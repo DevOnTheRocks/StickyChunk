@@ -10,8 +10,11 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import uk.codepen.stickysponge.Chunk;
+import uk.codepen.stickysponge.Coordinate;
 import uk.codepen.stickysponge.Permission.Permissions;
 import uk.codepen.stickysponge.StickySponge;
+
+import java.util.UUID;
 
 /**
  * Created by Cossacksman on 02/01/2017.
@@ -39,7 +42,7 @@ public class CommandCreate implements CommandExecutor {
 
 		// Do checks for the command
 
-		StickySponge.chunks.add(new Chunk(player.getLocation()));
+		StickySponge.chunks.add(new Chunk(player.getLocation(), player));
 
 		return CommandResult.success();
 	}
