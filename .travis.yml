@@ -1,7 +1,9 @@
 language: java
 
-sudo: true
+sudo: required
 
+install:
+  - ./gradlew setupDecompWorkspace
 script:
   - ./gradlew build
 
