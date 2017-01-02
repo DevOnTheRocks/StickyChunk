@@ -32,13 +32,14 @@ public class CommandCreate implements CommandExecutor {
 	}
 
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!(src instanceof Player)) {
+		if (!(src instanceof Player))
 			throw new CommandException(Text.of("You must be a player to execute this command."));
-		}
 
-		else {
-			// Do code
-		}
+		Player player = (Player) src;
+
+		// Do checks for the command
+
+		StickySponge.chunks.add(new Chunk(player.getLocation()));
 
 		return CommandResult.success();
 	}

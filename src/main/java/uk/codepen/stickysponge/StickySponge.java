@@ -1,18 +1,21 @@
 package uk.codepen.stickysponge;
 
 import com.google.inject.Inject;
+import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.world.World;
 import uk.codepen.stickysponge.config.StickySpongeConfig;
 import uk.codepen.stickysponge.database.IDatabase;
 import uk.codepen.stickysponge.database.SqliteDatabase;
 
+import java.lang.reflect.Array;
 import java.nio.file.Path;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 /**
  * Created by Cossacksman on 02/01/2017.
@@ -38,6 +41,8 @@ public class StickySponge {
 	private IDatabase database;
 
 	private static StickySponge instance;
+
+	public static ArrayList<Chunk> chunks = new ArrayList<>();
 
 	public static StickySponge getInstance() {
 		return instance;
@@ -71,5 +76,10 @@ public class StickySponge {
 	@Listener
 	public void onServerStopped(GameStoppedServerEvent event) {
 		// Update the database
+	}
+
+	public World getDefaultWorld() {
+		String defaultWorldName = StickySponge.getInstance().getGame().getServer().getDefaultWorldName();
+		return StickySponge.getInstance().getGame().getServer().getWorld(defaultWorldName).get();
 	}
 }
