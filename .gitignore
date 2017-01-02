@@ -7,3 +7,4 @@
 /lib/
 !.gitignore
 !build.gradle
+!.travis.yml
