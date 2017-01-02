@@ -1,5 +1,10 @@
 language: java
 
+sudo: true
+
+script:
+  - ./gradlew build
+
 jdk:
   - openjdk7
   - openjdk8
