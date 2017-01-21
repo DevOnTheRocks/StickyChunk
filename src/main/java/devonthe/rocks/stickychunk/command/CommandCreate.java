@@ -1,5 +1,8 @@
-package uk.codepen.stickysponge.command;
+package devonthe.rocks.stickychunk.command;
 
+import devonthe.rocks.stickychunk.Permission.Permissions;
+import devonthe.rocks.stickychunk.StickyChunk;
+import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -9,12 +12,6 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import uk.codepen.stickysponge.Chunk;
-import uk.codepen.stickysponge.Coordinate;
-import uk.codepen.stickysponge.Permission.Permissions;
-import uk.codepen.stickysponge.StickySponge;
-
-import java.util.UUID;
 
 /**
  * Created by Cossacksman on 02/01/2017.
@@ -26,12 +23,12 @@ public class CommandCreate implements CommandExecutor {
 	private static CommandSpec commandSpec = CommandSpec.builder()
 			.permission(Permissions.COMMAND_CREATE)
 			.description(Text.of(helpText))
-			.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("type"), Chunk.ChunkType.asMap())))
+			.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("type"), LoadedRegion.ChunkType.asMap())))
 			.executor(new CommandCreate())
 			.build();
 
 	public static void register() {
-		StickySponge.getInstance().getGame().getCommandManager().register(StickySponge.getInstance(), commandSpec);
+		StickyChunk.getInstance().getGame().getCommandManager().register(StickyChunk.getInstance(), commandSpec);
 	}
 
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -42,7 +39,7 @@ public class CommandCreate implements CommandExecutor {
 
 		// Do checks for the command
 
-		StickySponge.chunks.add(new Chunk(player.getLocation(), player));
+		StickyChunk.loadedRegions.add(new LoadedRegion(player.getLocation(), player));
 
 		return CommandResult.success();
 	}

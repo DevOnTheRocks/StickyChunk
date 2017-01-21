@@ -1,4 +1,4 @@
-package uk.codepen.stickysponge;
+package devonthe.rocks.stickychunk.world;
 
 import com.flowpowered.math.vector.Vector2i;
 import com.flowpowered.math.vector.Vector3i;

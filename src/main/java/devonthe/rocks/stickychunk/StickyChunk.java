@@ -1,6 +1,9 @@
-package uk.codepen.stickysponge;
+package devonthe.rocks.stickychunk;
 
 import com.google.inject.Inject;
+import devonthe.rocks.stickychunk.chunkload.ChunkLoadCallback;
+import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
+import devonthe.rocks.stickychunk.database.SqliteDatabase;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
@@ -9,11 +12,9 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.world.World;
-import uk.codepen.stickysponge.config.StickySpongeConfig;
-import uk.codepen.stickysponge.database.IDatabase;
-import uk.codepen.stickysponge.database.SqliteDatabase;
+import devonthe.rocks.stickychunk.config.StickySpongeConfig;
+import devonthe.rocks.stickychunk.database.IDatabase;
 
-import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -22,13 +23,13 @@ import java.util.ArrayList;
  */
 
 @Plugin(
-		id = "stickysponge",
-		name = "StickySponge",
+		id = "stickychunk",
+		name = "StickyChunk",
 		version = "0.1.0",
 		description = "",
 		authors = {"cossacksman"}
 )
-public class StickySponge {
+public class StickyChunk {
 	@Inject
 	private Logger logger;
 	@Inject
@@ -40,11 +41,11 @@ public class StickySponge {
 	private StickySpongeConfig config;
 	private IDatabase database;
 
-	private static StickySponge instance;
+	private static StickyChunk instance;
 
-	public static ArrayList<Chunk> chunks = new ArrayList<>();
+	public static ArrayList<LoadedRegion> loadedRegions = new ArrayList<>();
 
-	public static StickySponge getInstance() {
+	public static StickyChunk getInstance() {
 		return instance;
 	}
 
@@ -70,6 +71,9 @@ public class StickySponge {
 		config = new StickySpongeConfig();
 		database = new SqliteDatabase();
 
+		// Register tickets
+		getGame().getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
+
 		// Register commands
 	}
 
@@ -79,7 +83,7 @@ public class StickySponge {
 	}
 
 	public World getDefaultWorld() {
-		String defaultWorldName = StickySponge.getInstance().getGame().getServer().getDefaultWorldName();
-		return StickySponge.getInstance().getGame().getServer().getWorld(defaultWorldName).get();
+		String defaultWorldName = StickyChunk.getInstance().getGame().getServer().getDefaultWorldName();
+		return StickyChunk.getInstance().getGame().getServer().getWorld(defaultWorldName).get();
 	}
 }

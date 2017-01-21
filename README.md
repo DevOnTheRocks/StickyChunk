@@ -1,2 +1,2 @@
 # StickySponge
-A chunk persistence plugin for keeping your entities and blocks loaded.
+A loadedRegion persistence plugin for keeping your entities and blocks loaded.
