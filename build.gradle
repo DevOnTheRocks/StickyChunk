@@ -1,8 +1,21 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+    }
+}
+
 plugins {
     id 'java'
     id 'idea'
+    id 'maven'
     id 'org.spongepowered.plugin' version '0.6'
 }
+
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -19,6 +32,12 @@ repositories {
     }
 }
 
+minecraft {
+    forgeVersion = "2022"
+    mappings = "snapshot_20161111"
+}
+
 dependencies {
+    compile ("org.spongepowered:spongeforge:1.10.2-2202-5.1.0-BETA-2022:dev")
     compile ("org.spongepowered:spongeapi:5.0.0")
 }
