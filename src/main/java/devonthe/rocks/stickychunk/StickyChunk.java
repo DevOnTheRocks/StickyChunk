@@ -31,7 +31,7 @@ import java.util.ArrayList;
 		id = "stickychunk",
 		name = "StickyChunk",
 		version = "0.1.0",
-		description = "",
+		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
 public class StickyChunk {
