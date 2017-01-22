@@ -72,15 +72,30 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	 */
 	@Override
 	public List<LoadingTicket> onLoaded(ImmutableList<LoadingTicket> tickets, World world, int maxTickets) {
-//		List<LoadingTicket> worldTickets = new ArrayList<>();
-//		List<LoadingTicket> personalTickets = new ArrayList<>();
+		List<LoadingTicket> worldTickets = new ArrayList<>();
+		List<LoadingTicket> personalTickets = new ArrayList<>();
 		List<LoadingTicket> orderedTickets = new ArrayList<>();
 
 		if (tickets.size() > maxTickets) {
 			for (LoadingTicket ticket : tickets) {
-				// TODO - Get & sort by type
-				orderedTickets.add(ticket);
+
+				ITicketData tkt = (ITicketData) ticket;
+				int type = tkt.getModData().getInteger("type");
+
+				switch (type) {
+					case 2:
+						personalTickets.add(ticket);
+						break;
+					case 3:
+						worldTickets.add(ticket);
+						break;
+					default:
+						continue;
+				}
 			}
+
+			orderedTickets.addAll(worldTickets);
+			orderedTickets.addAll(personalTickets);
 		} else {
 			orderedTickets = tickets;
 		}
