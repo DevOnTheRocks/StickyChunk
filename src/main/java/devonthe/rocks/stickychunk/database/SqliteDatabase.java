@@ -3,6 +3,8 @@ package devonthe.rocks.stickychunk.database;
 import devonthe.rocks.stickychunk.StickyChunk;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
 import devonthe.rocks.stickychunk.world.Region;
+import org.slf4j.Logger;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.world.World;
 import devonthe.rocks.stickychunk.world.Coordinate;
 
@@ -23,33 +25,23 @@ import java.util.UUID;
 public class SqliteDatabase implements IDatabase {
 	// TODO:- Add config fields (location, dbName, tableName)
 
+	Server server = StickyChunk.getInstance().getGame().getServer();
+	Logger logger = StickyChunk.getInstance().getLogger();
+
 	public SqliteDatabase() {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			StickyChunk.getInstance().getLogger().error("Unable to load the JDBC driver");
+			logger.error("Unable to load the JDBC driver");
 		}
 
 		try (Statement statement = getConnection().createStatement()) {
 			statement.setQueryTimeout(30);
-
-			String table = "CREATE TABLE IF NOT EXISTS chunks (" +
-					"owner		STRING PRIMARY KEY" +
-					"id			STRING" +
-					"world 		STRING" +
-					"fromX		INT" +
-					"fromZ		INT" +
-					"toX		INT" +
-					"toZ		INT" +
-					"z			INT" +
-					"created	DATETIME" +
-					")";
-
-			statement.executeUpdate(table);
+			statement.executeUpdate(Schema.createChunkSchema());
 		} catch (SQLException e) {
 			e.printStackTrace();
-			StickyChunk.getInstance().getLogger().error("Unable to create StickyChunk database");
+			logger.error("Unable to create StickyChunk database");
 		}
 	}
 
@@ -58,11 +50,11 @@ public class SqliteDatabase implements IDatabase {
 	}
 
 	public void saveData(LoadedRegion loadedRegion) {
-		String sql = "INSERT OR REPLACE INTO chunks(owner, id, world, fromX, fromZ, toX, toZ, created) VALUES(?, ?, ?, ?, ?, ?)";
+		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?, ?, ?, ?, ?, ?)", Schema.getChunkProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, loadedRegion.getOwner().toString());
-			statement.setString(2, loadedRegion.getId().toString());
+			statement.setString(1, loadedRegion.getId().toString());
+			statement.setString(2, loadedRegion.getOwner().toString());
 			statement.setString(3, loadedRegion.getWorld().getUniqueId().toString());
 			statement.setInt(4, loadedRegion.getRegion().getFrom().getX());
 			statement.setInt(5, loadedRegion.getRegion().getFrom().getZ());
@@ -71,7 +63,7 @@ public class SqliteDatabase implements IDatabase {
 			statement.setDate(8, loadedRegion.getEpoch());
 		} catch(SQLException e) {
 			e.printStackTrace();
-			StickyChunk.getInstance().getLogger().error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
+			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
 		}
 	}
 
@@ -81,14 +73,14 @@ public class SqliteDatabase implements IDatabase {
 	}
 
 	public ArrayList<LoadedRegion> loadData() {
-		List chunks = new ArrayList<LoadedRegion>();
+		ArrayList<LoadedRegion> chunks = new ArrayList<LoadedRegion>();
 
 		try (Statement statement = getConnection().createStatement()) {
 			ResultSet results = statement.executeQuery("SELECT * FROM chunks");
 
 			while(results.next()) {
-				UUID owner = UUID.fromString(results.getString("owner"));
 				UUID id = UUID.fromString(results.getString("id"));
+				UUID owner = UUID.fromString(results.getString("owner"));
 				UUID world = UUID.fromString(results.getString("world"));
 				int fromX = results.getInt("fromX");
 				int fromZ = results.getInt("fromZ");
@@ -96,15 +88,20 @@ public class SqliteDatabase implements IDatabase {
 				int toZ = results.getInt("toZ");
 				Date date = results.getDate("created");
 
-				World worldOrDefault = StickyChunk.getInstance().getGame().getServer().getWorld(world).orElseGet(() -> StickyChunk.getInstance().getDefaultWorld());
-
-				StickyChunk.loadedRegions.add(new LoadedRegion(owner, id, world, new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ)), date));
+				if (server.getWorld(world).isPresent()) {
+					server.getWorld(world).ifPresent(loadedWorld ->
+						chunks.add(new LoadedRegion(owner, id, loadedWorld, new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ)), date))
+					);
+				} else {
+					logger.error("The world that a chunk was associated to no longer exists.");
+					logger.debug(String.format("The world's unique ID is %s", world.toString()));
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			StickyChunk.getInstance().getLogger().error(String.format("Unable to load data from the table: %s", e.getMessage()));
+			logger.error(String.format("Unable to load data from the table: %s", e.getMessage()));
 		}
 
-		return null;
+		return chunks;
 	}
 }

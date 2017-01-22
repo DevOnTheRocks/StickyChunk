@@ -3,7 +3,9 @@ package devonthe.rocks.stickychunk.command;
 import devonthe.rocks.stickychunk.Permission.Permissions;
 import devonthe.rocks.stickychunk.StickyChunk;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
+import devonthe.rocks.stickychunk.world.Region;
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,7 +23,8 @@ public class CommandCreate implements CommandExecutor {
 	private static String helpText = "/ss create [type] - Created a chunk-load of the specified type.";
 
 	private static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_CREATE)
+			.permission(Permissions.COMMAND_CREATE_PERSONAL)
+			.permission(Permissions.COMMAND_CREATE_WORLD)
 			.description(Text.of(helpText))
 			.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("type"), LoadedRegion.ChunkType.asMap())))
 			.executor(new CommandCreate())
@@ -33,14 +36,25 @@ public class CommandCreate implements CommandExecutor {
 
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if (!(src instanceof Player))
-			throw new CommandException(Text.of("You must be a player to execute this command."));
+			return execServer(src, args);
+		else {
+			Player player = (Player) src;
 
-		Player player = (Player) src;
+//			if (player.hasPermission(Permissions.COMMAND_CREATE_PERSONAL) || player.hasPermission(Permissions.COMMAND_CREATE_WORLD)) {
+				return execPlayer(player, args);
+//			} else {
+//				throw new CommandPermissionException(Text.of("You do not have permission to create chunks"));
+//			}
+		}
+	}
 
-		// Do checks for the command
+	private CommandResult execPlayer(Player player, CommandContext args) {
+		Region region = null; // TODO:- Remove as this command will only be executed after the region is set
+		StickyChunk.loadedRegions.add(new LoadedRegion(region, player));
+		return CommandResult.success();
+	}
 
-		StickyChunk.loadedRegions.add(new LoadedRegion(player.getLocation(), player));
-
+	private CommandResult execServer(CommandSource src, CommandContext args) {
 		return CommandResult.success();
 	}
 }

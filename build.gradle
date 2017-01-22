@@ -7,9 +7,9 @@ plugins {
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-group 'uk.codepen.stickychunk'
+group 'rocks.devonthe.stickychunk'
 version '0.1.0'
-description = 'StickySponge is a chunk persistence plugin for keeping blocks and entities loaded.'
+description = 'StickyChunk is a chunk persistence plugin for keeping blocks and entities loaded.'
 
 repositories {
     mavenCentral()

@@ -1,5 +1,6 @@
 package devonthe.rocks.stickychunk.chunkload;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -53,7 +54,7 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	 */
 	@Override
 	public void onLoaded(ImmutableList<LoadingTicket> tickets, World world) {
-		// Associate with
+		// Associate chunks to tickets using the DB data
 	}
 
 	/**

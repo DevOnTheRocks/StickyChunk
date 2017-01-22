@@ -43,8 +43,8 @@ public class LoadedRegion {
 		}
 	}
 
-	public LoadedRegion(UUID owner, UUID id, UUID world, Region region, Date epoch) {
-		this.world = SERVER.getWorld(world).orElseGet(() -> StickyChunk.getInstance().getDefaultWorld());
+	public LoadedRegion(UUID owner, UUID id, World world, Region region, Date epoch) {
+		this.world = world;
 		this.region = region;
 		this.owner = owner;
 		this.epoch = epoch;
