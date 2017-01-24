@@ -6,16 +6,12 @@ import com.google.common.collect.ImmutableSetMultimap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.ForgeChunkManager;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.ChunkTicketManager;
 import org.spongepowered.api.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.common.SpongeImpl;
-import org.spongepowered.common.data.nbt.NbtDataType;
-import org.spongepowered.common.data.util.NbtDataUtil;
-import org.spongepowered.common.mixin.core.nbt.MixinNBTTagCompound;
 import org.spongepowered.common.util.VecHelper;
 import org.spongepowered.mod.service.world.SpongeChunkTicketManager;
 

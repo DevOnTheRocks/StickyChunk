@@ -3,16 +3,21 @@ package devonthe.rocks.stickychunk;
 import com.google.inject.Inject;
 import devonthe.rocks.stickychunk.chunkload.ChunkLoadCallback;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
+import devonthe.rocks.stickychunk.command.CommandCreate;
 import devonthe.rocks.stickychunk.config.ConfigManager;
+import devonthe.rocks.stickychunk.data.DataStore;
 import devonthe.rocks.stickychunk.database.SqliteDatabase;
+import devonthe.rocks.stickychunk.world.RegionAreaListener;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -30,7 +35,7 @@ import java.util.ArrayList;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.1.0",
+		version = "0.2.2",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -47,6 +52,8 @@ public class StickyChunk {
 	private ConfigurationLoader<CommentedConfigurationNode> configManager;
 	private ConfigManager pluginConfigManager;
 	private StickyChunkConfig config;
+
+	private DataStore dataStore;
 	private IDatabase database;
 
 	private static StickyChunk instance;
@@ -74,32 +81,48 @@ public class StickyChunk {
 	}
 
 	@Listener
+	public void onPostInitialization(GamePostInitializationEvent event) {
+		instance = this;
+	}
+
+	@Listener
 	public void onAboutToStart(GameAboutToStartServerEvent event) {
+		// Initialize configs
 		config = new StickyChunkConfig();
 		pluginConfigManager = new ConfigManager(configManager);
 		pluginConfigManager.save();
 
 		// Register events
+		game.getEventManager().registerListeners(this, new RegionAreaListener());
+
 		// Register commands
+		registerCommands();
 	}
 
 	@Listener
 	public void onServerStarted(GameStartedServerEvent event) {
-		instance = this;
-		config = new StickyChunkConfig();
+		dataStore = new DataStore();
 		database = new SqliteDatabase();
 
 		// Register tickets
-		getGame().getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
+		game.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
 	}
 
 	@Listener
 	public void onServerStopped(GameStoppedServerEvent event) {
-		// Update the database
+		database.saveData(dataStore.getRegions());
+	}
+
+	public DataStore getDataStore() {
+		return dataStore;
 	}
 
 	public World getDefaultWorld() {
 		String defaultWorldName = StickyChunk.getInstance().getGame().getServer().getDefaultWorldName();
 		return StickyChunk.getInstance().getGame().getServer().getWorld(defaultWorldName).get();
+	}
+
+	private void registerCommands() {
+		CommandCreate.register();
 	}
 }

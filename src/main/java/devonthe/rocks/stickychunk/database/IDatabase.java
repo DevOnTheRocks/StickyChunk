@@ -1,5 +1,6 @@
 package devonthe.rocks.stickychunk.database;
 
+import com.google.common.collect.ImmutableSet;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
  */
 public interface IDatabase {
 	void saveData(LoadedRegion loadedRegion);
+	void saveData(ImmutableSet<LoadedRegion> loadedRegions);
 	void saveData(ArrayList<LoadedRegion> data);
 	ArrayList<LoadedRegion> loadData();
 }

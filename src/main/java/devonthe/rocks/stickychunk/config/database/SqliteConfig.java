@@ -1,5 +1,6 @@
 package devonthe.rocks.stickychunk.config.database;
 
+import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 /**
@@ -7,5 +8,13 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
  */
 @ConfigSerializable
 public class SqliteConfig {
+	@Setting("Name")
+	public String databaseName;
+	@Setting("Location")
+	public String location;
 
+	public SqliteConfig() {
+		databaseName = "stickychunk";
+		location = "./";
+	}
 }

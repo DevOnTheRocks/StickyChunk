@@ -7,6 +7,8 @@ public class Permissions {
 	public static final String COMMAND_CREATE_PERSONAL = "stickychunk.command.create.personal";
 	public static final String COMMAND_CREATE_WORLD = "stickychunk.command.create.world";
 
+	public static final String PLAYER_SELECT_REGION = "stickychunk.command.select";
+
 	public static final String COMMAND_DELETE_PERSONAL = "stickychunk.command.delete.personal";
 	public static final String COMMAND_DELETE_WORLD = "stickychunk.command.delete.world";
 

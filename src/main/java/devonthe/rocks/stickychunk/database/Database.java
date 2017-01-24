@@ -1,7 +1,9 @@
 package devonthe.rocks.stickychunk.database;
 
+import com.google.common.collect.ImmutableSet;
 import devonthe.rocks.stickychunk.StickyChunk;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
+import devonthe.rocks.stickychunk.data.DataStore;
 import devonthe.rocks.stickychunk.world.Coordinate;
 import devonthe.rocks.stickychunk.world.Region;
 import org.slf4j.Logger;
@@ -74,6 +76,10 @@ public abstract class Database implements IDatabase {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
 		}
+	}
+
+	public void saveData(ImmutableSet<LoadedRegion> loadedRegions) {
+		loadedRegions.forEach(this::saveData);
 	}
 
 	public void saveData(ArrayList<LoadedRegion> data) {
