@@ -14,10 +14,13 @@ public class DatabaseConfig {
 	public SqliteConfig sqlite;
 	@Setting(value = "MySQL")
 	public MysqlConfig mysql;
+	@Setting(value = "Mongo")
+	public MongoConfig mongo;
 
 	public DatabaseConfig() {
 		type = "SQLite";
 		sqlite = new SqliteConfig();
 		mysql = new MysqlConfig();
+		mongo = new MongoConfig();
 	}
 }

@@ -24,7 +24,6 @@ public class LoadedRegion {
 	private LoadingTicket ticket;
 	private List<Chunk> chunks;
 	private Region region;
-	private World world;
 	private Date epoch;
 	private UUID owner;
 	private UUID id;
@@ -43,31 +42,24 @@ public class LoadedRegion {
 		}
 	}
 
-	public LoadedRegion(UUID owner, UUID id, World world, Region region, Date epoch) {
-		this.world = world;
+	public LoadedRegion(UUID owner, UUID id, Region region, Date epoch) {
 		this.region = region;
 		this.owner = owner;
 		this.epoch = epoch;
 		this.id = id;
 	}
 
-	public LoadedRegion(World world, Region region, Player owner) {
+	public LoadedRegion(Region region, Player owner) {
 		this.epoch = (Date) Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
-		this.world = world;
 	}
 
 	public LoadedRegion(Location<World> from, Location<World> to, Player owner) {
 		this.region = new Region(from, to);
 		this.epoch = (Date) Date.from(Instant.now());
-		this.world = from.getExtent();
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
-	}
-
-	public LoadedRegion(Region region, Player owner) {
-
 	}
 
 	public static List<Chunk> getChunks(Region region) {
@@ -87,7 +79,7 @@ public class LoadedRegion {
 	}
 
 	public World getWorld() {
-		return world;
+		return region.getWorld();
 	}
 
 	public Region getRegion() {
@@ -102,10 +94,7 @@ public class LoadedRegion {
 		return chunks.size();
 	}
 
-
-
 	public void load(ChunkType type) {
-		for (Chunk chunk : chunks)
-			ticket.forceChunk(chunk.getPosition());
+		chunks.forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
 	}
 }

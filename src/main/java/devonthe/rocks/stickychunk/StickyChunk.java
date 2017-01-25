@@ -3,7 +3,7 @@ package devonthe.rocks.stickychunk;
 import com.google.inject.Inject;
 import devonthe.rocks.stickychunk.chunkload.ChunkLoadCallback;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
-import devonthe.rocks.stickychunk.command.CommandCreate;
+import devonthe.rocks.stickychunk.command.CommandCreateOne;
 import devonthe.rocks.stickychunk.config.ConfigManager;
 import devonthe.rocks.stickychunk.data.DataStore;
 import devonthe.rocks.stickychunk.database.SqliteDatabase;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.2.2",
+		version = "0.3.2",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -93,7 +93,7 @@ public class StickyChunk {
 		pluginConfigManager.save();
 
 		// Register events
-		game.getEventManager().registerListeners(this, new RegionAreaListener());
+		Sponge.getGame().getEventManager().registerListeners(this, new RegionAreaListener());
 
 		// Register commands
 		registerCommands();
@@ -110,7 +110,7 @@ public class StickyChunk {
 
 	@Listener
 	public void onServerStopped(GameStoppedServerEvent event) {
-		database.saveData(dataStore.getRegions());
+		database.saveRegionData(dataStore.getCollatedRegions());
 	}
 
 	public DataStore getDataStore() {
@@ -123,6 +123,6 @@ public class StickyChunk {
 	}
 
 	private void registerCommands() {
-		CommandCreate.register();
+		CommandCreateOne.register();
 	}
 }

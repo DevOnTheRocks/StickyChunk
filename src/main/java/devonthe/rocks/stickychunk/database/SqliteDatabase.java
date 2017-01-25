@@ -13,18 +13,20 @@ import java.sql.Statement;
 /**
  * Created by Cossacksman on 02/01/2017.
  */
-public class SqliteDatabase extends Database {
+public class SqliteDatabase extends SqlDatabase {
 	private SqliteConfig config;
 	private String databaseLocation;
 	private String databaseName;
 	private Connection connection;
 
-	private Logger logger = StickyChunk.getInstance().getLogger();
+	private Logger logger;
 
 	public SqliteDatabase() {
 		config = StickyChunk.getInstance().getConfig().database.sqlite;
 		databaseLocation = config.location;
 		databaseName = config.databaseName;
+
+		logger = StickyChunk.getInstance().getLogger();
 
 		try {
 			Class.forName("org.sqlite.JDBC");

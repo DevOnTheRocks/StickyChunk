@@ -3,31 +3,30 @@ package devonthe.rocks.stickychunk.database;
 import com.google.common.collect.ImmutableSet;
 import devonthe.rocks.stickychunk.StickyChunk;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
-import devonthe.rocks.stickychunk.data.DataStore;
 import devonthe.rocks.stickychunk.world.Coordinate;
 import devonthe.rocks.stickychunk.world.Region;
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.UUID;
 
 /**
  * Created by Cossacksman on 22/01/2017.
  */
-public abstract class Database implements IDatabase {
+public abstract class SqlDatabase implements IDatabase {
 	private Server server = StickyChunk.getInstance().getGame().getServer();
 	private Logger logger = StickyChunk.getInstance().getLogger();
 
 	public abstract Connection getConnection() throws SQLException;
 
-	public ArrayList<LoadedRegion> loadData() {
+	public ArrayList<LoadedRegion> loadRegionData() {
 		ArrayList<LoadedRegion> chunks = new ArrayList<LoadedRegion>();
 
 		try (Statement statement = getConnection().createStatement()) {
@@ -45,7 +44,7 @@ public abstract class Database implements IDatabase {
 
 				if (server.getWorld(world).isPresent()) {
 					server.getWorld(world).ifPresent(loadedWorld ->
-							chunks.add(new LoadedRegion(owner, id, loadedWorld, new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ)), date))
+							chunks.add(new LoadedRegion(owner, id, new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld), date))
 					);
 				} else {
 					logger.error("The world that a chunk was associated to no longer exists.");
@@ -60,7 +59,7 @@ public abstract class Database implements IDatabase {
 		return chunks;
 	}
 
-	public void saveData(LoadedRegion loadedRegion) {
+	public void saveRegionData(LoadedRegion loadedRegion) {
 		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?, ?, ?, ?, ?, ?)", Schema.getChunkProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
@@ -78,12 +77,11 @@ public abstract class Database implements IDatabase {
 		}
 	}
 
-	public void saveData(ImmutableSet<LoadedRegion> loadedRegions) {
-		loadedRegions.forEach(this::saveData);
+	public void saveRegionData(ImmutableSet<LoadedRegion> loadedRegions) {
+		loadedRegions.forEach(this::saveRegionData);
 	}
 
-	public void saveData(ArrayList<LoadedRegion> data) {
-		for (LoadedRegion loadedRegion : StickyChunk.loadedRegions)
-			saveData(loadedRegion);
+	public void saveRegionData(ArrayList<LoadedRegion> data) {
+		data.forEach(this::saveRegionData);
 	}
 }

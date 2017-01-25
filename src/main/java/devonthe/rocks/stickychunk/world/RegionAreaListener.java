@@ -26,8 +26,8 @@ public class RegionAreaListener {
 
 	@Listener
 	public void onInteract(InteractBlockEvent.Secondary.MainHand event, @Root Player player) {
-		if (!player.hasPermission(Permissions.PLAYER_SELECT_REGION))
-			return;
+//		if (!player.hasPermission(Permissions.PLAYER_SELECT_REGION))
+//			return;
 
 		Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
 		if (item.isPresent() && item.get().getItem().equals(ItemTypes.GOLDEN_AXE) && event.getTargetBlock() != BlockSnapshot.NONE) {
@@ -39,8 +39,8 @@ public class RegionAreaListener {
 
 	@Listener
 	public void onInteract(InteractBlockEvent.Primary.MainHand event, @Root Player player) {
-		if (!player.hasPermission(Permissions.PLAYER_SELECT_REGION))
-			return;
+//		if (!player.hasPermission(Permissions.PLAYER_SELECT_REGION))
+//			return;
 
 		Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
 		if (item.isPresent() && item.get().getItem().equals(ItemTypes.GOLDEN_AXE)) {

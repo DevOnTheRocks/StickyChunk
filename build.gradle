@@ -21,7 +21,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 group 'rocks.devonthe.stickychunk'
-version '0.2.2'
+version '0.3.2'
 description = 'StickyChunk is a chunk persistence plugin for keeping blocks and entities loaded.'
 
 repositories {
@@ -38,6 +38,7 @@ minecraft {
 }
 
 dependencies {
+    compile ('org.mongodb:mongo-java-driver:3.4.1')
     compile ("org.spongepowered:spongeforge:1.10.2-2202-5.1.0-BETA-2022:dev")
     compile ("org.spongepowered:spongeapi:5.0.0")
 }

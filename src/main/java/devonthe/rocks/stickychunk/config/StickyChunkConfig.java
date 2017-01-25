@@ -11,7 +11,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class StickyChunkConfig {
-	@Setting(value = "Database")
+	@Setting(value = "SqlDatabase")
 	public DatabaseConfig database;
 	@Setting(value = "Token")
 	public TokenConfig token;

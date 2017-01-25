@@ -9,8 +9,8 @@ import java.util.ArrayList;
  * Created by Cossacksman on 02/01/2017.
  */
 public interface IDatabase {
-	void saveData(LoadedRegion loadedRegion);
-	void saveData(ImmutableSet<LoadedRegion> loadedRegions);
-	void saveData(ArrayList<LoadedRegion> data);
-	ArrayList<LoadedRegion> loadData();
+	void saveRegionData(LoadedRegion loadedRegion);
+	void saveRegionData(ImmutableSet<LoadedRegion> loadedRegions);
+	void saveRegionData(ArrayList<LoadedRegion> data);
+	ArrayList<LoadedRegion> loadRegionData();
 }

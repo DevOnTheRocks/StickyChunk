@@ -14,16 +14,33 @@ import java.util.UUID;
  * Created by Cossacksman on 24/01/2017.
  */
 public class DataStore {
+	private Map<UUID, User> users = new HashMap<UUID, User>();
 	private Map<UUID, ArrayList<LoadedRegion>> loadedChunks = new HashMap<UUID, ArrayList<LoadedRegion>>();
+
+	public ImmutableSet<User> getUsers() {
+		return ImmutableSet.copyOf(users.values());
+	}
 
 	public ImmutableSet<UUID> getPlayers() {
 		return ImmutableSet.copyOf(loadedChunks.keySet());
 	}
 
-	public ImmutableSet<LoadedRegion> getRegions() {
+	public ImmutableSet<ArrayList<LoadedRegion>> getRegions() {
+		return ImmutableSet.copyOf(loadedChunks.values());
+	}
+
+	public ImmutableSet<LoadedRegion> getCollatedRegions() {
 		ArrayList<LoadedRegion> regions = new ArrayList<LoadedRegion>();
 		loadedChunks.values().forEach(regions::addAll);
 		return ImmutableSet.copyOf(regions);
+	}
+
+	public User getUser(Player player) {
+		return users.get(player.getUniqueId());
+	}
+
+	public User getUser(UUID uuid) {
+		return users.get(uuid);
 	}
 
 	public ArrayList<LoadedRegion> getPlayerRegions(Player player) {
