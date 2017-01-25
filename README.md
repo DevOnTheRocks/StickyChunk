@@ -12,6 +12,7 @@ StickyChunk will have many features working during the public Alpha and Beta rel
 - A configurable token system to load chunks with
 
 -----
+
 #### Feel like helping out?
 
  Don't forget you can always help [support the network](https://www.patreon.com/user?u=4752514) or [Buy me a coffee](https://www.paypal.me/cossacksman)!
