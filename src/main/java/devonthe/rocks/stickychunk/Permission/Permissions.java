@@ -1,4 +1,4 @@
-package devonthe.rocks.stickychunk.Permission;
+package devonthe.rocks.stickychunk.permission;
 
 /**
  * Created by Cossacksman on 02/01/2017.
