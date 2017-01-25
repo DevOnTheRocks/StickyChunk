@@ -7,7 +7,7 @@ import devonthe.rocks.stickychunk.command.CommandCreateOne;
 import devonthe.rocks.stickychunk.config.ConfigManager;
 import devonthe.rocks.stickychunk.data.DataStore;
 import devonthe.rocks.stickychunk.database.SqliteDatabase;
-import devonthe.rocks.stickychunk.world.RegionAreaListener;
+import devonthe.rocks.stickychunk.listener.RegionAreaListener;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
@@ -57,8 +57,6 @@ public class StickyChunk {
 	private IDatabase database;
 
 	private static StickyChunk instance;
-
-	public static ArrayList<LoadedRegion> loadedRegions = new ArrayList<>();
 
 	public static StickyChunk getInstance() {
 		return instance;

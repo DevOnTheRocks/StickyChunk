@@ -3,6 +3,7 @@ package devonthe.rocks.stickychunk.database;
 import com.google.common.collect.ImmutableSet;
 import devonthe.rocks.stickychunk.StickyChunk;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
+import devonthe.rocks.stickychunk.data.User;
 import devonthe.rocks.stickychunk.world.Coordinate;
 import devonthe.rocks.stickychunk.world.Region;
 import org.slf4j.Logger;
@@ -53,14 +54,36 @@ public abstract class SqlDatabase implements IDatabase {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			logger.error(String.format("Unable to load data from the table: %s", e.getMessage()));
+			logger.error(String.format("Unable to load loadedRegion from the table: %s", e.getMessage()));
 		}
 
 		return chunks;
 	}
 
+	public ArrayList<User> loadUserData() {
+		ArrayList<User> users = new ArrayList<User>();
+
+		try (Statement statement = getConnection().createStatement()) {
+			ResultSet results = statement.executeQuery("SELECT * FROM users");
+
+			while(results.next()) {
+				UUID player = UUID.fromString(results.getString("user"));
+				int credits = results.getInt("credits");
+				Date seen = results.getDate("seen");
+				Date joined = results.getDate("joined");
+
+				User user = new User(player, credits, joined, seen);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(String.format("Unable to load users from the table: %s", e.getMessage()));
+		}
+
+		return users;
+	}
+
 	public void saveRegionData(LoadedRegion loadedRegion) {
-		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?, ?, ?, ?, ?, ?)", Schema.getChunkProperties());
+		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?,?,?,?,?,?)", Schema.getChunkProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, loadedRegion.getId().toString());
@@ -83,5 +106,28 @@ public abstract class SqlDatabase implements IDatabase {
 
 	public void saveRegionData(ArrayList<LoadedRegion> data) {
 		data.forEach(this::saveRegionData);
+	}
+
+	public void saveUserData(User user) {
+		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?)", Schema.getUserProperties());
+
+		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
+			statement.setString(1, user.getUniqueId().toString());
+			statement.setInt(2, user.getCredits());
+			statement.setDate(3, user.getLastSeen());
+			statement.setDate(4, user.getUserJoined());
+			statement.execute();
+		} catch(SQLException e) {
+			e.printStackTrace();
+			logger.error(String.format("Error inserting user into the database: %s", e.getMessage()));
+		}
+	}
+
+	public void saveUserData(ImmutableSet<User> loadedRegions) {
+		loadedRegions.forEach(this::saveUserData);
+	}
+
+	public void saveUserData(ArrayList<User> data) {
+		data.forEach(this::saveUserData);
 	}
 }

@@ -7,7 +7,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -15,23 +14,23 @@ import java.util.UUID;
  */
 public class DataStore {
 	private Map<UUID, User> users = new HashMap<UUID, User>();
-	private Map<UUID, ArrayList<LoadedRegion>> loadedChunks = new HashMap<UUID, ArrayList<LoadedRegion>>();
+	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = new HashMap<UUID, ArrayList<LoadedRegion>>();
 
 	public ImmutableSet<User> getUsers() {
 		return ImmutableSet.copyOf(users.values());
 	}
 
 	public ImmutableSet<UUID> getPlayers() {
-		return ImmutableSet.copyOf(loadedChunks.keySet());
+		return ImmutableSet.copyOf(loadedRegions.keySet());
 	}
 
 	public ImmutableSet<ArrayList<LoadedRegion>> getRegions() {
-		return ImmutableSet.copyOf(loadedChunks.values());
+		return ImmutableSet.copyOf(loadedRegions.values());
 	}
 
 	public ImmutableSet<LoadedRegion> getCollatedRegions() {
 		ArrayList<LoadedRegion> regions = new ArrayList<LoadedRegion>();
-		loadedChunks.values().forEach(regions::addAll);
+		loadedRegions.values().forEach(regions::addAll);
 		return ImmutableSet.copyOf(regions);
 	}
 
@@ -43,35 +42,39 @@ public class DataStore {
 		return users.get(uuid);
 	}
 
+	public void updateUser(User user) {
+		users.put(user.getUniqueId(), user);
+	}
+
 	public ArrayList<LoadedRegion> getPlayerRegions(Player player) {
-		return loadedChunks.get(player.getUniqueId());
+		return loadedRegions.get(player.getUniqueId());
 	}
 
 	public ArrayList<LoadedRegion> getPlayerRegions(UUID uuid) {
-		return loadedChunks.get(uuid);
+		return loadedRegions.get(uuid);
 	}
 
 	public void addPlayerChunks(Player player, ArrayList<LoadedRegion> regions) {
-		loadedChunks.get(player.getUniqueId()).addAll(regions);
+		loadedRegions.get(player.getUniqueId()).addAll(regions);
 	}
 
 	public void addPlayerChunks(UUID uuid, ArrayList<LoadedRegion> regions) {
-		loadedChunks.get(uuid).addAll(regions);
+		loadedRegions.get(uuid).addAll(regions);
 	}
 
 	public void addPlayerChunk(Player player, LoadedRegion region) {
-		loadedChunks.get(player.getUniqueId()).add(region);
+		loadedRegions.get(player.getUniqueId()).add(region);
 	}
 
 	public void addPlayerChunk(UUID uuid, LoadedRegion region) {
-		loadedChunks.get(uuid).add(region);
+		loadedRegions.get(uuid).add(region);
 	}
 
 	public boolean playerHasRegions(Player player) {
-		return loadedChunks.containsKey(player.getUniqueId());
+		return loadedRegions.containsKey(player.getUniqueId());
 	}
 
 	public boolean playerHasRegions(UUID uuid) {
-		return loadedChunks.containsKey(uuid);
+		return loadedRegions.containsKey(uuid);
 	}
 }

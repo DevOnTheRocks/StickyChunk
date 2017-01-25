@@ -1,8 +1,7 @@
-package devonthe.rocks.stickychunk.world;
+package devonthe.rocks.stickychunk.listener;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Maps;
-import devonthe.rocks.stickychunk.Permission.Permissions;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;

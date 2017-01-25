@@ -1,10 +1,8 @@
 package devonthe.rocks.stickychunk.command;
 
-import devonthe.rocks.stickychunk.Permission.Permissions;
+import devonthe.rocks.stickychunk.permission.Permissions;
 import devonthe.rocks.stickychunk.StickyChunk;
 import devonthe.rocks.stickychunk.chunkload.LoadedRegion;
-import devonthe.rocks.stickychunk.world.Region;
-import devonthe.rocks.stickychunk.world.RegionAreaListener;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
