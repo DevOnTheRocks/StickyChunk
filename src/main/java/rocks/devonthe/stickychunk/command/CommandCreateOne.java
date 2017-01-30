@@ -14,6 +14,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import rocks.devonthe.stickychunk.world.Region;
 
 /**
  * Created by Cossacksman on 02/01/2017.
@@ -52,11 +53,14 @@ public class CommandCreateOne implements CommandExecutor {
 	}
 
 	private CommandResult execPlayer(Player player, CommandContext args) {
-		ticketManager.createTicket(player.getWorld()).ifPresent(ticket -> {
+		Region region = new Region(player.getLocation());
 
+		ticketManager.createTicket(player.getWorld()).ifPresent(ticket -> {
+			ticket.forceChunk(player.getLocation().getChunkPosition());
+			LoadedRegion loadedRegion = new LoadedRegion(region, player);
+			dataStore.addPlayerChunk(player, loadedRegion);
 		});
 
-//		StickyChunk.loadedRegions.add(new LoadedRegion(region, player));
 		return CommandResult.success();
 	}
 

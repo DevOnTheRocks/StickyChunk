@@ -18,6 +18,7 @@ public class Region {
 	private List<Chunk> chunks;
 	private Coordinate fromChunkPosition;
 	private Coordinate toChunkPosition;
+	private int area;
 
 	private Server server = StickyChunk.getInstance().getGame().getServer();
 
@@ -42,17 +43,13 @@ public class Region {
 	}
 
 	public List<Chunk> getChunkRange() {
-		return getChunkRange(getFrom(), getTo(), world);
-	}
-
-	public static List<Chunk> getChunkRange(Coordinate from, Coordinate to, World world) {
 		List<Chunk> chunks = new ArrayList<Chunk>();
-		int height, width, area, pointerX, pointerZ, lowestX, lowestZ, highestX, highestZ;
+		int height, width, pointerX, pointerZ, lowestX, lowestZ, highestX, highestZ;
 
-		lowestX = Math.min(from.getX(), to.getX());
-		lowestZ = Math.min(from.getZ(), to.getZ());
-		highestX = Math.max(from.getX(), to.getX());
-		highestZ = Math.max(from.getZ(), to.getZ());
+		lowestX = Math.min(fromChunkPosition.getX(), toChunkPosition.getX());
+		lowestZ = Math.min(fromChunkPosition.getZ(), toChunkPosition.getZ());
+		highestX = Math.max(fromChunkPosition.getX(), toChunkPosition.getX());
+		highestZ = Math.max(fromChunkPosition.getZ(), toChunkPosition.getZ());
 
 		width = Math.abs(lowestX - highestX);
 		height = Math.abs(lowestZ - highestZ);
@@ -63,10 +60,7 @@ public class Region {
 		pointerZ = lowestZ;
 
 		for (int i = 0; i <= width; i++) {
-			System.out.println(String.format("X: %s", pointerX));
 			for (int l = 0; l <= height; l++) {
-				System.out.println(String.format("Z: %s", pointerZ));
-
 				world.getChunk(pointerX, 0, pointerZ).ifPresent(chunks::add);
 				pointerZ++;
 			}
