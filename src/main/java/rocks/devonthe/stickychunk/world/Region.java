@@ -25,21 +25,27 @@ public class Region {
 		this.fromChunkPosition = from;
 		this.toChunkPosition = to;
 		this.world = world;
+		this.chunks = getChunkRange();
 	}
 
 	public Region(Location<World> from, Location<World> to) {
 		fromChunkPosition = new Coordinate(from.getBlockPosition());
 		toChunkPosition = new Coordinate(to.getBlockPosition());
 		world = from.getExtent();
+		chunks = getChunkRange();
 	}
 
 	public Region(Location<World> location) {
-		chunks.add(location.getExtent().getChunk(location.getBlockX(), 0, location.getBlockZ()).get());
+		location.getExtent().getChunk(location.getBlockX(), 0, location.getBlockZ()).ifPresent(chunks::add);
 		fromChunkPosition = toChunkPosition = new Coordinate(location.getBlockPosition());
 		world = location.getExtent();
 	}
 
-	public List<Chunk> calcChunks(Coordinate from, Coordinate to) {
+	public List<Chunk> getChunkRange() {
+		return getChunkRange(getFrom(), getTo(), world);
+	}
+
+	public static List<Chunk> getChunkRange(Coordinate from, Coordinate to, World world) {
 		List<Chunk> chunks = new ArrayList<Chunk>();
 		int height, width, area, pointerX, pointerZ, lowestX, lowestZ, highestX, highestZ;
 
