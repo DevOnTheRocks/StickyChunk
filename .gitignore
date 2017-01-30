@@ -5,6 +5,7 @@
 /build*
 /run*
 /lib/
+/out/
 !.gitignore
 !build.gradle
 !.travis.yml

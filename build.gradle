@@ -15,6 +15,7 @@ plugins {
     id 'org.spongepowered.plugin' version '0.6'
 }
 
+apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 sourceCompatibility = '1.8'
@@ -35,6 +36,10 @@ repositories {
 minecraft {
     forgeVersion = "2022"
     mappings = "snapshot_20161111"
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
 }
 
 dependencies {
