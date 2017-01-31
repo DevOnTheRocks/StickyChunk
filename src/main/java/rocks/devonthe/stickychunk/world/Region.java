@@ -37,6 +37,7 @@ public class Region {
 	}
 
 	public Region(Location<World> location) {
+		chunks = new ArrayList<Chunk>();
 		location.getExtent().getChunk(location.getChunkPosition().getX(), 0, location.getChunkPosition().getZ()).ifPresent(chunks::add);
 		fromChunkPosition = toChunkPosition = new Coordinate(location.getBlockPosition());
 		world = location.getExtent();
