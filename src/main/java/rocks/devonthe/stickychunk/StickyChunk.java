@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
 import rocks.devonthe.stickychunk.command.CommandCreateOne;
+import rocks.devonthe.stickychunk.command.CommandPersist;
 import rocks.devonthe.stickychunk.config.ConfigManager;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.SqliteDatabase;
@@ -103,6 +104,7 @@ public class StickyChunk {
 	}
 
 	private void registerCommands() {
+		CommandPersist.register();
 		CommandCreateOne.register();
 	}
 
