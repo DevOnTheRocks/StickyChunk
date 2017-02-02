@@ -9,11 +9,15 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
 import rocks.devonthe.stickychunk.data.DataStore;
+import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 import rocks.devonthe.stickychunk.permission.Permissions;
+import rocks.devonthe.stickychunk.world.Coordinate;
+import rocks.devonthe.stickychunk.world.Region;
 
 /**
  * Created by Cossacksman on 30/01/2017.
@@ -46,16 +50,32 @@ public class CommandCreateRange implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if (!(src instanceof Player))
 			return execServer(src, args);
-		else {
-			return execPlayer((Player) src, args);
-		}
-	}
 
-	private CommandResult execServer(CommandSource src, CommandContext args) {
+		Player player = (Player) src;
+
+		if (RegionAreaListener.exists(player)) {
+			RegionAreaListener.PlayerData playerData = RegionAreaListener.get(player);
+			Coordinate from = new Coordinate(playerData.getPos1());
+			Coordinate to = new Coordinate(playerData.getPos2());
+
+			Region region = new Region(from, to, player.getWorld());
+			LoadedRegion loadedRegion = new LoadedRegion(region, player);
+
+			if (loadedRegion.isValid()) {
+				dataStore.addPlayerChunk(player, loadedRegion);
+				loadedRegion.load();
+				player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded chunk range."));
+			} else {
+				player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket or force chunks."));
+			}
+		} else {
+			player.sendMessage(Text.of(TextColors.RED, "You must have a selected region before loading multiple chunks."));
+		}
+
 		return CommandResult.success();
 	}
 
-	private CommandResult execPlayer(Player player, CommandContext args) {
+	private CommandResult execServer(CommandSource src, CommandContext args) {
 		return CommandResult.success();
 	}
 }

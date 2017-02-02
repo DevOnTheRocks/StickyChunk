@@ -1,6 +1,7 @@
 package rocks.devonthe.stickychunk.command;
 
 import org.spongepowered.api.Game;
+import org.spongepowered.api.text.format.TextColors;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
@@ -51,12 +52,15 @@ public class CommandCreateOne implements CommandExecutor {
 
 		Player player = (Player) src;
 		Region region = new Region(player.getLocation());
+		LoadedRegion loadedRegion = new LoadedRegion(region, player);
 
-		ticketManager.createTicket(player.getWorld()).ifPresent(ticket -> {
-			ticket.forceChunk(player.getLocation().getChunkPosition());
-			LoadedRegion loadedRegion = new LoadedRegion(region, player);
+		if (loadedRegion.isValid()) {
 			dataStore.addPlayerChunk(player, loadedRegion);
-		});
+			loadedRegion.load();
+			player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the chunk."));
+		} else {
+			player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket and force chunk."));
+		}
 
 		return CommandResult.success();
 	}

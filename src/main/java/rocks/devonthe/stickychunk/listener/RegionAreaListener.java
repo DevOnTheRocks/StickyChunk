@@ -80,7 +80,11 @@ public class RegionAreaListener {
 		}
 	}
 
-	public static PlayerData get(Player pl) {
-		return PLAYER_DATA.computeIfAbsent(pl.getUniqueId(), k -> new PlayerData(pl.getUniqueId()));
+	public static boolean exists(Player player) {
+		return PLAYER_DATA.containsKey(player.getUniqueId());
+	}
+
+	public static PlayerData get(Player player) {
+		return PLAYER_DATA.computeIfAbsent(player.getUniqueId(), k -> new PlayerData(player.getUniqueId()));
 	}
 }

@@ -93,7 +93,7 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setInt(5, loadedRegion.getRegion().getFrom().getZ());
 			statement.setInt(6, loadedRegion.getRegion().getTo().getX());
 			statement.setInt(7, loadedRegion.getRegion().getTo().getZ());
-			statement.setDate(8, loadedRegion.getEpoch());
+			statement.setDate(8, (Date) loadedRegion.getEpoch());
 		} catch(SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));

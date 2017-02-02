@@ -11,7 +11,7 @@ import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.world.Region;
 
 import java.time.Instant;
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +57,7 @@ public class LoadedRegion {
 
 	public LoadedRegion(Region region, Player owner) {
 		this.ticket = createTicket(region.getWorld());
-		this.epoch = (Date) Date.from(Instant.now());
+		this.epoch = Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
 		this.region = region;
@@ -66,7 +66,7 @@ public class LoadedRegion {
 	public LoadedRegion(Location<World> from, Location<World> to, Player owner) {
 		this.region = new Region(from, to);
 		this.ticket = createTicket(region.getWorld());
-		this.epoch = (Date) Date.from(Instant.now());
+		this.epoch = Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
 	}
@@ -74,7 +74,7 @@ public class LoadedRegion {
 	public LoadedRegion(Location<World> location, Player owner) {
 		this.region = new Region(location);
 		this.ticket = createTicket(region.getWorld());
-		this.epoch = (Date) Date.from(Instant.now());
+		this.epoch = Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
 	}
@@ -115,7 +115,7 @@ public class LoadedRegion {
 		return isValid;
 	}
 
-	public void load(ChunkType type) {
+	public void load() {
 		chunks.forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
 	}
 
