@@ -26,7 +26,6 @@ public class LoadedRegion {
 	private static final Logger logger = StickyChunk.getInstance().getLogger();
 
 	private LoadingTicket ticket;
-	private List<Chunk> chunks;
 	private boolean isValid;
 	private Region region;
 	private Date epoch;
@@ -104,11 +103,11 @@ public class LoadedRegion {
 	}
 
 	public List<Chunk> getChunks() {
-		return chunks;
+		return region.getChunks();
 	}
 
 	public int getChunkCount() {
-		return chunks.size();
+		return region.getChunks().size();
 	}
 
 	public boolean isValid() {
@@ -116,7 +115,7 @@ public class LoadedRegion {
 	}
 
 	public void forceChunks() {
-		chunks.forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
+		region.getChunks().forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
 	}
 
 	public LoadingTicket createTicket(World world) {
