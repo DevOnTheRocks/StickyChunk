@@ -11,7 +11,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,7 +24,7 @@ public class CommandCreateOne implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
-	private static String helpText = "/sc create [type] - Created a chunk-load of the specified type.";
+	private static String helpText = "/sc create [type] - Create a chunk-load from the chunk at your position.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
 			.permission(Permissions.COMMAND_CREATE_PERSONAL)
@@ -56,7 +55,7 @@ public class CommandCreateOne implements CommandExecutor {
 
 		if (loadedRegion.isValid()) {
 			dataStore.addPlayerChunk(player, loadedRegion);
-			loadedRegion.load();
+			loadedRegion.forceChunks();
 			player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the chunk."));
 		} else {
 			player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket and force chunk."));

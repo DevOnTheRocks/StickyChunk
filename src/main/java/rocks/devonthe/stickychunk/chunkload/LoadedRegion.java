@@ -115,7 +115,7 @@ public class LoadedRegion {
 		return isValid;
 	}
 
-	public void load() {
+	public void forceChunks() {
 		chunks.forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
 	}
 

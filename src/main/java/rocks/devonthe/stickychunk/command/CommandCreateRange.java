@@ -63,7 +63,7 @@ public class CommandCreateRange implements CommandExecutor {
 
 			if (loadedRegion.isValid()) {
 				dataStore.addPlayerChunk(player, loadedRegion);
-				loadedRegion.load();
+				loadedRegion.forceChunks();
 				player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded chunk range."));
 			} else {
 				player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket or force chunks."));
