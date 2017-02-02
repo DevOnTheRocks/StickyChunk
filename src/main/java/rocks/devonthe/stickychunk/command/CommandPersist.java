@@ -22,6 +22,9 @@ public class CommandPersist implements CommandExecutor {
 			.executor(new CommandPersist())
 			.build();
 
+	/***
+	 * Register the command with the game's command manager
+	 */
 	public static void register() {
 		StickyChunk.getInstance().getGame().getCommandManager().register(StickyChunk.getInstance(), commandSpec, "sc");
 	}

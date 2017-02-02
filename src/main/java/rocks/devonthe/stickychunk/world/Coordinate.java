@@ -19,11 +19,19 @@ public class Coordinate {
         this.z = point.getZ();
     }
 
+	/***
+	 * Returns the x value of the coordinate x,z pair.
+	 * @return the x value of the coordinate
+	 */
     public int getX() {
         return x;
     }
 
-    public int getZ() {
+	/***
+	 * Returns the z value of the coordinate x,z pair.
+	 * @return the x value of the coordinate
+	 */
+	public int getZ() {
         return z;
     }
 }

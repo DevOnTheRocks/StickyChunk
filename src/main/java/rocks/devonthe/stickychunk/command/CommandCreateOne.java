@@ -33,6 +33,10 @@ public class CommandCreateOne implements CommandExecutor {
 			.executor(new CommandCreateOne())
 			.build();
 
+
+	/***
+	 * Register the command with the game's command manager
+	 */
 	public static void register() {
 		game.getCommandManager().register(StickyChunk.getInstance(), commandSpec);
 	}
