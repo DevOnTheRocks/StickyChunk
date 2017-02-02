@@ -32,7 +32,7 @@ public class CommandCreateRange implements CommandExecutor {
 			.permission(Permissions.COMMAND_CREATE_WORLD)
 			.description(Text.of(helpText))
 			.arguments(GenericArguments.optional(GenericArguments.choices(Text.of("type"), LoadedRegion.ChunkType.asMap())))
-			.executor(new CommandCreateOne())
+			.executor(new CommandCreateRange())
 			.build();
 
 	public static void register() {
