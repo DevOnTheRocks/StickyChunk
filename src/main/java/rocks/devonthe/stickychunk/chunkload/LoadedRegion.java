@@ -48,11 +48,11 @@ public class LoadedRegion {
 			return text;
 		}
 
-		public static HashMap<String, String> asMap() {
-			HashMap<String, String> map = new HashMap<>();
+		public static HashMap<String, ChunkType> asMap() {
+			HashMap<String, ChunkType> map = new HashMap<>();
 
 			for (ChunkType type : ChunkType.values())
-				map.put(type.name(), type.toString());
+				map.put(type.text, type);
 
 			return map;
 		}
@@ -215,5 +215,9 @@ public class LoadedRegion {
 		}
 
 		return newTicket;
+	}
+
+	public void invalidateTicket() {
+		ticket.release();
 	}
 }

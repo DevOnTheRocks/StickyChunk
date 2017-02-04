@@ -17,8 +17,9 @@ public class CommandPersist implements CommandExecutor {
 
 	private static CommandSpec commandSpec = CommandSpec.builder()
 			.description(Text.of(helpText))
-			.child(CommandCreateOne.commandSpec, "load")
-			.child(CommandCreateRange.commandSpec, "loadall")
+			.child(CommandLoad.commandSpec, "load")
+			.child(CommandLoadRange.commandSpec, "loadarea")
+			.child(CommandUnload.commandSpec, "unload")
 			.executor(new CommandPersist())
 			.build();
 

@@ -22,18 +22,17 @@ import rocks.devonthe.stickychunk.world.Region;
 /**
  * Created by Cossacksman on 02/01/2017.
  */
-public class CommandCreateOne implements CommandExecutor {
+public class CommandLoad implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
-	private static String helpText = "/sc load - Chunk-load the chunk at your current position.";
+	private static String helpText = "/sc load <world|personal> - Chunk-load the chunk at your current position.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_CREATE_PERSONAL)
-			.permission(Permissions.COMMAND_CREATE_WORLD)
+			.permission(Permissions.COMMAND_CREATE)
 			.description(Text.of(helpText))
 			.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
-			.executor(new CommandCreateOne())
+			.executor(new CommandLoad())
 			.build();
 
 
@@ -58,7 +57,7 @@ public class CommandCreateOne implements CommandExecutor {
 
 		Player player = (Player) src;
 		Region region = new Region(player.getLocation());
-		LoadedRegion.ChunkType type = (LoadedRegion.ChunkType) args.getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
+		LoadedRegion.ChunkType type = args.<LoadedRegion.ChunkType>getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
 
 		LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
 		loadedRegion.assignTicket();

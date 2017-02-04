@@ -24,24 +24,23 @@ import rocks.devonthe.stickychunk.world.Region;
 /**
  * Created by Cossacksman on 30/01/2017.
  */
-public class CommandCreateRange implements CommandExecutor {
+public class CommandLoadRange implements CommandExecutor {
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
-	private static String helpText = "/sc loadall - Chunk-load the region currently selected.";
+	private static String helpText = "/sc loadarea <world|personal> - Chunk-load the region currently selected.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_CREATE_PERSONAL)
-			.permission(Permissions.COMMAND_CREATE_WORLD)
+			.permission(Permissions.COMMAND_CREATE)
 			.description(Text.of(helpText))
 			.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
-			.executor(new CommandCreateRange())
+			.executor(new CommandLoadRange())
 			.build();
 
 	/***
 	 * Register the command with the game's command manager
 	 */
 	public static void register() {
-		StickyChunk.getInstance().getGame().getCommandManager().register(StickyChunk.getInstance(), commandSpec, "many");
+		StickyChunk.getInstance().getGame().getCommandManager().register(StickyChunk.getInstance(), commandSpec);
 	}
 
 	/**

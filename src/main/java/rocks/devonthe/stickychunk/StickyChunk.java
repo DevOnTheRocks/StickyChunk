@@ -3,8 +3,9 @@ package rocks.devonthe.stickychunk;
 import com.google.inject.Inject;
 import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
-import rocks.devonthe.stickychunk.command.CommandCreateOne;
+import rocks.devonthe.stickychunk.command.CommandLoad;
 import rocks.devonthe.stickychunk.command.CommandPersist;
+import rocks.devonthe.stickychunk.command.CommandUnload;
 import rocks.devonthe.stickychunk.config.ConfigManager;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.SqliteDatabase;
@@ -35,7 +36,7 @@ import java.nio.file.Path;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.9.0",
+		version = "0.10.0-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -111,7 +112,8 @@ public class StickyChunk {
 
 	private void registerCommands() {
 		CommandPersist.register();
-		CommandCreateOne.register();
+		CommandLoad.register();
+		CommandUnload.register();
 	}
 
 	public static StickyChunk getInstance() {

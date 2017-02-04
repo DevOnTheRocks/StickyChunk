@@ -42,6 +42,7 @@ public class SqliteDatabase extends SqlDatabase {
 		try (Statement statement = getConnection().createStatement()) {
 			statement.setQueryTimeout(30);
 			statement.executeUpdate(Schema.createChunkSchema());
+			statement.executeUpdate(Schema.createUserSchema());
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error("Unable to create StickyChunk database");

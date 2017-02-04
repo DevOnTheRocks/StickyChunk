@@ -1,6 +1,7 @@
 package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -94,6 +95,13 @@ public class DataStore {
 		}
 	}
 
+	public void deletePlayerRegion(UUID id) {
+		getCollatedRegions().stream()
+				.filter(region -> region.getId() == id)
+				.findFirst()
+				.ifPresent(loadedRegions.values()::remove);
+	}
+
 	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
 		loadedRegions.get(uuid).add(region);
 	}
@@ -105,4 +113,6 @@ public class DataStore {
 	public boolean playerHasRegions(UUID uuid) {
 		return loadedRegions.containsKey(uuid);
 	}
+
+
 }
