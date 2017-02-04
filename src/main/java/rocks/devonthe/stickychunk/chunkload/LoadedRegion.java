@@ -27,55 +27,67 @@ public class LoadedRegion {
 
 	private LoadingTicket ticket;
 	private boolean isValid;
+	private ChunkType type;
 	private Region region;
 	private Date epoch;
 	private UUID owner;
 	private UUID id;
 
 	public enum ChunkType {
-		PERSONAL,
-		WORLD;
+		PERSONAL("personal"),
+		WORLD("world");
 
-		public static HashMap<String, Integer> asMap() {
-			HashMap<String, Integer> map = new HashMap<>();
+		private final String text;
+
+		ChunkType(String text) {
+			this.text = text;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+
+		public static HashMap<String, String> asMap() {
+			HashMap<String, String> map = new HashMap<>();
 
 			for (ChunkType type : ChunkType.values())
-				map.put(type.name(), type.ordinal());
+				map.put(type.name(), type.toString());
 
 			return map;
 		}
 	}
 
-	public LoadedRegion(UUID owner, UUID id, Region region, Date epoch) {
-		this.ticket = createTicket(region.getWorld());
+	public LoadedRegion(UUID owner, UUID id, Region region, Date epoch, ChunkType type) {
 		this.region = region;
 		this.owner = owner;
 		this.epoch = epoch;
+		this.type = type;
 		this.id = id;
 	}
 
-	public LoadedRegion(Region region, Player owner) {
-		this.ticket = createTicket(region.getWorld());
+	public LoadedRegion(Region region, Player owner, ChunkType type) {
 		this.epoch = Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
 		this.region = region;
+		this.type = type;
 	}
 
-	public LoadedRegion(Location<World> from, Location<World> to, Player owner) {
+	public LoadedRegion(Location<World> from, Location<World> to, Player owner, ChunkType type) {
 		this.region = new Region(from, to);
-		this.ticket = createTicket(region.getWorld());
 		this.epoch = Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
+		this.type = type;
 	}
 
-	public LoadedRegion(Location<World> location, Player owner) {
+	public LoadedRegion(Location<World> location, Player owner, ChunkType type) {
 		this.region = new Region(location);
-		this.ticket = createTicket(region.getWorld());
 		this.epoch = Date.from(Instant.now());
 		this.owner = owner.getUniqueId();
 		this.id = UUID.randomUUID();
+		this.type = type;
 	}
 
 	/***
@@ -152,6 +164,29 @@ public class LoadedRegion {
 	}
 
 	/***
+	 * Get the type of the chunk, world or personal
+	 * @return the type of the chunk, world or personal
+	 */
+	public ChunkType getType() {
+		return type;
+	}
+
+	/***
+	 * Instruct this instance to create a new ticket and assign it to itself
+	 */
+	public void assignTicket() {
+		ticket = createTicket(getWorld());
+	}
+
+	/***
+	 * Give this instance a ticket to assign to itself
+	 * @param ticket the ticket this instance should use
+	 */
+	public void assignTicket(LoadingTicket ticket) {
+		this.ticket = ticket;
+	}
+
+	/***
 	 * Use this instances ticket to force chunks to persist in the world
 	 */
 	public void forceChunks() {
@@ -176,12 +211,12 @@ public class LoadedRegion {
 		Optional<LoadingTicket> opTicket = ticketManager.createTicket(world);
 		LoadingTicket newTicket = null;
 
-		if (!opTicket.isPresent()) {
-			logger.error("Requested ticket was not provided; maximum tickets may have been reached.");
-			this.isValid = false;
-		} else {
+		if (opTicket.isPresent()) {
 			newTicket = opTicket.get();
 			this.isValid = true;
+		} else {
+			logger.error("Requested ticket was not provided; maximum tickets may have been reached.");
+			this.isValid = false;
 		}
 
 		return newTicket;

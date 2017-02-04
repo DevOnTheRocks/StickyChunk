@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import org.spongepowered.api.entity.living.player.Player;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,11 +14,11 @@ import java.util.UUID;
  * Created by Cossacksman on 24/01/2017.
  */
 public class DataStore {
-	private Map<UUID, User> users = new HashMap<UUID, User>();
+	private Map<UUID, User> loadedUsers = new HashMap<UUID, User>();
 	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = new HashMap<UUID, ArrayList<LoadedRegion>>();
 
-	public ImmutableSet<User> getUsers() {
-		return ImmutableSet.copyOf(users.values());
+	public ImmutableSet<User> getLoadedUsers() {
+		return ImmutableSet.copyOf(loadedUsers.values());
 	}
 
 	public ImmutableSet<UUID> getPlayers() {
@@ -37,18 +36,22 @@ public class DataStore {
 	}
 
 	public Optional<User> getUser(Player player) {
-		return (users.containsKey(player.getUniqueId())) ? Optional.of(users.get(player.getUniqueId())) :  Optional.empty();
+		return (loadedUsers.containsKey(player.getUniqueId())) ? Optional.of(loadedUsers.get(player.getUniqueId())) :  Optional.empty();
 	}
 
 	// TODO:- Turn all potential null values into optionals
 	public Optional<User> getUser(UUID uuid) {
-		return (users.containsKey(uuid)) ?
-				Optional.of(users.get(uuid)) :
+		return (loadedUsers.containsKey(uuid)) ?
+				Optional.of(loadedUsers.get(uuid)) :
 				Optional.empty();
 	}
 
+	public void addUsers(ArrayList<User> users) {
+		users.forEach(user -> loadedUsers.put(user.getUniqueId(), user));
+	}
+
 	public void updateUser(User user) {
-		users.put(user.getUniqueId(), user);
+		loadedUsers.put(user.getUniqueId(), user);
 	}
 
 	public Optional<ArrayList<LoadedRegion>> getPlayerRegions(Player player) {
@@ -63,7 +66,11 @@ public class DataStore {
 				Optional.empty();
 	}
 
-	public void addPlayerChunks(Player player, ArrayList<LoadedRegion> regions) {
+	public void addPlayerRegions(HashMap<UUID, ArrayList<LoadedRegion>> regions) {
+		loadedRegions.putAll(regions);
+	}
+
+	public void addPlayerRegions(Player player, ArrayList<LoadedRegion> regions) {
 		if (loadedRegions.containsKey(player.getUniqueId())) {
 			loadedRegions.get(player.getUniqueId()).addAll(regions);
 		} else {
@@ -73,11 +80,11 @@ public class DataStore {
 		}
 	}
 
-	public void addPlayerChunks(UUID uuid, ArrayList<LoadedRegion> regions) {
+	public void addPlayerRegions(UUID uuid, ArrayList<LoadedRegion> regions) {
 		loadedRegions.get(uuid).addAll(regions);
 	}
 
-	public void addPlayerChunk(Player player, LoadedRegion region) {
+	public void addPlayerRegion(Player player, LoadedRegion region) {
 		if (loadedRegions.containsKey(player.getUniqueId())) {
 			loadedRegions.get(player.getUniqueId()).add(region);
 		} else {
@@ -87,7 +94,7 @@ public class DataStore {
 		}
 	}
 
-	public void addPlayerChunk(UUID uuid, LoadedRegion region) {
+	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
 		loadedRegions.get(uuid).add(region);
 	}
 

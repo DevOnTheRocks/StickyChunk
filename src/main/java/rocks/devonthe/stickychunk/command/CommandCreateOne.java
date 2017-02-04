@@ -1,8 +1,10 @@
 package rocks.devonthe.stickychunk.command;
 
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.format.TextColors;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
+import rocks.devonthe.stickychunk.command.Argument.ChunkTypeArgument;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
 import rocks.devonthe.stickychunk.StickyChunk;
@@ -24,12 +26,13 @@ public class CommandCreateOne implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
-	private static String helpText = "/sc create [type] - Create a chunk-load from the chunk at your position.";
+	private static String helpText = "/sc load - Chunk-load the chunk at your current position.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
 			.permission(Permissions.COMMAND_CREATE_PERSONAL)
 			.permission(Permissions.COMMAND_CREATE_WORLD)
 			.description(Text.of(helpText))
+			.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
 			.executor(new CommandCreateOne())
 			.build();
 
@@ -55,10 +58,13 @@ public class CommandCreateOne implements CommandExecutor {
 
 		Player player = (Player) src;
 		Region region = new Region(player.getLocation());
-		LoadedRegion loadedRegion = new LoadedRegion(region, player);
+		LoadedRegion.ChunkType type = (LoadedRegion.ChunkType) args.getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
+
+		LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
+		loadedRegion.assignTicket();
 
 		if (loadedRegion.isValid()) {
-			dataStore.addPlayerChunk(player, loadedRegion);
+			dataStore.addPlayerRegion(player, loadedRegion);
 			loadedRegion.forceChunks();
 			player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the chunk."));
 		} else {

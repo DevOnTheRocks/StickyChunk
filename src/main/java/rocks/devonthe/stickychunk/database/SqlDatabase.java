@@ -1,6 +1,7 @@
 package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.User;
@@ -16,6 +17,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -27,8 +30,8 @@ public abstract class SqlDatabase implements IDatabase {
 
 	public abstract Connection getConnection() throws SQLException;
 
-	public ArrayList<LoadedRegion> loadRegionData() {
-		ArrayList<LoadedRegion> chunks = new ArrayList<LoadedRegion>();
+	public HashMap<UUID, ArrayList<LoadedRegion>> loadRegionData() {
+		HashMap<UUID, ArrayList<LoadedRegion>> regions = new HashMap<>();
 
 		try (Statement statement = getConnection().createStatement()) {
 			ResultSet results = statement.executeQuery("SELECT * FROM chunks");
@@ -37,6 +40,7 @@ public abstract class SqlDatabase implements IDatabase {
 				UUID id = UUID.fromString(results.getString("id"));
 				UUID owner = UUID.fromString(results.getString("owner"));
 				UUID world = UUID.fromString(results.getString("world"));
+				LoadedRegion.ChunkType type = LoadedRegion.ChunkType.valueOf(results.getString("type"));
 				int fromX = results.getInt("fromX");
 				int fromZ = results.getInt("fromZ");
 				int toX = results.getInt("toX");
@@ -44,9 +48,14 @@ public abstract class SqlDatabase implements IDatabase {
 				Date date = results.getDate("created");
 
 				if (server.getWorld(world).isPresent()) {
-					server.getWorld(world).ifPresent(loadedWorld ->
-							chunks.add(new LoadedRegion(owner, id, new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld), date))
-					);
+					server.getWorld(world).ifPresent(loadedWorld -> {
+						Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld);
+
+						if (regions.containsKey(id))
+							regions.get(id).add(new LoadedRegion(owner, id, region, date, type));
+						else
+							regions.put(id, Lists.newArrayList(new LoadedRegion(owner, id, region, date, type)));
+					});
 				} else {
 					logger.error("The world that a chunk was associated to no longer exists.");
 					logger.debug(String.format("The world's unique ID is %s", world.toString()));
@@ -57,7 +66,7 @@ public abstract class SqlDatabase implements IDatabase {
 			logger.error(String.format("Unable to load loadedRegion from the table: %s", e.getMessage()));
 		}
 
-		return chunks;
+		return regions;
 	}
 
 	public ArrayList<User> loadUserData() {

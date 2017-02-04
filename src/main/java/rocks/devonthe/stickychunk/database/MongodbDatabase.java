@@ -58,6 +58,7 @@ public class MongodbDatabase implements IDatabase {
 			UUID id = UUID.fromString(document.getString("_id"));
 			UUID owner = UUID.fromString(document.getString("owner"));
 			UUID world = UUID.fromString(document.getString("world"));
+			LoadedRegion.ChunkType type = LoadedRegion.ChunkType.valueOf(document.getString("type"));
 			int fromX  = document.getInteger("fromX");
 			int fromZ = document.getInteger("fromZ");
 			int toX = document.getInteger("toX");
@@ -66,7 +67,8 @@ public class MongodbDatabase implements IDatabase {
 
 			if (server.getWorld(world).isPresent()) {
 				server.getWorld(world).ifPresent(loadedWorld -> {
-					chunks.add(new LoadedRegion(owner, id, new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld), date));
+					Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld);
+					chunks.add(new LoadedRegion(owner, id, region, date, type));
 				});
 			}
 		});

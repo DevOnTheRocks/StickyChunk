@@ -35,7 +35,7 @@ import java.nio.file.Path;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.6.6",
+		version = "0.7.7",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -76,6 +76,9 @@ public class StickyChunk {
 		ticketManager = new TicketManager();
 		database = new SqliteDatabase();
 		dataStore = new DataStore();
+
+		dataStore.addPlayerRegions(database.loadRegionData());
+		dataStore.addUsers(database.loadUserData());
 
 		// Register callbacks
 		game.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
