@@ -1,7 +1,7 @@
 # StickyChunk [![Build Status](http://ci.devonthe.rocks/buildStatus/icon?job=StickyChunk)](http://ci.devonthe.rocks/job/StickyChunk/)
 StickyChunk is a standalone, server-side chunk persistence plugin for keeping your entities and blocks loaded. This plugin is quite early in development and so support, questions or requests can be made over on the [Discord](https://discord.gg/Bd8Jj6V) server.
 
-### Features
+## Features
 
 StickyChunk will have many features working during the public Alpha and Beta releases, but will not come into it's own light until the first official release. It's features shall include;
 
@@ -11,7 +11,7 @@ StickyChunk will have many features working during the public Alpha and Beta rel
 - Multiple connection-based or flat-file database types to choose from
 - A configurable token system to load chunks with
 
-## Important Notes
+### Important Notes
 
 - This plugin is in the early stages; any pulls taken could be broken and should be used for testing. Branching will occur soon.
 - An API will be created for this plugin to allow for integration in the future but that is planned for post-release date.
