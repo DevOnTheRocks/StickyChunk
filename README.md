@@ -11,6 +11,12 @@ StickyChunk will have many features working during the public Alpha and Beta rel
 - Multiple connection-based or flat-file database types to choose from
 - A configurable token system to load chunks with
 
+## Important Notes
+
+- This plugin is in the early stages; any pulls taken could be broken and should be used for testing. Branching will occur soon.
+- An API will be created for this plugin to allow for integration in the future but that is planned for post-release date.
+- Database migration will be handled by the code in the beta versions, so loss of data is nothing to worry about when acting as an early tester.
+
 -----
 
 ### Feel like helping out?
