@@ -1,14 +1,11 @@
-import com.flowpowered.math.vector.Vector3i;
 import org.junit.Test;
-import org.spongepowered.api.world.Chunk;
-import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.world.Coordinate;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class TestRegion {
 	World world = new World();
@@ -31,7 +28,7 @@ public class TestRegion {
 		width = Math.abs(lowestX - highestX);
 		height = Math.abs(lowestZ - highestZ);
 
-		area = Math.abs((width+1) * (height+1));
+		area = Math.abs((width + 1) * (height + 1));
 
 		pointerX = lowestX;
 		pointerZ = lowestZ;

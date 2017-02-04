@@ -1,8 +1,8 @@
 package rocks.devonthe.stickychunk.chunkload;
 
-import rocks.devonthe.stickychunk.StickyChunk;
 import org.spongepowered.api.world.World;
 import org.spongepowered.mod.service.world.SpongeChunkTicketManager;
+import rocks.devonthe.stickychunk.StickyChunk;
 
 import java.util.Optional;
 

@@ -1,10 +1,10 @@
 package rocks.devonthe.stickychunk.world;
 
-import rocks.devonthe.stickychunk.StickyChunk;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import rocks.devonthe.stickychunk.StickyChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class Region {
 		width = Math.abs(lowestX - highestX);
 		height = Math.abs(lowestZ - highestZ);
 
-		area = Math.abs((width+1) * (height+1));
+		area = Math.abs((width + 1) * (height + 1));
 
 		pointerX = lowestX;
 		pointerZ = lowestZ;

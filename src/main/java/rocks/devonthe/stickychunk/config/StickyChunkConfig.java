@@ -1,9 +1,9 @@
 package rocks.devonthe.stickychunk.config;
 
-import rocks.devonthe.stickychunk.config.database.DatabaseConfig;
-import rocks.devonthe.stickychunk.config.token.TokenConfig;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import rocks.devonthe.stickychunk.config.database.DatabaseConfig;
+import rocks.devonthe.stickychunk.config.token.TokenConfig;
 
 /**
  * Created by Cossacksman on 02/01/2017.

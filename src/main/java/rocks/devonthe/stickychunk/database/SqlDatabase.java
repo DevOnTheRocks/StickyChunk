@@ -2,21 +2,21 @@ package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.spongepowered.api.Server;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.User;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
-import org.slf4j.Logger;
-import org.spongepowered.api.Server;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public abstract class SqlDatabase implements IDatabase {
 		try (Statement statement = getConnection().createStatement()) {
 			ResultSet results = statement.executeQuery("SELECT * FROM chunks");
 
-			while(results.next()) {
+			while (results.next()) {
 				UUID id = UUID.fromString(results.getString("id"));
 				UUID owner = UUID.fromString(results.getString("owner"));
 				UUID world = UUID.fromString(results.getString("world"));
@@ -74,7 +74,7 @@ public abstract class SqlDatabase implements IDatabase {
 		try (Statement statement = getConnection().createStatement()) {
 			ResultSet results = statement.executeQuery("SELECT * FROM users");
 
-			while(results.next()) {
+			while (results.next()) {
 				UUID player = UUID.fromString(results.getString("user"));
 				double balance = results.getDouble("balance");
 				Date seen = results.getDate("seen");
@@ -104,7 +104,7 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setInt(7, loadedRegion.getRegion().getTo().getX());
 			statement.setInt(8, loadedRegion.getRegion().getTo().getZ());
 			statement.setDate(9, (Date) loadedRegion.getEpoch());
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
 		}
@@ -127,7 +127,7 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setDate(3, user.getLastSeen());
 			statement.setDate(4, user.getUserJoined());
 			statement.execute();
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting user into the database: %s", e.getMessage()));
 		}

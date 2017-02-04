@@ -1,18 +1,16 @@
 package rocks.devonthe.stickychunk.listener;
 
-import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
-import rocks.devonthe.stickychunk.data.DataStore;
-import rocks.devonthe.stickychunk.data.User;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
+import rocks.devonthe.stickychunk.data.DataStore;
+import rocks.devonthe.stickychunk.data.User;
 
-import java.time.Instant;
 import java.sql.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
 
 /**
  * Created by Cossacksman on 25/01/2017.

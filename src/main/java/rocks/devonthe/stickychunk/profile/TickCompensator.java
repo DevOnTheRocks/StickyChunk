@@ -1,11 +1,11 @@
 package rocks.devonthe.stickychunk.profile;
 
-import rocks.devonthe.stickychunk.StickyChunk;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
+import rocks.devonthe.stickychunk.StickyChunk;
 
 /**
  * Created by Cossacksman on 05/01/2017.

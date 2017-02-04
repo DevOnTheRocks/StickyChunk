@@ -1,9 +1,8 @@
 package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import org.spongepowered.api.entity.living.player.Player;
+import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class DataStore {
 	}
 
 	public Optional<User> getUser(Player player) {
-		return (loadedUsers.containsKey(player.getUniqueId())) ? Optional.of(loadedUsers.get(player.getUniqueId())) :  Optional.empty();
+		return (loadedUsers.containsKey(player.getUniqueId())) ? Optional.of(loadedUsers.get(player.getUniqueId())) : Optional.empty();
 	}
 
 	// TODO:- Turn all potential null values into optionals

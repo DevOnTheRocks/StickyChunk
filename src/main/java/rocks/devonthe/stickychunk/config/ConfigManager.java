@@ -1,12 +1,12 @@
 package rocks.devonthe.stickychunk.config;
 
-import rocks.devonthe.stickychunk.StickyChunk;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
+import rocks.devonthe.stickychunk.StickyChunk;
 
 import java.io.IOException;
 

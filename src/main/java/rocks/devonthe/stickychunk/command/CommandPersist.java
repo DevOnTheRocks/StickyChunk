@@ -1,6 +1,5 @@
 package rocks.devonthe.stickychunk.command;
 
-import rocks.devonthe.stickychunk.StickyChunk;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -8,6 +7,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
+import rocks.devonthe.stickychunk.StickyChunk;
 
 /**
  * Created by Cossacksman on 24/01/2017.

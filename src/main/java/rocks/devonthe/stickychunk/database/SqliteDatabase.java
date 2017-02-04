@@ -1,8 +1,8 @@
 package rocks.devonthe.stickychunk.database;
 
+import org.slf4j.Logger;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.config.database.SqliteConfig;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.sql.Connection;

@@ -9,20 +9,17 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.spongepowered.api.Server;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.config.database.MongoConfig;
 import rocks.devonthe.stickychunk.data.User;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.spongepowered.api.Server;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -65,7 +62,7 @@ public class MongodbDatabase implements IDatabase {
 			UUID owner = UUID.fromString(document.getString("owner"));
 			UUID world = UUID.fromString(document.getString("world"));
 			LoadedRegion.ChunkType type = LoadedRegion.ChunkType.valueOf(document.getString("type"));
-			int fromX  = document.getInteger("fromX");
+			int fromX = document.getInteger("fromX");
 			int fromZ = document.getInteger("fromZ");
 			int toX = document.getInteger("toX");
 			int toZ = document.getInteger("toZ");
@@ -120,9 +117,9 @@ public class MongodbDatabase implements IDatabase {
 				.append("created", loadedRegion.getEpoch());
 
 		collection.replaceOne(
-			Filters.eq("_id", loadedRegion.getId().toString()),
-			regionDocument,
-			(new UpdateOptions()).upsert(true)
+				Filters.eq("_id", loadedRegion.getId().toString()),
+				regionDocument,
+				(new UpdateOptions()).upsert(true)
 		);
 	}
 

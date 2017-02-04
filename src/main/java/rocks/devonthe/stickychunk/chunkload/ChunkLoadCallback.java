@@ -3,18 +3,15 @@ package rocks.devonthe.stickychunk.chunkload;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.ChunkTicketManager.Callback;
+import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.ChunkTicketManager.OrderedCallback;
 import org.spongepowered.api.world.ChunkTicketManager.PlayerOrderedCallback;
-import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
+import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by Cossacksman on 02/01/2017.
@@ -22,7 +19,7 @@ import java.util.stream.Collectors;
 public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrderedCallback {
 	/**
 	 * Callback for loading player Tickets during world load.
-	 *
+	 * <p>
 	 * During this callback you cannot associate loadedRegions to tickets. This
 	 * callback gets all player-associated tickets registered by the plugin.
 	 * Tickets absent from the returned Multimap will be released.
@@ -37,15 +34,15 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 
 	/**
 	 * Callback for loading Tickets during world load.
-	 *
+	 * <p>
 	 * The list of forced chunks is not saved with Tickets, this callback
 	 * is your place to reassociate chunks to Tickets, using the extra
 	 * information saved with the ticket or your own external configuration.
 	 * Any unneeded tickets must be manually released.
-	 *
+	 * <p>
 	 * The list of tickets contains both standard plugin and
 	 * player-associated tickets that were registered by this plugin.
-	 *
+	 * <p>
 	 * The list of tickets has been truncated to the maximum allowed for
 	 * your plugin, so may not be all saved tickets in the event that the
 	 * maximum tickets for your plugin was decreased.
@@ -68,7 +65,7 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 
 	/**
 	 * Callback for loading Tickets during world load.
-	 *
+	 * <p>
 	 * During this callback you cannot associate chunks to tickets. This
 	 * callback gets all loaded non-player tickets. The returned list will
 	 * be truncated to maxTickets after this callback is called, and and

@@ -1,6 +1,5 @@
 package rocks.devonthe.stickychunk.chunkload;
 
-import rocks.devonthe.stickychunk.StickyChunk;
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.living.player.Player;
@@ -8,6 +7,7 @@ import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.world.Region;
 
 import java.time.Instant;

@@ -1,7 +1,6 @@
 package rocks.devonthe.stickychunk.command.Argument;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -14,7 +13,6 @@ import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.permission.Permissions;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

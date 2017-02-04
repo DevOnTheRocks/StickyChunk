@@ -1,15 +1,6 @@
 package rocks.devonthe.stickychunk;
 
 import com.google.inject.Inject;
-import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
-import rocks.devonthe.stickychunk.chunkload.TicketManager;
-import rocks.devonthe.stickychunk.command.CommandLoad;
-import rocks.devonthe.stickychunk.command.CommandPersist;
-import rocks.devonthe.stickychunk.command.CommandUnload;
-import rocks.devonthe.stickychunk.config.ConfigManager;
-import rocks.devonthe.stickychunk.data.DataStore;
-import rocks.devonthe.stickychunk.database.SqliteDatabase;
-import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
@@ -24,8 +15,17 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.world.World;
+import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
+import rocks.devonthe.stickychunk.chunkload.TicketManager;
+import rocks.devonthe.stickychunk.command.CommandLoad;
+import rocks.devonthe.stickychunk.command.CommandPersist;
+import rocks.devonthe.stickychunk.command.CommandUnload;
+import rocks.devonthe.stickychunk.config.ConfigManager;
 import rocks.devonthe.stickychunk.config.StickyChunkConfig;
+import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
+import rocks.devonthe.stickychunk.database.SqliteDatabase;
+import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
 import java.nio.file.Path;
 
