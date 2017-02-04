@@ -190,16 +190,11 @@ public class LoadedRegion {
 	 * Use this instances ticket to force chunks to persist in the world
 	 */
 	public void forceChunks() {
-		int i[] = new int[1];
-		i[0] = 0;
+		region.getChunks().forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
+	}
 
-		logger.info("BeforeSize: " + region.getChunks().size());
-		region.getChunks().forEach(chunk -> {
-			logger.info(""+i);
-			ticket.forceChunk(chunk.getPosition());
-			logger.info(String.format("Forcing chunks at %s,%s", chunk.getPosition().getX(), chunk.getPosition().getZ()));
-			i[0]++;
-		});
+	public void unForceChunks() {
+		region.getChunks().forEach(chunk -> ticket.unforceChunk(chunk.getPosition()));
 	}
 
 	/***
