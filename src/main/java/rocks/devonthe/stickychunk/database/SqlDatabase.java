@@ -77,11 +77,13 @@ public abstract class SqlDatabase implements IDatabase {
 
 			while(results.next()) {
 				UUID player = UUID.fromString(results.getString("user"));
-				int credits = results.getInt("credits");
+				int personalCredits = results.getInt("personalCredits");
+				int worldCredits = results.getInt("worldCredits");
 				Date seen = results.getDate("seen");
 				Date joined = results.getDate("joined");
 
-				User user = new User(player, credits, joined, seen);
+				User user = new User(player, personalCredits, worldCredits, joined, seen);
+				users.add(user);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -118,13 +120,14 @@ public abstract class SqlDatabase implements IDatabase {
 	}
 
 	public void saveUserData(User user) {
-		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?)", Schema.getUserProperties());
+		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?,?,?)", Schema.getUserProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, user.getUniqueId().toString());
-			statement.setInt(2, user.getCredits());
-			statement.setDate(3, user.getLastSeen());
-			statement.setDate(4, user.getUserJoined());
+			statement.setInt(2, user.getPersonalCredits());
+			statement.setInt(3, user.getWorldCredits());
+			statement.setDate(4, user.getLastSeen());
+			statement.setDate(5, user.getUserJoined());
 			statement.execute();
 		} catch(SQLException e) {
 			e.printStackTrace();

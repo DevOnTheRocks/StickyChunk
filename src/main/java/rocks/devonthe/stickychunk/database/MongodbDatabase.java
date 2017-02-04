@@ -1,6 +1,7 @@
 package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -11,6 +12,7 @@ import com.mongodb.client.model.UpdateOptions;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.config.database.MongoConfig;
+import rocks.devonthe.stickychunk.data.User;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
 import org.bson.Document;
@@ -18,7 +20,11 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -50,8 +56,8 @@ public class MongodbDatabase implements IDatabase {
 		return database;
 	}
 
-	public ArrayList<LoadedRegion> loadRegionData() {
-		ArrayList<LoadedRegion> chunks = new ArrayList<LoadedRegion>();
+	public HashMap<UUID, ArrayList<LoadedRegion>> loadRegionData() {
+		HashMap<UUID, ArrayList<LoadedRegion>> regions = new HashMap<>();
 
 		MongoCollection<Document> collection = getDatabase().getCollection("chunks");
 		collection.find().forEach((Block<Document>) document -> {
@@ -68,12 +74,37 @@ public class MongodbDatabase implements IDatabase {
 			if (server.getWorld(world).isPresent()) {
 				server.getWorld(world).ifPresent(loadedWorld -> {
 					Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld);
-					chunks.add(new LoadedRegion(owner, id, region, date, type));
+
+					if (regions.containsKey(id))
+						regions.get(id).add(new LoadedRegion(owner, id, region, date, type));
+					else
+						regions.put(id, Lists.newArrayList(new LoadedRegion(owner, id, region, date, type)));
 				});
+			} else {
+				logger.error("The world that a chunk was associated to no longer exists.");
+				logger.debug(String.format("The world's unique ID is %s", world.toString()));
 			}
 		});
 
-		return chunks;
+		return regions;
+	}
+
+	public ArrayList<User> loadUserData() {
+		ArrayList<User> users = new ArrayList<User>();
+
+		MongoCollection<Document> collection = getDatabase().getCollection("users");
+		collection.find().forEach((Block<Document>) document -> {
+			UUID player = UUID.fromString(document.getString("user"));
+			int personalCredits = document.getInteger("personalCredits");
+			int worldCredits = document.getInteger("worldCredits");
+			Date seen = (Date) document.getDate("seen");
+			Date joined = (Date) document.getDate("joined");
+
+			User user = new User(player, personalCredits, worldCredits, joined, seen);
+			users.add(user);
+		});
+
+		return users;
 	}
 
 	public void saveRegionData(LoadedRegion loadedRegion) {
