@@ -6,7 +6,6 @@ import rocks.devonthe.stickychunk.data.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,5 +16,9 @@ public interface IDatabase {
 	void saveRegionData(ImmutableSet<LoadedRegion> loadedRegions);
 	void saveRegionData(ArrayList<LoadedRegion> data);
 	HashMap<UUID, ArrayList<LoadedRegion>> loadRegionData();
+
+	void saveUserData(User user);
+	void saveUserData(ImmutableSet<User> loadedUsers);
+	void saveUserData(ArrayList<User> loadedUsers);
 	ArrayList<User> loadUserData();
 }

@@ -25,7 +25,7 @@ public class PlayerConnectionListener {
 	public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		Player player = (Player) event.player;
 		Date now = (Date) java.util.Date.from(Instant.now());
-		User user = dataStore.getUser(player).orElse(new User(player.getUniqueId(), 0, 0, now, now));
+		User user = dataStore.getUser(player).orElse(new User(player.getUniqueId(), 0, now, now));
 
 		dataStore.getPlayerRegions(user.getUniqueId()).ifPresent(loadedRegions -> loadedRegions.forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
@@ -40,7 +40,7 @@ public class PlayerConnectionListener {
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
 		Player player = (Player) event.player;
 		Date now = (Date) java.util.Date.from(Instant.now());
-		User user = dataStore.getUser(player).orElse(new User(player.getUniqueId(), 0, 0, now, now));
+		User user = dataStore.getUser(player).orElse(new User(player.getUniqueId(), 0, now, now));
 
 		dataStore.getPlayerRegions(user.getUniqueId()).ifPresent(loadedRegions -> loadedRegions.forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)

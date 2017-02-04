@@ -95,12 +95,11 @@ public class MongodbDatabase implements IDatabase {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 		collection.find().forEach((Block<Document>) document -> {
 			UUID player = UUID.fromString(document.getString("user"));
-			int personalCredits = document.getInteger("personalCredits");
-			int worldCredits = document.getInteger("worldCredits");
+			double balance = document.getDouble("personalCredits");
 			Date seen = (Date) document.getDate("seen");
 			Date joined = (Date) document.getDate("joined");
 
-			User user = new User(player, personalCredits, worldCredits, joined, seen);
+			User user = new User(player, balance, joined, seen);
 			users.add(user);
 		});
 
@@ -113,6 +112,7 @@ public class MongodbDatabase implements IDatabase {
 		Document regionDocument = new Document("_id", loadedRegion.getId().toString())
 				.append("owner", loadedRegion.getOwner().toString())
 				.append("world", loadedRegion.getWorld().getUniqueId().toString())
+				.append("type", loadedRegion.getType().toString())
 				.append("fromX", loadedRegion.getRegion().getFrom().getX())
 				.append("fromZ", loadedRegion.getRegion().getFrom().getZ())
 				.append("toX", loadedRegion.getRegion().getTo().getX())
@@ -126,11 +126,34 @@ public class MongodbDatabase implements IDatabase {
 		);
 	}
 
+	public void saveUserData(User user) {
+		MongoCollection<Document> collection = getDatabase().getCollection("users");
+
+		Document userDocument = new Document("_id", user.getUniqueId())
+				.append("balance", user.getBalance())
+				.append("seen", user.getLastSeen())
+				.append("joined", user.getUserJoined());
+
+		collection.replaceOne(
+				Filters.eq("_id", user.getUniqueId().toString()),
+				userDocument,
+				(new UpdateOptions()).upsert(true)
+		);
+	}
+
 	public void saveRegionData(ImmutableSet<LoadedRegion> loadedRegions) {
 		loadedRegions.forEach(this::saveRegionData);
 	}
 
 	public void saveRegionData(ArrayList<LoadedRegion> loadedRegions) {
 		loadedRegions.forEach(this::saveRegionData);
+	}
+
+	public void saveUserData(ImmutableSet<User> loadedUsers) {
+		loadedUsers.forEach(this::saveUserData);
+	}
+
+	public void saveUserData(ArrayList<User> loadedUsers) {
+		loadedUsers.forEach(this::saveUserData);
 	}
 }

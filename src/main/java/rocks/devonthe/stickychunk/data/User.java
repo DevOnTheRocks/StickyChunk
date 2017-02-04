@@ -12,15 +12,13 @@ public class User {
 	UUID player;
 	private Date seen;
 	private Date joined;
-	private int personalCredits;
-	private int worldCredits;
+	private double balance;
 
-	public User(UUID id, int personalCredits, int worldCredits, Date joined, Date seen) {
+	public User(UUID id, double balance, Date joined, Date seen) {
 		this.player = id;
 		this.seen = seen;
 		this.joined = joined;
-		this.personalCredits = personalCredits;
-		this.worldCredits = worldCredits;
+		this.balance = balance;
 	}
 
 	public UUID getUniqueId() {
@@ -40,12 +38,8 @@ public class User {
 		return joined;
 	}
 
-	public int getPersonalCredits() {
-		return personalCredits;
-	}
-
-	public int getWorldCredits() {
-		return worldCredits;
+	public double getBalance() {
+		return balance;
 	}
 
 	public void update() {

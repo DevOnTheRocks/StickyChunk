@@ -16,11 +16,10 @@ public interface Schema {
 
 	static final String CHUNKPROPS = "id, owner, world, type, fromX, fromZ, toX, toZ, created";
 
-	static final String USERSCHEMA =	"user				STRING PRIMARY KEY," +
-										"personalCredits	INT," +
-										"worldCredits		INT," +
-										"seen				DATETIME," +
-										"joined				DATETIME";
+	static final String USERSCHEMA =	"user		STRING PRIMARY KEY," +
+										"balance	INT," +
+										"seen		DATETIME," +
+										"joined		DATETIME";
 
 	static final String USERPROPS = "user, personalCredits, worldCredits, seen, joined";
 

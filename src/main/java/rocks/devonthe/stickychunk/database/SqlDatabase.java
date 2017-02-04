@@ -18,7 +18,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -77,12 +76,11 @@ public abstract class SqlDatabase implements IDatabase {
 
 			while(results.next()) {
 				UUID player = UUID.fromString(results.getString("user"));
-				int personalCredits = results.getInt("personalCredits");
-				int worldCredits = results.getInt("worldCredits");
+				double balance = results.getDouble("balance");
 				Date seen = results.getDate("seen");
 				Date joined = results.getDate("joined");
 
-				User user = new User(player, personalCredits, worldCredits, joined, seen);
+				User user = new User(player, balance, joined, seen);
 				users.add(user);
 			}
 		} catch (SQLException e) {
@@ -100,11 +98,12 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setString(1, loadedRegion.getId().toString());
 			statement.setString(2, loadedRegion.getOwner().toString());
 			statement.setString(3, loadedRegion.getWorld().getUniqueId().toString());
-			statement.setInt(4, loadedRegion.getRegion().getFrom().getX());
-			statement.setInt(5, loadedRegion.getRegion().getFrom().getZ());
-			statement.setInt(6, loadedRegion.getRegion().getTo().getX());
-			statement.setInt(7, loadedRegion.getRegion().getTo().getZ());
-			statement.setDate(8, (Date) loadedRegion.getEpoch());
+			statement.setString(4, loadedRegion.getType().toString());
+			statement.setInt(5, loadedRegion.getRegion().getFrom().getX());
+			statement.setInt(6, loadedRegion.getRegion().getFrom().getZ());
+			statement.setInt(7, loadedRegion.getRegion().getTo().getX());
+			statement.setInt(8, loadedRegion.getRegion().getTo().getZ());
+			statement.setDate(9, (Date) loadedRegion.getEpoch());
 		} catch(SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
@@ -120,14 +119,13 @@ public abstract class SqlDatabase implements IDatabase {
 	}
 
 	public void saveUserData(User user) {
-		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?,?,?)", Schema.getUserProperties());
+		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?)", Schema.getUserProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, user.getUniqueId().toString());
-			statement.setInt(2, user.getPersonalCredits());
-			statement.setInt(3, user.getWorldCredits());
-			statement.setDate(4, user.getLastSeen());
-			statement.setDate(5, user.getUserJoined());
+			statement.setDouble(2, user.getBalance());
+			statement.setDate(3, user.getLastSeen());
+			statement.setDate(4, user.getUserJoined());
 			statement.execute();
 		} catch(SQLException e) {
 			e.printStackTrace();
