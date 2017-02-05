@@ -5,6 +5,7 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -17,7 +18,7 @@ import rocks.devonthe.stickychunk.permission.Permissions;
 /**
  * Created by Cossacksman on 04/02/2017.
  */
-public class CommandUnload {
+public class CommandUnload implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
@@ -26,7 +27,7 @@ public class CommandUnload {
 	public static CommandSpec commandSpec = CommandSpec.builder()
 			.permission(Permissions.COMMAND_DELETE)
 			.description(Text.of(helpText))
-			.executor(new CommandLoad())
+			.executor(new CommandUnload())
 			.build();
 
 	/***
