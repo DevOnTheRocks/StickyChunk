@@ -8,6 +8,7 @@ import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.data.User;
+import rocks.devonthe.stickychunk.database.IDatabase;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.time.Instant;
  */
 public class PlayerConnectionListener {
 	DataStore dataStore = StickyChunk.getInstance().getDataStore();
+	IDatabase database = StickyChunk.getInstance().getDatabase();
 	Logger logger = StickyChunk.getInstance().getLogger();
 
 	@Listener
@@ -32,6 +34,7 @@ public class PlayerConnectionListener {
 
 		// Update the user in case it's an existing user
 		dataStore.getUser(player).ifPresent(usr -> usr.setLastSeen(now).update());
+		database.saveUserData(user);
 	}
 
 	@Listener
@@ -47,5 +50,6 @@ public class PlayerConnectionListener {
 
 		// Update the user in case it's an existing user
 		dataStore.getUser(player).ifPresent(usr -> usr.setLastSeen(now).update());
+		database.saveUserData(user);
 	}
 }

@@ -5,9 +5,12 @@ import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.data.DataStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Created by Cossacksman on 19/01/2017.
@@ -16,16 +19,18 @@ public class Region {
 	private List<Chunk> chunks = new ArrayList<>();
 	private Coordinate fromChunkPosition;
 	private Coordinate toChunkPosition;
+	private UUID worldId;
 	private World world;
 	private int area;
 
 	private Server server = StickyChunk.getInstance().getGame().getServer();
+	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 
-	public Region(Coordinate from, Coordinate to, World world) {
+	public Region(Coordinate from, Coordinate to, UUID world) {
 		this.fromChunkPosition = from;
 		chunks = new ArrayList<>();
 		this.toChunkPosition = to;
-		this.world = world;
+		this.worldId = worldId;
 	}
 
 	public Region(Location<World> from, Location<World> to) {
@@ -104,10 +109,10 @@ public class Region {
 	}
 
 	/***
-	 * Get the world this region is associated with
-	 * @return the world object this region uses
+	 * Get the world ID this region is associated with
+	 * @return the world ID this region uses
 	 */
-	public World getWorld() {
-		return world;
+	public UUID getWorldId() {
+		return worldId;
 	}
 }

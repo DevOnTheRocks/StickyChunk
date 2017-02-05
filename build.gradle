@@ -22,7 +22,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 group 'rocks.devonthe.stickychunk'
-version '0.11.1-SNAPSHOT'
+version '0.11.3-SNAPSHOT'
 description = 'StickyChunk is a chunk persistence plugin for keeping blocks and entities loaded.'
 
 repositories {

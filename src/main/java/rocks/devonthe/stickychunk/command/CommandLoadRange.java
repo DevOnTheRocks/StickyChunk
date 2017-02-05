@@ -16,6 +16,7 @@ import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
 import rocks.devonthe.stickychunk.command.Argument.ChunkTypeArgument;
 import rocks.devonthe.stickychunk.data.DataStore;
+import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 import rocks.devonthe.stickychunk.permission.Permissions;
 import rocks.devonthe.stickychunk.world.Coordinate;
@@ -25,6 +26,7 @@ import rocks.devonthe.stickychunk.world.Region;
  * Created by Cossacksman on 30/01/2017.
  */
 public class CommandLoadRange implements CommandExecutor {
+	private IDatabase database = StickyChunk.getInstance().getDatabase();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
 	private static String helpText = "/sc loadarea <world|personal> - Chunk-load the region currently selected.";
@@ -67,13 +69,14 @@ public class CommandLoadRange implements CommandExecutor {
 			StickyChunk.getInstance().getLogger().info(String.format("FromX: %s, fromZ: %s", from.getX(), from.getZ()));
 			StickyChunk.getInstance().getLogger().info(String.format("ToX: %s, toZ: %s", to.getX(), to.getZ()));
 
-			Region region = new Region(from, to, player.getWorld());
+			Region region = new Region(from, to, player.getWorld().getUniqueId());
 			LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
 			loadedRegion.assignTicket();
 
 			if (loadedRegion.isValid()) {
 				dataStore.addPlayerRegion(player, loadedRegion);
 				loadedRegion.forceChunks();
+				database.saveRegionData(loadedRegion);
 				player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded chunk range."));
 			} else {
 				player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a loading ticket or force chunks."));

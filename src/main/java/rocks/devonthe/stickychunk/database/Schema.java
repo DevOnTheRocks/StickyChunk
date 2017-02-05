@@ -7,7 +7,7 @@ public interface Schema {
 	static final String CHUNKSCHEMA =	"id			STRING PRIMARY KEY," +
 										"owner		STRING," +
 										"world 		STRING," +
-										"type		STRING" +
+										"type		STRING," +
 										"fromX		INT," +
 										"fromZ		INT," +
 										"toX		INT," +

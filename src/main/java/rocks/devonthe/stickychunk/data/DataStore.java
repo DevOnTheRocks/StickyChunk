@@ -34,8 +34,12 @@ public class DataStore {
 	}
 
 	public ImmutableSet<LoadedRegion> getCollatedRegions() {
-		ArrayList<LoadedRegion> regions = new ArrayList<LoadedRegion>();
+		ArrayList<LoadedRegion> regions = new ArrayList<>();
 		loadedRegions.values().forEach(regions::addAll);
+
+		StickyChunk.getInstance().getLogger().info(String.format("There are %s chunks.", loadedRegions.size()));
+		StickyChunk.getInstance().getLogger().info(String.format("%s are copied.", regions.size()));
+
 		return ImmutableSet.copyOf(regions);
 	}
 
@@ -71,7 +75,6 @@ public class DataStore {
 
 	public void addPlayerRegions(HashMap<UUID, ArrayList<LoadedRegion>> regions) {
 		loadedRegions.putAll(regions);
-		regions.values().forEach(database::saveRegionData);
 	}
 
 	public void addPlayerRegions(Player player, ArrayList<LoadedRegion> regions) {
@@ -82,8 +85,6 @@ public class DataStore {
 			playerRegions.addAll(regions);
 			loadedRegions.put(player.getUniqueId(), playerRegions);
 		}
-
-		database.saveRegionData(regions);
 	}
 
 	public void addPlayerRegions(UUID uuid, ArrayList<LoadedRegion> regions) {
@@ -99,18 +100,26 @@ public class DataStore {
 			playerRegions.add(region);
 			loadedRegions.put(player.getUniqueId(), playerRegions);
 		}
+	}
 
-		database.saveRegionData(region);
+	public void deletePlayerRegion(UUID player, UUID id) {
+		getPlayerRegions(player).ifPresent(regions -> regions.stream()
+				.filter(region -> region.getUniqueId().equals(id))
+				.findFirst()
+				.ifPresent(region -> {
+					loadedRegions.get(player).remove(region);
+					database.deleteRegionData(region);
+				}));
 	}
 
 	public void deletePlayerRegion(Player player, UUID id) {
-		loadedRegions.get(player.getUniqueId()).stream()
-				.filter(region -> region.getUniqueIdentifier().equals(id))
+		getPlayerRegions(player).ifPresent(regions -> regions.stream()
+				.filter(region -> region.getUniqueId().equals(id))
 				.findFirst()
 				.ifPresent(region -> {
 					loadedRegions.get(player.getUniqueId()).remove(region);
 					database.deleteRegionData(region);
-				});
+				}));
 	}
 
 	public void addPlayerRegion(UUID uuid, LoadedRegion region) {

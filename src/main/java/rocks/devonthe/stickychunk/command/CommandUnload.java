@@ -16,6 +16,9 @@ import rocks.devonthe.stickychunk.chunkload.TicketManager;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 /**
  * Created by Cossacksman on 04/02/2017.
  */
@@ -51,6 +54,7 @@ public class CommandUnload implements CommandExecutor {
 		if (!(src instanceof Player))
 			return execServer(src, args);
 
+		HashMap<Player, UUID> deleteQueue = new HashMap<>();
 		Player player = (Player) src;
 
 		if (player.hasPermission(Permissions.COMMAND_DELETE)) {
@@ -65,7 +69,7 @@ public class CommandUnload implements CommandExecutor {
 								logger.info("found chunk to delete");
 								region.unForceChunks();
 								region.invalidateTicket();
-								dataStore.deletePlayerRegion(player, region.getUniqueIdentifier());
+								deleteQueue.put(player, region.getUniqueId());
 								player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
 							}
 						}
@@ -74,14 +78,17 @@ public class CommandUnload implements CommandExecutor {
 			);
 		}
 
+		// Delete all the regions queued to be deleted
+		deleteQueue.forEach((owner, regionId) -> dataStore.deletePlayerRegion(owner, regionId));
+
 		return CommandResult.success();
 	}
 
 	/***
-	 *
-	 * @param src
-	 * @param args
-	 * @return
+	 * Handles executing the command on the server console
+	 * @param src the source of the command call
+	 * @param args the arguments passed with the command
+	 * @return the result of executing this command
 	 */
 	private CommandResult execServer(CommandSource src, CommandContext args) {
 		return CommandResult.success();

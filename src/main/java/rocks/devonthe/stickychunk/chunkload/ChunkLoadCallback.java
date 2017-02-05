@@ -53,14 +53,18 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	@Override
 	public void onLoaded(ImmutableList<LoadingTicket> tickets, World world) {
 		int index[] = new int[1];
+
+		StickyChunk.getInstance().getLogger().info("Restoring regions...");
+
 		StickyChunk.getInstance().getDataStore().getCollatedRegions().forEach(region -> {
 			if (index[0] <= tickets.size()) {
 				region.assignTicket(tickets.get(index[0]));
 				index[0]++;
-			} else {
-				region.assignTicket();
 			}
 		});
+
+		int regionCount = StickyChunk.getInstance().getDataStore().getCollatedRegions().size();
+		StickyChunk.getInstance().getLogger().info(String.format("Restored %s regions", regionCount));
 	}
 
 	/**

@@ -39,26 +39,19 @@ public abstract class SqlDatabase implements IDatabase {
 				UUID id = UUID.fromString(results.getString("id"));
 				UUID owner = UUID.fromString(results.getString("owner"));
 				UUID world = UUID.fromString(results.getString("world"));
-				LoadedRegion.ChunkType type = LoadedRegion.ChunkType.valueOf(results.getString("type"));
+				LoadedRegion.ChunkType type = LoadedRegion.ChunkType.valueOf(results.getString("type").toUpperCase());
 				int fromX = results.getInt("fromX");
 				int fromZ = results.getInt("fromZ");
 				int toX = results.getInt("toX");
 				int toZ = results.getInt("toZ");
 				Date date = results.getDate("created");
 
-				if (server.getWorld(world).isPresent()) {
-					server.getWorld(world).ifPresent(loadedWorld -> {
-						Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld);
+				Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), world);
 
-						if (regions.containsKey(id))
-							regions.get(id).add(new LoadedRegion(owner, id, region, date, type));
-						else
-							regions.put(id, Lists.newArrayList(new LoadedRegion(owner, id, region, date, type)));
-					});
-				} else {
-					logger.error("The world that a chunk was associated to no longer exists.");
-					logger.debug(String.format("The world's unique ID is %s", world.toString()));
-				}
+				if (regions.containsKey(id))
+					regions.get(id).add(new LoadedRegion(owner, id, region, date, type));
+				else
+					regions.put(id, Lists.newArrayList(new LoadedRegion(owner, id, region, date, type)));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -92,10 +85,10 @@ public abstract class SqlDatabase implements IDatabase {
 	}
 
 	public void saveRegionData(LoadedRegion loadedRegion) {
-		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?,?,?,?,?,?)", Schema.getChunkProperties());
+		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?,?,?,?,?,?,?,?,?)", Schema.getChunkProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, loadedRegion.getUniqueIdentifier().toString());
+			statement.setString(1, loadedRegion.getUniqueId().toString());
 			statement.setString(2, loadedRegion.getOwner().toString());
 			statement.setString(3, loadedRegion.getWorld().getUniqueId().toString());
 			statement.setString(4, loadedRegion.getType().toString());
@@ -103,7 +96,8 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setInt(6, loadedRegion.getRegion().getFrom().getZ());
 			statement.setInt(7, loadedRegion.getRegion().getTo().getX());
 			statement.setInt(8, loadedRegion.getRegion().getTo().getZ());
-			statement.setDate(9, (Date) loadedRegion.getEpoch());
+			statement.setDate(9, new Date(loadedRegion.getEpoch().getTime()));
+			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
@@ -126,7 +120,7 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setDouble(2, user.getBalance());
 			statement.setDate(3, user.getLastSeen());
 			statement.setDate(4, user.getUserJoined());
-			statement.execute();
+			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting user into the database: %s", e.getMessage()));
@@ -145,7 +139,7 @@ public abstract class SqlDatabase implements IDatabase {
 		String sql = "DELETE FROM chunks WHERE id = ?";
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, region.getUniqueIdentifier().toString());
+			statement.setString(1, region.getUniqueId().toString());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

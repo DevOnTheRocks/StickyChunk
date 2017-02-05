@@ -8,6 +8,8 @@ import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.data.DataStore;
+import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.world.Region;
 
 import java.time.Instant;
@@ -24,11 +26,15 @@ public class LoadedRegion {
 	private static final Server SERVER = StickyChunk.getInstance().getGame().getServer();
 	private static final TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
 	private static final Logger logger = StickyChunk.getInstance().getLogger();
+	private final Server server = StickyChunk.getInstance().getGame().getServer();
+	private final DataStore dataStore = StickyChunk.getInstance().getDataStore();
+	private final IDatabase database = StickyChunk.getInstance().getDatabase();
 
 	private LoadingTicket ticket;
-	private boolean isValid;
+	private boolean isValid = false;
 	private ChunkType type;
 	private Region region;
+	private World world;
 	private Date epoch;
 	private UUID owner;
 	private UUID id;
@@ -103,7 +109,7 @@ public class LoadedRegion {
 	 * Get the unique identifier of this LoadedRegion
 	 * @return a UUID of this LoadedRegion
 	 */
-	public UUID getUniqueIdentifier() {
+	public UUID getUniqueId() {
 		return id;
 	}
 
@@ -124,11 +130,22 @@ public class LoadedRegion {
 	}
 
 	/***
-	 * Get the world this LoadedRegion is associated with
+	 * Get the world this LoadedRegion is associated with.
+	 * This method is not to be used before the server has finished loading.
 	 * @return the world object this LoadedRegion uses
 	 */
 	public World getWorld() {
-		return region.getWorld();
+		Optional<World> optWorld = server.getWorld(region.getWorldId());
+
+		if (optWorld.isPresent())
+			world = optWorld.get();
+		else {
+			logger.error("This region's world is no longer available, deleting...");
+			dataStore.deletePlayerRegion(getUniqueId(), getUniqueId());
+			database.deleteRegionData(this);
+		}
+
+		return world;
 	}
 
 	/***
@@ -184,6 +201,7 @@ public class LoadedRegion {
 	 */
 	public void assignTicket(LoadingTicket ticket) {
 		this.ticket = ticket;
+		this.isValid = true;
 	}
 
 	/***

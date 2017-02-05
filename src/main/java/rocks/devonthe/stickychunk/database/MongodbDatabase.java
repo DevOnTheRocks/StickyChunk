@@ -69,19 +69,13 @@ public class MongodbDatabase implements IDatabase {
 			int toZ = document.getInteger("toZ");
 			Date date = (Date) document.getDate("created");
 
-			if (server.getWorld(world).isPresent()) {
-				server.getWorld(world).ifPresent(loadedWorld -> {
-					Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), loadedWorld);
+			Region region = new Region(new Coordinate(fromX, fromZ), new Coordinate(toX, toZ), world);
 
-					if (regions.containsKey(id))
-						regions.get(id).add(new LoadedRegion(owner, id, region, date, type));
-					else
-						regions.put(id, Lists.newArrayList(new LoadedRegion(owner, id, region, date, type)));
-				});
-			} else {
-				logger.error("The world that a chunk was associated to no longer exists.");
-				logger.debug(String.format("The world's unique ID is %s", world.toString()));
-			}
+			if (regions.containsKey(id))
+				regions.get(id).add(new LoadedRegion(owner, id, region, date, type));
+			else
+				regions.put(id, Lists.newArrayList(new LoadedRegion(owner, id, region, date, type)));
+
 		});
 
 		return regions;
@@ -107,7 +101,7 @@ public class MongodbDatabase implements IDatabase {
 	public void saveRegionData(LoadedRegion loadedRegion) {
 		MongoCollection<Document> collection = getDatabase().getCollection("chunks");
 
-		Document regionDocument = new Document("_id", loadedRegion.getUniqueIdentifier().toString())
+		Document regionDocument = new Document("_id", loadedRegion.getUniqueId().toString())
 				.append("owner", loadedRegion.getOwner().toString())
 				.append("world", loadedRegion.getWorld().getUniqueId().toString())
 				.append("type", loadedRegion.getType().toString())
@@ -118,7 +112,7 @@ public class MongodbDatabase implements IDatabase {
 				.append("created", loadedRegion.getEpoch());
 
 		collection.replaceOne(
-				Filters.eq("_id", loadedRegion.getUniqueIdentifier().toString()),
+				Filters.eq("_id", loadedRegion.getUniqueId().toString()),
 				regionDocument,
 				(new UpdateOptions()).upsert(true)
 		);
@@ -150,7 +144,7 @@ public class MongodbDatabase implements IDatabase {
 	public void deleteRegionData(LoadedRegion region) {
 		MongoCollection<Document> collection = getDatabase().getCollection("chunks");
 
-		Bson condition = new Document("_id", region.getUniqueIdentifier().toString());
+		Bson condition = new Document("_id", region.getUniqueId().toString());
 		collection.deleteOne(condition);
 	}
 

@@ -36,7 +36,7 @@ import java.nio.file.Path;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.11.1-SNAPSHOT",
+		version = "0.11.3-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -73,11 +73,13 @@ public class StickyChunk {
 		pluginConfigManager = new ConfigManager(configManager);
 		pluginConfigManager.save();
 
-
 		ticketManager = new TicketManager();
 		database = new SqliteDatabase();
 		dataStore = new DataStore();
+	}
 
+	@Listener
+	public void onServerStarted(GameStartedServerEvent event) {
 		dataStore.addPlayerRegions(database.loadRegionData());
 		dataStore.addUsers(database.loadUserData());
 
@@ -89,16 +91,15 @@ public class StickyChunk {
 
 		// Register commands
 		registerCommands();
-	}
 
-	@Listener
-	public void onServerStarted(GameStartedServerEvent event) {
-		// Register tickets
+		// Validate LoadedRegions
+		ticketManager.validateLoadedRegions();
 	}
 
 	@Listener
 	public void onServerStopped(GameStoppedServerEvent event) {
 		database.saveRegionData(dataStore.getCollatedRegions());
+		database.saveUserData(dataStore.getLoadedUsers());
 	}
 
 	public DataStore getDataStore() {
