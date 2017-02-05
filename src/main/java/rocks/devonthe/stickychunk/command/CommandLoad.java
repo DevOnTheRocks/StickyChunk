@@ -65,6 +65,7 @@ public class CommandLoad implements CommandExecutor {
 		if (loadedRegion.isValid()) {
 			dataStore.addPlayerRegion(player, loadedRegion);
 			loadedRegion.forceChunks();
+			
 			player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the chunk."));
 		} else {
 			player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket and force chunk."));

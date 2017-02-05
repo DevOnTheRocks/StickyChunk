@@ -20,11 +20,19 @@ public interface IDatabase {
 
 	HashMap<UUID, ArrayList<LoadedRegion>> loadRegionData();
 
+	void deleteRegionData(LoadedRegion region);
+
+	void deleteRegionData( ArrayList<LoadedRegion> regions);
+
 	void saveUserData(User user);
 
 	void saveUserData(ImmutableSet<User> loadedUsers);
 
 	void saveUserData(ArrayList<User> loadedUsers);
+
+	void deleteUserData(User user);
+
+	void deleteUserData(ArrayList<User> users);
 
 	ArrayList<User> loadUserData();
 }

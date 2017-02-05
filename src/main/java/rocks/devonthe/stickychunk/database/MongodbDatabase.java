@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 import rocks.devonthe.stickychunk.StickyChunk;
@@ -106,7 +107,7 @@ public class MongodbDatabase implements IDatabase {
 	public void saveRegionData(LoadedRegion loadedRegion) {
 		MongoCollection<Document> collection = getDatabase().getCollection("chunks");
 
-		Document regionDocument = new Document("_id", loadedRegion.getId().toString())
+		Document regionDocument = new Document("_id", loadedRegion.getUniqueIdentifier().toString())
 				.append("owner", loadedRegion.getOwner().toString())
 				.append("world", loadedRegion.getWorld().getUniqueId().toString())
 				.append("type", loadedRegion.getType().toString())
@@ -117,7 +118,7 @@ public class MongodbDatabase implements IDatabase {
 				.append("created", loadedRegion.getEpoch());
 
 		collection.replaceOne(
-				Filters.eq("_id", loadedRegion.getId().toString()),
+				Filters.eq("_id", loadedRegion.getUniqueIdentifier().toString()),
 				regionDocument,
 				(new UpdateOptions()).upsert(true)
 		);
@@ -146,11 +147,33 @@ public class MongodbDatabase implements IDatabase {
 		loadedRegions.forEach(this::saveRegionData);
 	}
 
+	public void deleteRegionData(LoadedRegion region) {
+		MongoCollection<Document> collection = getDatabase().getCollection("chunks");
+
+		Bson condition = new Document("_id", region.getUniqueIdentifier().toString());
+		collection.deleteOne(condition);
+	}
+
+	public void deleteRegionData(ArrayList<LoadedRegion> regions) {
+		regions.forEach(this::deleteRegionData);
+	}
+
 	public void saveUserData(ImmutableSet<User> loadedUsers) {
 		loadedUsers.forEach(this::saveUserData);
 	}
 
 	public void saveUserData(ArrayList<User> loadedUsers) {
 		loadedUsers.forEach(this::saveUserData);
+	}
+
+	public void deleteUserData(User user) {
+		MongoCollection<Document> collection = getDatabase().getCollection("users");
+
+		Bson condition = new Document("_id", user.getUniqueId().toString());
+		collection.deleteOne(condition);
+	}
+
+	public void deleteUserData(ArrayList<User> users) {
+		users.forEach(this::deleteUserData);
 	}
 }

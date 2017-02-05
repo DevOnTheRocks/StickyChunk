@@ -103,7 +103,7 @@ public class LoadedRegion {
 	 * Get the unique identifier of this LoadedRegion
 	 * @return a UUID of this LoadedRegion
 	 */
-	public UUID getId() {
+	public UUID getUniqueIdentifier() {
 		return id;
 	}
 
@@ -193,6 +193,9 @@ public class LoadedRegion {
 		region.getChunks().forEach(chunk -> ticket.forceChunk(chunk.getPosition()));
 	}
 
+	/***
+	 * Un-force the chunks associated with this this instances ticket
+	 */
 	public void unForceChunks() {
 		region.getChunks().forEach(chunk -> ticket.unforceChunk(chunk.getPosition()));
 	}
@@ -217,6 +220,9 @@ public class LoadedRegion {
 		return newTicket;
 	}
 
+	/***
+	 * Release the ticket association with this plugin entirely
+	 */
 	public void invalidateTicket() {
 		ticket.release();
 	}

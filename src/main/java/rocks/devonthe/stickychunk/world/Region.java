@@ -84,8 +84,6 @@ public class Region {
 		if (chunks.isEmpty())
 			chunks = getChunkRange();
 
-		StickyChunk.getInstance().getLogger().info(String.format("AfterSize: %s", chunks.size()));
-
 		return chunks;
 	}
 

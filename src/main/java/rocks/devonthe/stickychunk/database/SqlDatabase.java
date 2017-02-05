@@ -95,7 +95,7 @@ public abstract class SqlDatabase implements IDatabase {
 		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?,?,?,?,?,?)", Schema.getChunkProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, loadedRegion.getId().toString());
+			statement.setString(1, loadedRegion.getUniqueIdentifier().toString());
 			statement.setString(2, loadedRegion.getOwner().toString());
 			statement.setString(3, loadedRegion.getWorld().getUniqueId().toString());
 			statement.setString(4, loadedRegion.getType().toString());
@@ -139,5 +139,37 @@ public abstract class SqlDatabase implements IDatabase {
 
 	public void saveUserData(ArrayList<User> data) {
 		data.forEach(this::saveUserData);
+	}
+
+	public void deleteRegionData(LoadedRegion region) {
+		String sql = "DELETE FROM chunks WHERE id = ?";
+
+		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
+			statement.setString(1, region.getUniqueIdentifier().toString());
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(String.format("Unable to delete record from the chunks table: %s", e.getMessage()));
+		}
+	}
+
+	public void deleteRegionData(ArrayList<LoadedRegion> regions) {
+		regions.forEach(this::deleteRegionData);
+	}
+
+	public void deleteUserData(User user) {
+		String sql = "DELETE FROM users WHERE id = ?";
+
+		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
+			statement.setString(1, user.getUniqueId().toString());
+			statement.executeUpdate();
+ 		} catch (SQLException e) {
+			e.printStackTrace();
+			logger.error(String.format("Unable to delete record from the users table: %s", e.getMessage()));
+		}
+	}
+
+	public void deleteUserData(ArrayList<User> users) {
+		users.forEach(this::deleteUserData);
 	}
 }

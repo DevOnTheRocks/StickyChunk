@@ -1,5 +1,6 @@
 package rocks.devonthe.stickychunk.command;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -19,6 +20,7 @@ import rocks.devonthe.stickychunk.permission.Permissions;
  * Created by Cossacksman on 04/02/2017.
  */
 public class CommandUnload implements CommandExecutor {
+	private Logger logger = StickyChunk.getInstance().getLogger();
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
@@ -52,14 +54,18 @@ public class CommandUnload implements CommandExecutor {
 		Player player = (Player) src;
 
 		if (player.hasPermission(Permissions.COMMAND_DELETE)) {
+			logger.info("attempting to delete loadedregion");
+
 			dataStore.getPlayerRegions(player).ifPresent(
 				playerRegions -> playerRegions.forEach(
 					region -> region.getChunks().forEach(
 						chunk -> {
-							if (player.getLocation().getChunkPosition() == chunk.getPosition()) {
+							logger.info("Checking players location");
+							if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
+								logger.info("found chunk to delete");
 								region.unForceChunks();
 								region.invalidateTicket();
-								dataStore.deletePlayerRegion(region.getId());
+								dataStore.deletePlayerRegion(player, region.getUniqueIdentifier());
 								player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
 							}
 						}

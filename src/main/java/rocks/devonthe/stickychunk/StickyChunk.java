@@ -36,7 +36,7 @@ import java.nio.file.Path;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.10.0-SNAPSHOT",
+		version = "0.11.1-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -134,6 +134,10 @@ public class StickyChunk {
 
 	public StickyChunkConfig getConfig() {
 		return config;
+	}
+
+	public IDatabase getDatabase() {
+		return database;
 	}
 
 	public TicketManager getTicketManager() {

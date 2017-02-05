@@ -2,7 +2,9 @@ package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
 import org.spongepowered.api.entity.living.player.Player;
+import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
+import rocks.devonthe.stickychunk.database.IDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import java.util.UUID;
 public class DataStore {
 	private Map<UUID, User> loadedUsers = new HashMap<UUID, User>();
 	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = new HashMap<UUID, ArrayList<LoadedRegion>>();
+
+	private IDatabase database = StickyChunk.getInstance().getDatabase();
 
 	public ImmutableSet<User> getLoadedUsers() {
 		return ImmutableSet.copyOf(loadedUsers.values());
@@ -39,7 +43,6 @@ public class DataStore {
 		return (loadedUsers.containsKey(player.getUniqueId())) ? Optional.of(loadedUsers.get(player.getUniqueId())) : Optional.empty();
 	}
 
-	// TODO:- Turn all potential null values into optionals
 	public Optional<User> getUser(UUID uuid) {
 		return (loadedUsers.containsKey(uuid)) ?
 				Optional.of(loadedUsers.get(uuid)) :
@@ -68,6 +71,7 @@ public class DataStore {
 
 	public void addPlayerRegions(HashMap<UUID, ArrayList<LoadedRegion>> regions) {
 		loadedRegions.putAll(regions);
+		regions.values().forEach(database::saveRegionData);
 	}
 
 	public void addPlayerRegions(Player player, ArrayList<LoadedRegion> regions) {
@@ -78,10 +82,13 @@ public class DataStore {
 			playerRegions.addAll(regions);
 			loadedRegions.put(player.getUniqueId(), playerRegions);
 		}
+
+		database.saveRegionData(regions);
 	}
 
 	public void addPlayerRegions(UUID uuid, ArrayList<LoadedRegion> regions) {
 		loadedRegions.get(uuid).addAll(regions);
+		database.saveRegionData(regions);
 	}
 
 	public void addPlayerRegion(Player player, LoadedRegion region) {
@@ -92,17 +99,23 @@ public class DataStore {
 			playerRegions.add(region);
 			loadedRegions.put(player.getUniqueId(), playerRegions);
 		}
+
+		database.saveRegionData(region);
 	}
 
-	public void deletePlayerRegion(UUID id) {
-		getCollatedRegions().stream()
-				.filter(region -> region.getId() == id)
+	public void deletePlayerRegion(Player player, UUID id) {
+		loadedRegions.get(player.getUniqueId()).stream()
+				.filter(region -> region.getUniqueIdentifier().equals(id))
 				.findFirst()
-				.ifPresent(loadedRegions.values()::remove);
+				.ifPresent(region -> {
+					loadedRegions.get(player.getUniqueId()).remove(region);
+					database.deleteRegionData(region);
+				});
 	}
 
 	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
 		loadedRegions.get(uuid).add(region);
+		database.saveRegionData(region);
 	}
 
 	public boolean playerHasRegions(Player player) {
@@ -112,6 +125,4 @@ public class DataStore {
 	public boolean playerHasRegions(UUID uuid) {
 		return loadedRegions.containsKey(uuid);
 	}
-
-
 }
