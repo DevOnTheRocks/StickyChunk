@@ -1,5 +1,35 @@
+/*
+ * This file is part of StickyChunk by DevOnTheRocks, licened under GPL-3.0
+ *
+ * Copyright (C) 2017 DevOnTheRocks
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * The above notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * Created by Cossacksman on 02/01/2017.
+ */
 package rocks.devonthe.stickychunk.chunkload;
 
+import net.minecraftforge.common.ForgeChunkManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.living.player.Player;
@@ -7,6 +37,7 @@ import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.mod.service.world.SpongeChunkTicketManager;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
@@ -19,9 +50,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Created by Cossacksman on 02/01/2017.
- */
 public class LoadedRegion {
 	private static final Server SERVER = StickyChunk.getInstance().getGame().getServer();
 	private static final TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
@@ -31,6 +59,7 @@ public class LoadedRegion {
 	private final IDatabase database = StickyChunk.getInstance().getDatabase();
 
 	private LoadingTicket ticket;
+
 	private boolean isValid = false;
 	private ChunkType type;
 	private Region region;
@@ -140,6 +169,7 @@ public class LoadedRegion {
 		if (optWorld.isPresent())
 			world = optWorld.get();
 		else {
+			logger.info(String.format("This region's world id is %s", region.getWorldId()));
 			logger.error("This region's world is no longer available, deleting...");
 			dataStore.deletePlayerRegion(getUniqueId(), getUniqueId());
 			database.deleteRegionData(this);
@@ -223,7 +253,7 @@ public class LoadedRegion {
 	 * @param world the world which the ticket should associate with
 	 * @return A LoadingTicket for force loading chunks
 	 */
-	public LoadingTicket createTicket(World world) {
+	private LoadingTicket createTicket(World world) {
 		Optional<LoadingTicket> opTicket = ticketManager.createTicket(world);
 		LoadingTicket newTicket = null;
 
@@ -243,5 +273,6 @@ public class LoadedRegion {
 	 */
 	public void invalidateTicket() {
 		ticket.release();
+		isValid = false;
 	}
 }

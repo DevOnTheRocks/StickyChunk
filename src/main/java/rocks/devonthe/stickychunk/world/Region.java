@@ -1,3 +1,32 @@
+/*
+ * This file is part of StickyChunk by DevOnTheRocks, licened under GPL-3.0
+ *
+ * Copyright (C) 2017 DevOnTheRocks
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * The above notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * Created by Cossacksman on 19/01/2017.
+ */
 package rocks.devonthe.stickychunk.world;
 
 import org.spongepowered.api.Server;
@@ -12,15 +41,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Created by Cossacksman on 19/01/2017.
- */
 public class Region {
 	private List<Chunk> chunks = new ArrayList<>();
 	private Coordinate fromChunkPosition;
 	private Coordinate toChunkPosition;
 	private UUID worldId;
-	private World world;
 	private int area;
 
 	private Server server = StickyChunk.getInstance().getGame().getServer();
@@ -30,21 +55,21 @@ public class Region {
 		this.fromChunkPosition = from;
 		chunks = new ArrayList<>();
 		this.toChunkPosition = to;
-		this.worldId = worldId;
+		this.worldId = world;
 	}
 
 	public Region(Location<World> from, Location<World> to) {
 		fromChunkPosition = new Coordinate(from.getBlockPosition());
 		toChunkPosition = new Coordinate(to.getBlockPosition());
 		chunks = new ArrayList<>();
-		world = from.getExtent();
+		worldId = from.getExtent().getUniqueId();
 	}
 
 	public Region(Location<World> location) {
 		chunks = new ArrayList<>();
 		location.getExtent().getChunk(location.getChunkPosition().getX(), 0, location.getChunkPosition().getZ()).ifPresent(chunks::add);
 		fromChunkPosition = toChunkPosition = new Coordinate(location.getBlockPosition());
-		world = location.getExtent();
+		worldId = location.getExtent().getUniqueId();
 	}
 
 	/***
@@ -55,27 +80,31 @@ public class Region {
 		List<Chunk> chunks = new ArrayList<Chunk>();
 		int height, width, pointerX, pointerZ, lowestX, lowestZ, highestX, highestZ;
 
-		lowestX = Math.min(fromChunkPosition.getX(), toChunkPosition.getX());
-		lowestZ = Math.min(fromChunkPosition.getZ(), toChunkPosition.getZ());
-		highestX = Math.max(fromChunkPosition.getX(), toChunkPosition.getX());
-		highestZ = Math.max(fromChunkPosition.getZ(), toChunkPosition.getZ());
+		Optional<World> world = server.getWorld(getWorldId());
 
-		width = Math.abs(lowestX - highestX);
-		height = Math.abs(lowestZ - highestZ);
+		if (world.isPresent()) {
+			lowestX = Math.min(fromChunkPosition.getX(), toChunkPosition.getX());
+			lowestZ = Math.min(fromChunkPosition.getZ(), toChunkPosition.getZ());
+			highestX = Math.max(fromChunkPosition.getX(), toChunkPosition.getX());
+			highestZ = Math.max(fromChunkPosition.getZ(), toChunkPosition.getZ());
 
-		area = Math.abs((width + 1) * (height + 1));
+			width = Math.abs(lowestX - highestX);
+			height = Math.abs(lowestZ - highestZ);
 
-		pointerX = lowestX;
-		pointerZ = lowestZ;
+			area = Math.abs((width + 1) * (height + 1));
 
-		for (int i = 0; i <= width; i++) {
-			for (int l = 0; l <= height; l++) {
-				world.getChunk(pointerX, 0, pointerZ).ifPresent(chunks::add);
-				pointerZ++;
-			}
-
+			pointerX = lowestX;
 			pointerZ = lowestZ;
-			pointerX++;
+
+			for (int i = 0; i <= width; i++) {
+				for (int l = 0; l <= height; l++) {
+					world.get().getChunk(pointerX, 0, pointerZ).ifPresent(chunks::add);
+					pointerZ++;
+				}
+
+				pointerZ = lowestZ;
+				pointerX++;
+			}
 		}
 
 		return chunks;
