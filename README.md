@@ -11,7 +11,13 @@ StickyChunk will have many features working during the public Alpha and Beta rel
 - Multiple connection-based or flat-file database types to choose from
 - A configurable token system to load chunks with
 
-### Important Notes
+### Minimum Requirements
+
+StickyChunk has very few requirements to run, but due to the features required for this plugin to work, the minimum SpongeForge version you can use is listed below.
+
+- SpongeForge 1.10.2-2221-5.1.0-BETA-2132
+
+#### Important Notes
 
 - This plugin is in the early stages; any pulls taken could be broken and should be used for testing. Branching will occur soon.
 - An API will be created for this plugin to allow for integration in the future but that is planned for post-release date.
