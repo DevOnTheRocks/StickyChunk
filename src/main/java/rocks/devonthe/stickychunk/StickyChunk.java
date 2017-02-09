@@ -34,6 +34,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
@@ -43,6 +44,7 @@ import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
@@ -86,14 +88,17 @@ public class StickyChunk {
 	private IDatabase database;
 
 	private static StickyChunk instance;
+	private static boolean enabled;
 
 	@Listener
 	public void onPostInitialization(GamePostInitializationEvent event) {
 		instance = this;
+		enabled = validateSpongeVersion();
 	}
 
 	@Listener
 	public void onAboutToStart(GameAboutToStartServerEvent event) {
+		if (!enabled) return;
 		// Initialize configs
 		config = new StickyChunkConfig();
 		pluginConfigManager = new ConfigManager(configManager);
@@ -106,6 +111,7 @@ public class StickyChunk {
 
 	@Listener
 	public void onServerStarted(GameStartedServerEvent event) {
+		if (!enabled) return;
 		dataStore.addPlayerRegions(database.loadRegionData());
 		dataStore.addUsers(database.loadUserData());
 
@@ -124,6 +130,7 @@ public class StickyChunk {
 
 	@Listener
 	public void onServerStopped(GameStoppedServerEvent event) {
+		if (!enabled) return;
 		database.saveRegionData(dataStore.getCollatedRegions());
 		database.saveUserData(dataStore.getLoadedUsers());
 	}
@@ -141,6 +148,23 @@ public class StickyChunk {
 		CommandPersist.register();
 		CommandLoad.register();
 		CommandUnload.register();
+	}
+
+	private boolean validateSpongeVersion() {
+		PluginContainer container = Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION);
+		if (container.getName().equals("SpongeForge")) {
+			try {
+				String version = container.getVersion().orElseThrow(Exception::new);
+				version = version.substring(Math.max(version.length() - 4, 0));
+				int spongeVersion = Integer.parseInt(version);
+				if (spongeVersion < 2132) {
+					this.logger.error(String.format("Failed to initialize StickyChunk due to outdated SpongeForge (%s). StickyChunk requires SF 2132+", spongeVersion));
+					return false;
+				}
+			} catch (Exception ignored) {
+			}
+		}
+		return true;
 	}
 
 	public static StickyChunk getInstance() {
