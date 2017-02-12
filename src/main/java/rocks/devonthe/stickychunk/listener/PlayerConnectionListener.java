@@ -31,6 +31,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.DataStore;
@@ -40,6 +42,7 @@ import rocks.devonthe.stickychunk.database.IDatabase;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class PlayerConnectionListener {
 	DataStore dataStore = StickyChunk.getInstance().getDataStore();
@@ -47,9 +50,8 @@ public class PlayerConnectionListener {
 	Logger logger = StickyChunk.getInstance().getLogger();
 
 	@Listener
-	public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-		Player player = (Player) event.player;
-		Date now = (Date) java.util.Date.from(Instant.now());
+	public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
+		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 		UserData userData = dataStore.getUserData(player);
 
 		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
@@ -68,9 +70,8 @@ public class PlayerConnectionListener {
 	}
 
 	@Listener
-	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-		Player player = (Player) event.player;
-		Date now = (Date) java.util.Date.from(Instant.now());
+	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event, @Root Player player) {
+		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 		UserData userData = dataStore.getUserData(player);
 
 		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {

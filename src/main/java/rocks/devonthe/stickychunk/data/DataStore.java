@@ -70,12 +70,14 @@ public class DataStore {
 		return ImmutableSet.copyOf(regions);
 	}
 
-	public UserData getUserData(User player) {
-		return getUserData(player.getUniqueId());
+	public UserData getUserData(User user) {
+		return getUserData(user.getUniqueId());
 	}
 
 	public UserData getUserData(UUID uuid) {
-		Date now = (Date) java.util.Date.from(Instant.now());
+		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
+
+		StickyChunk.getInstance().getLogger().info(String.format("UUID in DataStore: %s", uuid.toString()));
 
 		return (loadedUsers.containsKey(uuid)) ?
 				loadedUsers.get(uuid) :
@@ -90,8 +92,8 @@ public class DataStore {
 		loadedUsers.put(userData.getUniqueId(), userData);
 	}
 
-	public ArrayList<LoadedRegion> getPlayerRegions(User player) {
-		return getPlayerRegions(player.getUniqueId());
+	public ArrayList<LoadedRegion> getPlayerRegions(User user) {
+		return getPlayerRegions(user.getUniqueId());
 	}
 
 	// Sometimes returns null; how?
@@ -101,8 +103,8 @@ public class DataStore {
 				loadedRegions.put(uuid, Lists.newArrayList());
 	}
 
-	public ArrayList<World> getPlayerRegionWorlds(User player) {
-		return getPlayerRegionWorlds(player.getUniqueId());
+	public ArrayList<World> getPlayerRegionWorlds(User user) {
+		return getPlayerRegionWorlds(user.getUniqueId());
 	}
 
 	public ArrayList<World> getPlayerRegionWorlds(UUID uuid) {
@@ -118,8 +120,8 @@ public class DataStore {
 		loadedRegions.putAll(regions);
 	}
 
-	public void addPlayerRegions(User player, ArrayList<LoadedRegion> regions) {
-		addPlayerRegions(player.getUniqueId(), regions);
+	public void addPlayerRegions(User user, ArrayList<LoadedRegion> regions) {
+		addPlayerRegions(user.getUniqueId(), regions);
 	}
 
 	public void addPlayerRegions(UUID uuid, ArrayList<LoadedRegion> regions) {
@@ -129,13 +131,13 @@ public class DataStore {
 			loadedRegions.put(uuid, regions);
 	}
 
-	public void addPlayerRegion(User player, LoadedRegion region) {
-		if (loadedRegions.containsKey(player.getUniqueId())) {
-			loadedRegions.get(player.getUniqueId()).add(region);
+	public void addPlayerRegion(User user, LoadedRegion region) {
+		if (loadedRegions.containsKey(user.getUniqueId())) {
+			loadedRegions.get(user.getUniqueId()).add(region);
 		} else {
 			ArrayList<LoadedRegion> playerRegions = new ArrayList<>();
 			playerRegions.add(region);
-			loadedRegions.put(player.getUniqueId(), playerRegions);
+			loadedRegions.put(user.getUniqueId(), playerRegions);
 		}
 	}
 
@@ -149,8 +151,8 @@ public class DataStore {
 				});
 	}
 
-	public void deletePlayerRegion(User player, UUID id) {
-		deletePlayerRegion(player.getUniqueId(), id);
+	public void deletePlayerRegion(User user, UUID id) {
+		deletePlayerRegion(user.getUniqueId(), id);
 	}
 
 	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
@@ -158,8 +160,8 @@ public class DataStore {
 		database.saveRegionData(region);
 	}
 
-	public boolean playerHasRegions(User player) {
-		return playerHasRegions(player.getUniqueId());
+	public boolean playerHasRegions(User user) {
+		return playerHasRegions(user.getUniqueId());
 	}
 
 	public boolean playerHasRegions(UUID uuid) {

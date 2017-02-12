@@ -65,7 +65,7 @@ import java.nio.file.Path;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.12.2-SNAPSHOT",
+		version = "0.12.3-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
