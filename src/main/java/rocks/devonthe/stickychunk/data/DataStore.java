@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -28,7 +28,9 @@
 package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
@@ -41,12 +43,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class DataStore {
-	private Map<UUID, User> loadedUsers = new HashMap<UUID, User>();
+	private Map<UUID, UserData> loadedUsers = new HashMap<UUID, UserData>();
 	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = new HashMap<UUID, ArrayList<LoadedRegion>>();
 
 	private IDatabase database = StickyChunk.getInstance().getDatabase();
 
-	public ImmutableSet<User> getLoadedUsers() {
+	public ImmutableSet<UserData> getLoadedUsers() {
 		return ImmutableSet.copyOf(loadedUsers.values());
 	}
 
@@ -65,53 +67,41 @@ public class DataStore {
 		return ImmutableSet.copyOf(regions);
 	}
 
-	public Optional<User> getUser(Player player) {
-		return (loadedUsers.containsKey(player.getUniqueId())) ? Optional.of(loadedUsers.get(player.getUniqueId())) : Optional.empty();
+	public Optional<UserData> getUserData(User player) {
+		return getUserData(player.getUniqueId());
 	}
 
-	public Optional<User> getUser(UUID uuid) {
+	public Optional<UserData> getUserData(UUID uuid) {
 		return (loadedUsers.containsKey(uuid)) ?
 				Optional.of(loadedUsers.get(uuid)) :
 				Optional.empty();
 	}
 
-	public void addUsers(ArrayList<User> users) {
-		users.forEach(user -> loadedUsers.put(user.getUniqueId(), user));
+	public void addUsers(ArrayList<UserData> userDatas) {
+		userDatas.forEach(user -> loadedUsers.put(user.getUniqueId(), user));
 	}
 
-	public void updateUser(User user) {
-		loadedUsers.put(user.getUniqueId(), user);
+	public void updateUser(UserData userData) {
+		loadedUsers.put(userData.getUniqueId(), userData);
 	}
 
-	public Optional<ArrayList<LoadedRegion>> getPlayerRegions(Player player) {
-		return (loadedRegions.containsKey(player.getUniqueId())) ?
-				Optional.of(loadedRegions.get(player.getUniqueId())) :
-				Optional.empty();
+	public ArrayList<LoadedRegion> getPlayerRegions(User player) {
+		return getPlayerRegions(player.getUniqueId());
 	}
 
-	public Optional<ArrayList<LoadedRegion>> getPlayerRegions(UUID uuid) {
+	public ArrayList<LoadedRegion> getPlayerRegions(UUID uuid) {
 		return (loadedRegions.containsKey(uuid)) ?
-				Optional.of(loadedRegions.get(uuid)) :
-				Optional.empty();
+				loadedRegions.get(uuid) :
+				loadedRegions.put(uuid, Lists.newArrayList());
 	}
 
-	public ArrayList<World> getPlayerRegionWorlds(Player player) {
-		ArrayList<World> worlds = new ArrayList<>();
-
-		getPlayerRegions(player).ifPresent(loadedRegions ->
-			loadedRegions.forEach(loadedRegion -> worlds.add(loadedRegion.getWorld()))
-		);
-
-		return worlds;
+	public ArrayList<World> getPlayerRegionWorlds(User player) {
+		return getPlayerRegionWorlds(player.getUniqueId());
 	}
 
 	public ArrayList<World> getPlayerRegionWorlds(UUID uuid) {
 		ArrayList<World> worlds = new ArrayList<>();
-
-		getPlayerRegions(uuid).ifPresent(loadedRegions ->
-				loadedRegions.forEach(loadedRegion -> worlds.add(loadedRegion.getWorld()))
-		);
-
+		getPlayerRegions(uuid).forEach(loadedRegion -> worlds.add(loadedRegion.getWorld()));
 		return worlds;
 	}
 
@@ -119,22 +109,18 @@ public class DataStore {
 		loadedRegions.putAll(regions);
 	}
 
-	public void addPlayerRegions(Player player, ArrayList<LoadedRegion> regions) {
-		if (loadedRegions.containsKey(player.getUniqueId())) {
-			loadedRegions.get(player.getUniqueId()).addAll(regions);
-		} else {
-			ArrayList<LoadedRegion> playerRegions = new ArrayList<>();
-			playerRegions.addAll(regions);
-			loadedRegions.put(player.getUniqueId(), playerRegions);
-		}
+	public void addPlayerRegions(User player, ArrayList<LoadedRegion> regions) {
+		addPlayerRegions(player.getUniqueId(), regions);
 	}
 
 	public void addPlayerRegions(UUID uuid, ArrayList<LoadedRegion> regions) {
-		loadedRegions.get(uuid).addAll(regions);
-		database.saveRegionData(regions);
+		if (loadedRegions.containsKey(uuid))
+			loadedRegions.get(uuid).addAll(regions);
+		else
+			loadedRegions.put(uuid, regions);
 	}
 
-	public void addPlayerRegion(Player player, LoadedRegion region) {
+	public void addPlayerRegion(User player, LoadedRegion region) {
 		if (loadedRegions.containsKey(player.getUniqueId())) {
 			loadedRegions.get(player.getUniqueId()).add(region);
 		} else {
@@ -145,23 +131,17 @@ public class DataStore {
 	}
 
 	public void deletePlayerRegion(UUID player, UUID id) {
-		getPlayerRegions(player).ifPresent(regions -> regions.stream()
+		getPlayerRegions(player).stream()
 				.filter(region -> region.getUniqueId().equals(id))
 				.findFirst()
 				.ifPresent(region -> {
 					loadedRegions.get(player).remove(region);
 					database.deleteRegionData(region);
-				}));
+				});
 	}
 
-	public void deletePlayerRegion(Player player, UUID id) {
-		getPlayerRegions(player).ifPresent(regions -> regions.stream()
-				.filter(region -> region.getUniqueId().equals(id))
-				.findFirst()
-				.ifPresent(region -> {
-					loadedRegions.get(player.getUniqueId()).remove(region);
-					database.deleteRegionData(region);
-				}));
+	public void deletePlayerRegion(User player, UUID id) {
+		deletePlayerRegion(player.getUniqueId(), id);
 	}
 
 	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
@@ -169,8 +149,8 @@ public class DataStore {
 		database.saveRegionData(region);
 	}
 
-	public boolean playerHasRegions(Player player) {
-		return loadedRegions.containsKey(player.getUniqueId());
+	public boolean playerHasRegions(User player) {
+		return playerHasRegions(player.getUniqueId());
 	}
 
 	public boolean playerHasRegions(UUID uuid) {

@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -34,7 +34,7 @@ import org.spongepowered.api.event.Listener;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.DataStore;
-import rocks.devonthe.stickychunk.data.User;
+import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.database.IDatabase;
 
 import java.math.BigDecimal;
@@ -50,31 +50,31 @@ public class PlayerConnectionListener {
 	public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		Player player = (Player) event.player;
 		Date now = (Date) java.util.Date.from(Instant.now());
-		User user = dataStore.getUser(player).orElse(new User(player.getUniqueId(), new BigDecimal(0), now, now));
+		UserData userData = dataStore.getUserData(player).orElse(new UserData(player.getUniqueId(), new BigDecimal(0), now, now));
 
-		dataStore.getPlayerRegions(user.getUniqueId()).ifPresent(loadedRegions -> loadedRegions.forEach(region -> {
+		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
 				region.unForceChunks();
-		}));
+		});
 
-		// Update the user in case it's an existing user
-		dataStore.getUser(player).ifPresent(usr -> usr.setLastSeen(now).update());
-		database.saveUserData(user);
+		// Update the userData in case it's an existing userData
+		dataStore.getUserData(player).ifPresent(usr -> usr.setLastSeen(now).update());
+		database.saveUserData(userData);
 	}
 
 	@Listener
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
 		Player player = (Player) event.player;
 		Date now = (Date) java.util.Date.from(Instant.now());
-		User user = dataStore.getUser(player).orElse(new User(player.getUniqueId(), new BigDecimal(0), now, now));
+		UserData userData = dataStore.getUserData(player).orElse(new UserData(player.getUniqueId(), new BigDecimal(0), now, now));
 
-		dataStore.getPlayerRegions(user.getUniqueId()).ifPresent(loadedRegions -> loadedRegions.forEach(region -> {
+		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
 				region.forceChunks();
-		}));
+		});
 
-		// Update the user in case it's an existing user
-		dataStore.getUser(player).ifPresent(usr -> usr.setLastSeen(now).update());
-		database.saveUserData(user);
+		// Update the userData in case it's an existing userData
+		dataStore.getUserData(player).ifPresent(usr -> usr.setLastSeen(now).update());
+		database.saveUserData(userData);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -43,7 +43,7 @@ import org.spongepowered.api.Server;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.config.database.MongoConfig;
-import rocks.devonthe.stickychunk.data.User;
+import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
 
@@ -106,21 +106,21 @@ public class MongodbDatabase implements IDatabase {
 		return regions;
 	}
 
-	public ArrayList<User> loadUserData() {
-		ArrayList<User> users = new ArrayList<User>();
+	public ArrayList<UserData> loadUserData() {
+		ArrayList<UserData> userDatas = new ArrayList<UserData>();
 
-		MongoCollection<Document> collection = getDatabase().getCollection("users");
+		MongoCollection<Document> collection = getDatabase().getCollection("userDatas");
 		collection.find().forEach((Block<Document>) document -> {
-			UUID player = UUID.fromString(document.getString("user"));
+			UUID player = UUID.fromString(document.getString("userData"));
 			BigDecimal balance = document.get("balance", BigDecimal.class);
 			Date seen = (Date) document.getDate("seen");
 			Date joined = (Date) document.getDate("joined");
 
-			User user = new User(player, balance, joined, seen);
-			users.add(user);
+			UserData userData = new UserData(player, balance, joined, seen);
+			userDatas.add(userData);
 		});
 
-		return users;
+		return userDatas;
 	}
 
 	public void saveRegionData(LoadedRegion loadedRegion) {
@@ -143,16 +143,16 @@ public class MongodbDatabase implements IDatabase {
 		);
 	}
 
-	public void saveUserData(User user) {
+	public void saveUserData(UserData userData) {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 
-		Document userDocument = new Document("_id", user.getUniqueId())
-				.append("balance", user.getBalance())
-				.append("seen", user.getLastSeen())
-				.append("joined", user.getUserJoined());
+		Document userDocument = new Document("_id", userData.getUniqueId())
+				.append("balance", userData.getBalance())
+				.append("seen", userData.getLastSeen())
+				.append("joined", userData.getUserJoined());
 
 		collection.replaceOne(
-				Filters.eq("_id", user.getUniqueId().toString()),
+				Filters.eq("_id", userData.getUniqueId().toString()),
 				userDocument,
 				(new UpdateOptions()).upsert(true)
 		);
@@ -177,22 +177,22 @@ public class MongodbDatabase implements IDatabase {
 		regions.forEach(this::deleteRegionData);
 	}
 
-	public void saveUserData(ImmutableSet<User> loadedUsers) {
-		loadedUsers.forEach(this::saveUserData);
+	public void saveUserData(ImmutableSet<UserData> loadedUserDatas) {
+		loadedUserDatas.forEach(this::saveUserData);
 	}
 
-	public void saveUserData(ArrayList<User> loadedUsers) {
-		loadedUsers.forEach(this::saveUserData);
+	public void saveUserData(ArrayList<UserData> loadedUserDatas) {
+		loadedUserDatas.forEach(this::saveUserData);
 	}
 
-	public void deleteUserData(User user) {
+	public void deleteUserData(UserData userData) {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 
-		Bson condition = new Document("_id", user.getUniqueId().toString());
+		Bson condition = new Document("_id", userData.getUniqueId().toString());
 		collection.deleteOne(condition);
 	}
 
-	public void deleteUserData(ArrayList<User> users) {
-		users.forEach(this::deleteUserData);
+	public void deleteUserData(ArrayList<UserData> userDatas) {
+		userDatas.forEach(this::deleteUserData);
 	}
 }

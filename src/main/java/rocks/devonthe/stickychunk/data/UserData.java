@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -28,7 +28,6 @@
 package rocks.devonthe.stickychunk.data;
 
 import org.spongepowered.api.service.economy.account.UniqueAccount;
-import org.spongepowered.asm.mixin.Unique;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.economy.EconomyManager;
 
@@ -37,7 +36,7 @@ import java.sql.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-public class User {
+public class UserData {
 	UUID player;
 	private Date seen;
 	private Date joined;
@@ -45,7 +44,7 @@ public class User {
 
 	private EconomyManager economyManager = StickyChunk.getInstance().getEconomyManager();
 
-	public User(UUID id, BigDecimal balance, Date joined, Date seen) {
+	public UserData(UUID id, BigDecimal balance, Date joined, Date seen) {
 		this.player = id;
 		this.seen = seen;
 		this.joined = joined;
@@ -66,7 +65,7 @@ public class User {
 		return seen;
 	}
 
-	public User setLastSeen(Date seen) {
+	public UserData setLastSeen(Date seen) {
 		this.seen = seen;
 		return this;
 	}

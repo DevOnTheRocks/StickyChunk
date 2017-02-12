@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Server;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
-import rocks.devonthe.stickychunk.data.User;
+import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
 
@@ -86,27 +86,27 @@ public abstract class SqlDatabase implements IDatabase {
 		return regions;
 	}
 
-	public ArrayList<User> loadUserData() {
-		ArrayList<User> users = new ArrayList<User>();
+	public ArrayList<UserData> loadUserData() {
+		ArrayList<UserData> userDatas = new ArrayList<UserData>();
 
 		try (Statement statement = getConnection().createStatement()) {
-			ResultSet results = statement.executeQuery("SELECT * FROM users");
+			ResultSet results = statement.executeQuery("SELECT * FROM userDatas");
 
 			while (results.next()) {
-				UUID player = UUID.fromString(results.getString("user"));
+				UUID player = UUID.fromString(results.getString("userData"));
 				BigDecimal balance = results.getBigDecimal("balance");
 				Date seen = results.getDate("seen");
 				Date joined = results.getDate("joined");
 
-				User user = new User(player, balance, joined, seen);
-				users.add(user);
+				UserData userData = new UserData(player, balance, joined, seen);
+				userDatas.add(userData);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			logger.error(String.format("Unable to load users from the table: %s", e.getMessage()));
+			logger.error(String.format("Unable to load userDatas from the table: %s", e.getMessage()));
 		}
 
-		return users;
+		return userDatas;
 	}
 
 	public void saveRegionData(LoadedRegion loadedRegion) {
@@ -137,26 +137,26 @@ public abstract class SqlDatabase implements IDatabase {
 		data.forEach(this::saveRegionData);
 	}
 
-	public void saveUserData(User user) {
+	public void saveUserData(UserData userData) {
 		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?)", Schema.getUserProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, user.getUniqueId().toString());
-			statement.setBigDecimal(2, user.getBalance());
-			statement.setDate(3, user.getLastSeen());
-			statement.setDate(4, user.getUserJoined());
+			statement.setString(1, userData.getUniqueId().toString());
+			statement.setBigDecimal(2, userData.getBalance());
+			statement.setDate(3, userData.getLastSeen());
+			statement.setDate(4, userData.getUserJoined());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			logger.error(String.format("Error inserting user into the database: %s", e.getMessage()));
+			logger.error(String.format("Error inserting userData into the database: %s", e.getMessage()));
 		}
 	}
 
-	public void saveUserData(ImmutableSet<User> loadedRegions) {
+	public void saveUserData(ImmutableSet<UserData> loadedRegions) {
 		loadedRegions.forEach(this::saveUserData);
 	}
 
-	public void saveUserData(ArrayList<User> data) {
+	public void saveUserData(ArrayList<UserData> data) {
 		data.forEach(this::saveUserData);
 	}
 
@@ -176,11 +176,11 @@ public abstract class SqlDatabase implements IDatabase {
 		regions.forEach(this::deleteRegionData);
 	}
 
-	public void deleteUserData(User user) {
+	public void deleteUserData(UserData userData) {
 		String sql = "DELETE FROM users WHERE id = ?";
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, user.getUniqueId().toString());
+			statement.setString(1, userData.getUniqueId().toString());
 			statement.executeUpdate();
  		} catch (SQLException e) {
 			e.printStackTrace();
@@ -188,7 +188,7 @@ public abstract class SqlDatabase implements IDatabase {
 		}
 	}
 
-	public void deleteUserData(ArrayList<User> users) {
-		users.forEach(this::deleteUserData);
+	public void deleteUserData(ArrayList<UserData> userDatas) {
+		userDatas.forEach(this::deleteUserData);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -84,20 +84,18 @@ public class CommandUnload implements CommandExecutor {
 		if (player.hasPermission(Permissions.COMMAND_DELETE)) {
 			logger.info("attempting to delete loadedregion");
 
-			dataStore.getPlayerRegions(player).ifPresent(
-				playerRegions -> playerRegions.forEach(
-					region -> region.getChunks().forEach(
-						chunk -> {
-							logger.info("Checking players location");
-							if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
-								logger.info("found chunk to delete");
-								region.unForceChunks();
-								region.invalidateTicket();
-								deleteQueue.put(player, region.getUniqueId());
-								player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
-							}
+			dataStore.getPlayerRegions(player).forEach(
+				region -> region.getChunks().forEach(
+					chunk -> {
+						logger.info("Checking players location");
+						if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
+							logger.info("found chunk to delete");
+							region.unForceChunks();
+							region.invalidateTicket();
+							deleteQueue.put(player, region.getUniqueId());
+							player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
 						}
-					)
+					}
 				)
 			);
 		}

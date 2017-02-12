@@ -1,7 +1,7 @@
 /*
  * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright © 2017 DevOnTheRocks
+ * Copyright (C) 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -29,7 +29,7 @@ package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
-import rocks.devonthe.stickychunk.data.User;
+import rocks.devonthe.stickychunk.data.UserData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,15 +48,15 @@ public interface IDatabase {
 
 	void deleteRegionData( ArrayList<LoadedRegion> regions);
 
-	void saveUserData(User user);
+	void saveUserData(UserData userData);
 
-	void saveUserData(ImmutableSet<User> loadedUsers);
+	void saveUserData(ImmutableSet<UserData> loadedUserDatas);
 
-	void saveUserData(ArrayList<User> loadedUsers);
+	void saveUserData(ArrayList<UserData> loadedUserDatas);
 
-	void deleteUserData(User user);
+	void deleteUserData(UserData userData);
 
-	void deleteUserData(ArrayList<User> users);
+	void deleteUserData(ArrayList<UserData> userDatas);
 
-	ArrayList<User> loadUserData();
+	ArrayList<UserData> loadUserData();
 }
