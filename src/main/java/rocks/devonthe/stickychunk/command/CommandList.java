@@ -95,7 +95,7 @@ public class CommandList implements CommandExecutor {
 		);
 
 		if (loadedRegions.isEmpty())
-			header = Text.of("");
+			header = Text.of(TextColors.RED, "There are no loaded regions to display");
 
 		for (LoadedRegion region : loadedRegions) {
 			listText.add(Text.of(
@@ -119,7 +119,7 @@ public class CommandList implements CommandExecutor {
 
 	private CommandResult execServer(CommandSource src, CommandContext args) {
 		if (dataStore.getCollatedRegions().isEmpty())
-			src.sendMessage(Text.of("There are no loaded regions to display"));
+			src.sendMessage(Text.of(TextColors.RED, "There are no loaded regions to display"));
 
 		dataStore.getCollatedRegions().forEach(region ->
 				src.sendMessage(
