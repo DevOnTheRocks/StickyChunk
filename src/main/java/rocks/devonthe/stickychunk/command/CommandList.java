@@ -121,15 +121,15 @@ public class CommandList implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.RED, "There are no loaded regions to display"));
 
 		dataStore.getCollatedRegions().forEach(region ->
-												   src.sendMessage(
-													   Text.of(
-														   TextColors.GOLD, region.getChunks().size(),
-														   TextColors.WHITE, " chunks in world ",
-														   TextColors.GOLD, region.getWorld().getName(),
-														   TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-														   TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
-													   )
-												   )
+			src.sendMessage(
+				Text.of(
+					TextColors.GOLD, region.getChunks().size(),
+					TextColors.WHITE, " chunks in world ",
+					TextColors.GOLD, region.getWorld().getName(),
+					TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
+					TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+				)
+			)
 		);
 
 		return CommandResult.success();
