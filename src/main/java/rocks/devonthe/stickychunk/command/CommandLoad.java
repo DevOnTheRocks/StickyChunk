@@ -55,11 +55,11 @@ public class CommandLoad implements CommandExecutor {
 	private static String helpText = "/sc load <world|personal> - Chunk-load the chunk at your current position.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_CREATE)
-			.description(Text.of(helpText))
-			.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
-			.executor(new CommandLoad())
-			.build();
+		.permission(Permissions.COMMAND_CREATE)
+		.description(Text.of(helpText))
+		.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
+		.executor(new CommandLoad())
+		.build();
 
 
 	/***
@@ -92,7 +92,7 @@ public class CommandLoad implements CommandExecutor {
 			dataStore.addPlayerRegion(player, loadedRegion);
 			loadedRegion.forceChunks();
 			database.saveRegionData(loadedRegion);
-			
+
 			player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the chunk."));
 		} else {
 			player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket and force chunk."));

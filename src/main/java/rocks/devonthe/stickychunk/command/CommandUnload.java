@@ -54,10 +54,10 @@ public class CommandUnload implements CommandExecutor {
 	private static String helpText = "/sc unload - unload the region at your current position.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_DELETE)
-			.description(Text.of(helpText))
-			.executor(new CommandUnload())
-			.build();
+		.permission(Permissions.COMMAND_DELETE)
+		.description(Text.of(helpText))
+		.executor(new CommandUnload())
+		.build();
 
 	/***
 	 * Register the command with the game's command manager

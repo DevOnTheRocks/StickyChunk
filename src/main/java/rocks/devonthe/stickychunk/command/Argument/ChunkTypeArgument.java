@@ -90,10 +90,10 @@ public class ChunkTypeArgument extends CommandElement {
 		try {
 			String type = args.peek().toLowerCase();
 			return LoadedRegion.ChunkType.asMap().entrySet().stream()
-					.filter(s -> s.getKey().startsWith(type))
-					.filter(s -> Permissions.hasPermission(src, s.getKey()))
-					.map(Map.Entry::getKey)
-					.collect(Collectors.toList());
+				.filter(s -> s.getKey().startsWith(type))
+				.filter(s -> Permissions.hasPermission(src, s.getKey()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 		} catch (ArgumentParseException e) {
 			e.printStackTrace();
 		}

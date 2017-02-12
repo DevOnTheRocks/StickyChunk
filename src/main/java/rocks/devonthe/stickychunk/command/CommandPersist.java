@@ -40,13 +40,13 @@ public class CommandPersist implements CommandExecutor {
 	private static String helpText = "";
 
 	private static CommandSpec commandSpec = CommandSpec.builder()
-			.description(Text.of(helpText))
-			.child(CommandList.commandSpec, "list")
-			.child(CommandLoad.commandSpec, "load")
-			.child(CommandLoadRange.commandSpec, "loadarea")
-			.child(CommandUnload.commandSpec, "unload")
-			.executor(new CommandPersist())
-			.build();
+		.description(Text.of(helpText))
+		.child(CommandList.commandSpec, "list")
+		.child(CommandLoad.commandSpec, "load")
+		.child(CommandLoadRange.commandSpec, "loadarea")
+		.child(CommandUnload.commandSpec, "unload")
+		.executor(new CommandPersist())
+		.build();
 
 	/***
 	 * Register the command with the game's command manager

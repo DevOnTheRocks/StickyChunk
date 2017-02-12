@@ -57,11 +57,11 @@ public class CommandList implements CommandExecutor {
 	private static final Text USER = Text.of("user");
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_LIST)
-			.description(Text.of(helpText))
-			.arguments(GenericArguments.optional(GenericArguments.user(USER)))
-			.executor(new CommandList())
-			.build();
+		.permission(Permissions.COMMAND_LIST)
+		.description(Text.of(helpText))
+		.arguments(GenericArguments.optional(GenericArguments.user(USER)))
+		.executor(new CommandList())
+		.build();
 
 	/***
 	 * Register the command with the game's command manager
@@ -87,31 +87,31 @@ public class CommandList implements CommandExecutor {
 		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
 
 		Text header = Text.of(
-				"Listing",
-				TextColors.GOLD, loadedRegions.size(),
-				TextColors.RESET, " regions across ",
-				TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
-				TextColors.RESET, " worlds"
+			"Listing",
+			TextColors.GOLD, loadedRegions.size(),
+			TextColors.RESET, " regions across ",
+			TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
+			TextColors.RESET, " worlds"
 		);
 
 		if (loadedRegions.isEmpty())
 			header = Text.of(TextColors.RED, "There are no loaded regions to display");
 
 		loadedRegions.forEach(region -> listText.add(Text.of(
-				TextColors.GOLD, region.getChunks().size(),
-				TextColors.WHITE, " chunks in world ",
-				TextColors.GOLD, region.getWorld().getName(),
-				TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-				TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+			TextColors.GOLD, region.getChunks().size(),
+			TextColors.WHITE, " chunks in world ",
+			TextColors.GOLD, region.getWorld().getName(),
+			TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
+			TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
 		)));
 
 
 		PaginationList.builder()
-				.title(Text.of(TextColors.GOLD, "Loaded Regions"))
-				.header(header)
-				.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
-				.contents(listText)
-				.sendTo(src);
+			.title(Text.of(TextColors.GOLD, "Loaded Regions"))
+			.header(header)
+			.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
+			.contents(listText)
+			.sendTo(src);
 
 		return CommandResult.success();
 	}
@@ -121,15 +121,15 @@ public class CommandList implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.RED, "There are no loaded regions to display"));
 
 		dataStore.getCollatedRegions().forEach(region ->
-				src.sendMessage(
-						Text.of(
-								TextColors.GOLD, region.getChunks().size(),
-								TextColors.WHITE, " chunks in world ",
-								TextColors.GOLD, region.getWorld().getName(),
-								TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-								TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
-						)
-				)
+												   src.sendMessage(
+													   Text.of(
+														   TextColors.GOLD, region.getChunks().size(),
+														   TextColors.WHITE, " chunks in world ",
+														   TextColors.GOLD, region.getWorld().getName(),
+														   TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
+														   TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+													   )
+												   )
 		);
 
 		return CommandResult.success();

@@ -56,11 +56,11 @@ public class CommandLoadRange implements CommandExecutor {
 	private static String helpText = "/sc loadarea <world|personal> - Chunk-load the region currently selected.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
-			.permission(Permissions.COMMAND_CREATE)
-			.description(Text.of(helpText))
-			.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
-			.executor(new CommandLoadRange())
-			.build();
+		.permission(Permissions.COMMAND_CREATE)
+		.description(Text.of(helpText))
+		.arguments(GenericArguments.optional(new ChunkTypeArgument(Text.of("type"))))
+		.executor(new CommandLoadRange())
+		.build();
 
 	/***
 	 * Register the command with the game's command manager
