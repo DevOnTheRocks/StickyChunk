@@ -43,8 +43,10 @@ import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
@@ -56,6 +58,7 @@ import rocks.devonthe.stickychunk.config.StickyChunkConfig;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.database.SqliteDatabase;
+import rocks.devonthe.stickychunk.economy.EconomyManager;
 import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
 import java.nio.file.Path;
@@ -83,6 +86,7 @@ public class StickyChunk {
 	private StickyChunkConfig config;
 
 	private TicketManager ticketManager;
+	private EconomyManager economyManager;
 
 	private DataStore dataStore;
 	private IDatabase database;
@@ -98,7 +102,9 @@ public class StickyChunk {
 
 	@Listener
 	public void onAboutToStart(GameAboutToStartServerEvent event) {
-		if (!enabled) return;
+		if (!enabled)
+			return;
+
 		// Initialize configs
 		config = new StickyChunkConfig();
 		pluginConfigManager = new ConfigManager(configManager);
@@ -111,7 +117,9 @@ public class StickyChunk {
 
 	@Listener
 	public void onServerStarted(GameStartedServerEvent event) {
-		if (!enabled) return;
+		if (!enabled)
+			return;
+
 		dataStore.addPlayerRegions(database.loadRegionData());
 		dataStore.addUsers(database.loadUserData());
 
@@ -130,9 +138,20 @@ public class StickyChunk {
 
 	@Listener
 	public void onServerStopped(GameStoppedServerEvent event) {
-		if (!enabled) return;
+		if (!enabled)
+			return;
+
 		database.saveRegionData(dataStore.getCollatedRegions());
 		database.saveUserData(dataStore.getLoadedUsers());
+	}
+
+	@Listener
+	public void onServiceChanged(ChangeServiceProviderEvent event) {
+		if (!enabled)
+			return;
+
+		if (event.getService().equals(EconomyService.class))
+			economyManager = new EconomyManager((EconomyService) event.getNewProviderRegistration().getProvider());
 	}
 
 	public DataStore getDataStore() {
@@ -193,5 +212,9 @@ public class StickyChunk {
 
 	public TicketManager getTicketManager() {
 		return ticketManager;
+	}
+
+	public EconomyManager getEconomyManager() {
+		return economyManager;
 	}
 }

@@ -49,6 +49,7 @@ import rocks.devonthe.stickychunk.data.User;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,7 +114,7 @@ public class MongodbDatabase implements IDatabase {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 		collection.find().forEach((Block<Document>) document -> {
 			UUID player = UUID.fromString(document.getString("user"));
-			double balance = document.getDouble("personalCredits");
+			BigDecimal balance = document.get("balance", BigDecimal.class);
 			Date seen = (Date) document.getDate("seen");
 			Date joined = (Date) document.getDate("joined");
 

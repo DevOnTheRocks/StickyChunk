@@ -39,6 +39,7 @@ import rocks.devonthe.stickychunk.data.User;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -95,7 +96,7 @@ public abstract class SqlDatabase implements IDatabase {
 
 			while (results.next()) {
 				UUID player = UUID.fromString(results.getString("user"));
-				double balance = results.getDouble("balance");
+				BigDecimal balance = results.getBigDecimal("balance");
 				Date seen = results.getDate("seen");
 				Date joined = results.getDate("joined");
 
@@ -143,7 +144,7 @@ public abstract class SqlDatabase implements IDatabase {
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, user.getUniqueId().toString());
-			statement.setDouble(2, user.getBalance());
+			statement.setBigDecimal(2, user.getBalance());
 			statement.setDate(3, user.getLastSeen());
 			statement.setDate(4, user.getUserJoined());
 			statement.executeUpdate();

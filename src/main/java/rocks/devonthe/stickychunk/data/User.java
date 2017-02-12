@@ -29,22 +29,35 @@
  */
 package rocks.devonthe.stickychunk.data;
 
+import org.spongepowered.api.service.economy.account.UniqueAccount;
+import org.spongepowered.asm.mixin.Unique;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.economy.EconomyManager;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 public class User {
 	UUID player;
 	private Date seen;
 	private Date joined;
-	private double balance;
+	private UniqueAccount account;
 
-	public User(UUID id, double balance, Date joined, Date seen) {
+	private EconomyManager economyManager = StickyChunk.getInstance().getEconomyManager();
+
+	public User(UUID id, BigDecimal balance, Date joined, Date seen) {
 		this.player = id;
 		this.seen = seen;
 		this.joined = joined;
-		this.balance = balance;
+
+		Optional<UniqueAccount> oAccount = economyManager.getOrCreateAccount(id);
+		if (oAccount.isPresent()) {
+			this.account = oAccount.get();
+		} else {
+			// WAT DO!?
+		}
 	}
 
 	public UUID getUniqueId() {
@@ -64,8 +77,8 @@ public class User {
 		return joined;
 	}
 
-	public double getBalance() {
-		return balance;
+	public BigDecimal getBalance() {
+		return account.getBalance(economyManager.getCurrency());
 	}
 
 	public void update() {

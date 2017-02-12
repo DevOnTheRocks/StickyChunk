@@ -32,6 +32,8 @@ package rocks.devonthe.stickychunk.permission;
 import org.spongepowered.api.command.CommandSource;
 
 public class Permissions {
+	public static final String COMMAND_LIST = "stickychunk.command.list";
+
 	public static final String COMMAND_CREATE = "stickychunk.command.create";
 	public static final String COMMAND_CREATE_PERSONAL = "stickychunk.command.create.personal";
 	public static final String COMMAND_CREATE_WORLD = "stickychunk.command.create.world";

@@ -31,6 +31,7 @@ package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.database.IDatabase;
@@ -94,6 +95,26 @@ public class DataStore {
 		return (loadedRegions.containsKey(uuid)) ?
 				Optional.of(loadedRegions.get(uuid)) :
 				Optional.empty();
+	}
+
+	public ArrayList<World> getPlayerRegionWorlds(Player player) {
+		ArrayList<World> worlds = new ArrayList<>();
+
+		getPlayerRegions(player).ifPresent(loadedRegions ->
+			loadedRegions.forEach(loadedRegion -> worlds.add(loadedRegion.getWorld()))
+		);
+
+		return worlds;
+	}
+
+	public ArrayList<World> getPlayerRegionWorlds(UUID uuid) {
+		ArrayList<World> worlds = new ArrayList<>();
+
+		getPlayerRegions(uuid).ifPresent(loadedRegions ->
+				loadedRegions.forEach(loadedRegion -> worlds.add(loadedRegion.getWorld()))
+		);
+
+		return worlds;
 	}
 
 	public void addPlayerRegions(HashMap<UUID, ArrayList<LoadedRegion>> regions) {
