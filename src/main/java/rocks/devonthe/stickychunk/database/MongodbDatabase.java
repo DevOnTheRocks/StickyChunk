@@ -1,7 +1,7 @@
 /*
- * This file is part of StickyChunk by DevOnTheRocks, licened under GPL-3.0
+ * This file is part of StickyChunk by DevOnTheRocks, licensed under GPL-3.0
  *
- * Copyright (C) 2017 DevOnTheRocks
+ * Copyright © 2017 DevOnTheRocks
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -24,8 +24,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
- * Created by Cossacksman on 25/01/2017.
  */
 package rocks.devonthe.stickychunk.database;
 
