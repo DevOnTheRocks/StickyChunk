@@ -109,9 +109,9 @@ public class MongodbDatabase implements IDatabase {
 	public ArrayList<UserData> loadUserData() {
 		ArrayList<UserData> userDatas = new ArrayList<UserData>();
 
-		MongoCollection<Document> collection = getDatabase().getCollection("userDatas");
+		MongoCollection<Document> collection = getDatabase().getCollection("user");
 		collection.find().forEach((Block<Document>) document -> {
-			UUID player = UUID.fromString(document.getString("userData"));
+			UUID player = UUID.fromString(document.getString("user"));
 			BigDecimal balance = document.get("balance", BigDecimal.class);
 			Date seen = (Date) document.getDate("seen");
 			Date joined = (Date) document.getDate("joined");

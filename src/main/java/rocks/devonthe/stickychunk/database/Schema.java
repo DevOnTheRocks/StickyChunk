@@ -41,11 +41,11 @@ public interface Schema {
 	static final String CHUNKPROPS = "id, owner, world, type, fromX, fromZ, toX, toZ, created";
 
 	static final String USERSCHEMA =	"user		STRING PRIMARY KEY," +
-										"balance	INT," +
+										"balance	NUMERIC," +
 										"seen		DATETIME," +
 										"joined		DATETIME";
 
-	static final String USERPROPS = "user, personalCredits, worldCredits, seen, joined";
+	static final String USERPROPS = "user, balance, seen, joined";
 
 	static String createChunkSchema() {
 		return String.format("CREATE TABLE IF NOT EXISTS chunks (%s)", CHUNKSCHEMA);

@@ -90,10 +90,10 @@ public abstract class SqlDatabase implements IDatabase {
 		ArrayList<UserData> userDatas = new ArrayList<UserData>();
 
 		try (Statement statement = getConnection().createStatement()) {
-			ResultSet results = statement.executeQuery("SELECT * FROM userDatas");
+			ResultSet results = statement.executeQuery("SELECT * FROM users");
 
 			while (results.next()) {
-				UUID player = UUID.fromString(results.getString("userData"));
+				UUID player = UUID.fromString(results.getString("user"));
 				BigDecimal balance = results.getBigDecimal("balance");
 				Date seen = results.getDate("seen");
 				Date joined = results.getDate("joined");
@@ -103,7 +103,7 @@ public abstract class SqlDatabase implements IDatabase {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			logger.error(String.format("Unable to load userDatas from the table: %s", e.getMessage()));
+			logger.error(String.format("Unable to load user from the table: %s", e.getMessage()));
 		}
 
 		return userDatas;
@@ -148,7 +148,7 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			logger.error(String.format("Error inserting userData into the database: %s", e.getMessage()));
+			logger.error(String.format("Error inserting user into the database: %s", e.getMessage()));
 		}
 	}
 
