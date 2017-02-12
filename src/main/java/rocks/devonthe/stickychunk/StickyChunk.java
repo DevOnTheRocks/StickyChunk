@@ -57,6 +57,7 @@ import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.database.SqliteDatabase;
 import rocks.devonthe.stickychunk.economy.EconomyManager;
+import rocks.devonthe.stickychunk.listener.PlayerConnectionListener;
 import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
 import java.nio.file.Path;
@@ -64,7 +65,7 @@ import java.nio.file.Path;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.12.1-SNAPSHOT",
+		version = "0.12.2-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -125,6 +126,7 @@ public class StickyChunk {
 		game.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
 
 		// Register events
+		Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());
 		Sponge.getGame().getEventManager().registerListeners(this, new RegionAreaListener());
 
 		// Register commands

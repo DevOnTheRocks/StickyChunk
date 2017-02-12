@@ -36,6 +36,9 @@ import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.database.IDatabase;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,14 +70,16 @@ public class DataStore {
 		return ImmutableSet.copyOf(regions);
 	}
 
-	public Optional<UserData> getUserData(User player) {
+	public UserData getUserData(User player) {
 		return getUserData(player.getUniqueId());
 	}
 
-	public Optional<UserData> getUserData(UUID uuid) {
+	public UserData getUserData(UUID uuid) {
+		Date now = (Date) java.util.Date.from(Instant.now());
+
 		return (loadedUsers.containsKey(uuid)) ?
-				Optional.of(loadedUsers.get(uuid)) :
-				Optional.empty();
+				loadedUsers.get(uuid) :
+				loadedUsers.put(uuid, new UserData(uuid, new BigDecimal(0), now, now));
 	}
 
 	public void addUsers(ArrayList<UserData> userDatas) {
@@ -89,6 +94,7 @@ public class DataStore {
 		return getPlayerRegions(player.getUniqueId());
 	}
 
+	// Sometimes returns null; how?
 	public ArrayList<LoadedRegion> getPlayerRegions(UUID uuid) {
 		return (loadedRegions.containsKey(uuid)) ?
 				loadedRegions.get(uuid) :
@@ -101,7 +107,10 @@ public class DataStore {
 
 	public ArrayList<World> getPlayerRegionWorlds(UUID uuid) {
 		ArrayList<World> worlds = new ArrayList<>();
-		getPlayerRegions(uuid).forEach(loadedRegion -> worlds.add(loadedRegion.getWorld()));
+		getPlayerRegions(uuid).forEach(loadedRegion -> {
+			if (!worlds.contains(loadedRegion.getWorld()))
+				worlds.add(loadedRegion.getWorld());
+		});
 		return worlds;
 	}
 

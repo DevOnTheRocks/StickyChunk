@@ -50,15 +50,20 @@ public class PlayerConnectionListener {
 	public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		Player player = (Player) event.player;
 		Date now = (Date) java.util.Date.from(Instant.now());
-		UserData userData = dataStore.getUserData(player).orElse(new UserData(player.getUniqueId(), new BigDecimal(0), now, now));
+		UserData userData = dataStore.getUserData(player);
 
 		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
-				region.unForceChunks();
+				region.forceChunks();
 		});
 
+		logger.info("Attempting to save user");
+
 		// Update the userData in case it's an existing userData
-		dataStore.getUserData(player).ifPresent(usr -> usr.setLastSeen(now).update());
+		dataStore.getUserData(player).setLastSeen(now).update();
+
+		logger.info(String.format("Got user %s", dataStore.getUserData(player).getUniqueId()));
+
 		database.saveUserData(userData);
 	}
 
@@ -66,15 +71,15 @@ public class PlayerConnectionListener {
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
 		Player player = (Player) event.player;
 		Date now = (Date) java.util.Date.from(Instant.now());
-		UserData userData = dataStore.getUserData(player).orElse(new UserData(player.getUniqueId(), new BigDecimal(0), now, now));
+		UserData userData = dataStore.getUserData(player);
 
 		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
-				region.forceChunks();
+				region.unForceChunks();
 		});
 
 		// Update the userData in case it's an existing userData
-		dataStore.getUserData(player).ifPresent(usr -> usr.setLastSeen(now).update());
+		dataStore.getUserData(player).setLastSeen(now).update();
 		database.saveUserData(userData);
 	}
 }

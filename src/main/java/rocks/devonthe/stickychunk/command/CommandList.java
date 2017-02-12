@@ -29,6 +29,7 @@ package rocks.devonthe.stickychunk.command;
 
 import com.google.common.collect.Lists;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -49,9 +50,11 @@ import rocks.devonthe.stickychunk.permission.Permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CommandList implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
+	private static Server server = game.getServer();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private static String helpText = "/sc list - Lists all of your chunks across worlds.";
 	private static final Text USER = Text.of("user");
@@ -87,9 +90,9 @@ public class CommandList implements CommandExecutor {
 		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
 
 		Text header = Text.of(
-			"Listing",
+			"Listing ",
 			TextColors.GOLD, loadedRegions.size(),
-			TextColors.RESET, " regions across ",
+			TextColors.RESET, " region(s) across ",
 			TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
 			TextColors.RESET, " worlds"
 		);
@@ -99,7 +102,7 @@ public class CommandList implements CommandExecutor {
 
 		loadedRegions.forEach(region -> listText.add(Text.of(
 			TextColors.GOLD, region.getChunks().size(),
-			TextColors.WHITE, " chunks in world ",
+			TextColors.WHITE, " chunk(s) in world ",
 			TextColors.GOLD, region.getWorld().getName(),
 			TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
 			TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
@@ -120,17 +123,21 @@ public class CommandList implements CommandExecutor {
 		if (dataStore.getCollatedRegions().isEmpty())
 			src.sendMessage(Text.of(TextColors.RED, "There are no loaded regions to display"));
 
-		dataStore.getCollatedRegions().forEach(region ->
+		dataStore.getCollatedRegions().forEach(region -> {
+			Optional<Player> oPlayer = server.getPlayer(region.getOwner());
+			String owner = (oPlayer.isPresent()) ? oPlayer.get().getName() : region.getOwner().toString();
+
 			src.sendMessage(
 				Text.of(
+					TextColors.GREEN, owner, " ",
 					TextColors.GOLD, region.getChunks().size(),
 					TextColors.WHITE, " chunks in world ",
 					TextColors.GOLD, region.getWorld().getName(),
 					TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
 					TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
 				)
-			)
-		);
+			);
+		});
 
 		return CommandResult.success();
 	}

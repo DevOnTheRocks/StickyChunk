@@ -145,7 +145,9 @@ public abstract class SqlDatabase implements IDatabase {
 			statement.setBigDecimal(2, userData.getBalance());
 			statement.setDate(3, userData.getLastSeen());
 			statement.setDate(4, userData.getUserJoined());
-			statement.executeUpdate();
+			logger.info("Saving user data");
+
+			statement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting user into the database: %s", e.getMessage()));
