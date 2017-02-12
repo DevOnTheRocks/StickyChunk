@@ -27,32 +27,39 @@
  */
 package rocks.devonthe.stickychunk.command;
 
+import com.google.common.collect.Lists;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
 public class CommandList implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private static String helpText = "/sc list - Lists all of your chunks across worlds.";
+	private static final Text USER = Text.of("user");
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
 			.permission(Permissions.COMMAND_LIST)
 			.description(Text.of(helpText))
+			.arguments(GenericArguments.optional(GenericArguments.user(USER)))
 			.executor(new CommandList())
 			.build();
 
@@ -66,7 +73,7 @@ public class CommandList implements CommandExecutor {
 	/**
 	 * Callback for the execution of a command.
 	 *
-	 * @param src The commander who is executing this command
+	 * @param src  The commander who is executing this command
 	 * @param args The parsed command arguments for this command
 	 * @return the result of executing this command
 	 * @throws CommandException If a user-facing error occurs while executing this command
@@ -75,33 +82,37 @@ public class CommandList implements CommandExecutor {
 		if (!(src instanceof Player))
 			return execServer(src, args);
 
-		Player player = (Player) src;
+		User user = args.<User>getOne(USER).orElse((Player) src);
+		List<Text> listText = Lists.newArrayList();
+		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
 
-		Optional<ArrayList<LoadedRegion>> oRegions = dataStore.getPlayerRegions(player);
-		if (oRegions.isPresent() && oRegions.get().isEmpty())
-			player.sendMessage(Text.of("There are no loaded regions to display"));
+		Text header = Text.of(
+				"Listing",
+				TextColors.GOLD, loadedRegions.size(),
+				TextColors.RESET, " regions across ",
+				TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
+				TextColors.RESET, " worlds"
+		);
 
-		dataStore.getPlayerRegions(player).ifPresent(loadedRegions -> {
-			player.sendMessage(
-				Text.of(
-					"Listing",
-					TextColors.GOLD, loadedRegions.size(),
-					" regions across ", dataStore.getPlayerRegionWorlds(player).size(),
-					TextColors.WHITE, " worlds"
-				)
-			);
+		if (loadedRegions.isEmpty())
+			header = Text.of("");
 
-			loadedRegions.forEach(region ->
-				player.sendMessage(
-					Text.of(
+		for (LoadedRegion region : loadedRegions) {
+			listText.add(Text.of(
 					TextColors.GOLD, region.getChunks().size(),
 					TextColors.WHITE, " chunks in world ",
 					TextColors.GOLD, region.getWorld().getName(),
 					TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
 					TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
-				)
 			));
-		});
+		}
+
+		PaginationList.builder()
+				.title(Text.of(TextColors.GOLD, "Loaded Regions"))
+				.header(header)
+				.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
+				.contents(listText)
+				.sendTo(src);
 
 		return CommandResult.success();
 	}
@@ -111,15 +122,15 @@ public class CommandList implements CommandExecutor {
 			src.sendMessage(Text.of("There are no loaded regions to display"));
 
 		dataStore.getCollatedRegions().forEach(region ->
-			src.sendMessage(
-				Text.of(
-					TextColors.GOLD, region.getChunks().size(),
-					TextColors.WHITE, " chunks in world ",
-					TextColors.GOLD, region.getWorld().getName(),
-					TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-					TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+				src.sendMessage(
+						Text.of(
+								TextColors.GOLD, region.getChunks().size(),
+								TextColors.WHITE, " chunks in world ",
+								TextColors.GOLD, region.getWorld().getName(),
+								TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
+								TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+						)
 				)
-			)
 		);
 
 		return CommandResult.success();
