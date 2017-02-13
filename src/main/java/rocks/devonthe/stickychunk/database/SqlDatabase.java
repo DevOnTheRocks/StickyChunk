@@ -94,11 +94,10 @@ public abstract class SqlDatabase implements IDatabase {
 
 			while (results.next()) {
 				UUID player = UUID.fromString(results.getString("user"));
-				BigDecimal balance = results.getBigDecimal("balance");
 				Date seen = results.getDate("seen");
 				Date joined = results.getDate("joined");
 
-				UserData userData = new UserData(player, balance, joined, seen);
+				UserData userData = new UserData(player, joined, seen);
 				userDatas.add(userData);
 			}
 		} catch (SQLException e) {
@@ -138,11 +137,10 @@ public abstract class SqlDatabase implements IDatabase {
 	}
 
 	public void saveUserData(UserData userData) {
-		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?,?)", Schema.getUserProperties());
+		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?)", Schema.getUserProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, userData.getUniqueId().toString());
-			statement.setBigDecimal(2, userData.getBalance());
 			statement.setDate(3, userData.getLastSeen());
 			statement.setDate(4, userData.getUserJoined());
 			logger.info("Saving user data");

@@ -81,7 +81,7 @@ public class DataStore {
 
 		return (loadedUsers.containsKey(uuid)) ?
 				loadedUsers.get(uuid) :
-				loadedUsers.put(uuid, new UserData(uuid, new BigDecimal(0), now, now));
+				loadedUsers.put(uuid, new UserData(uuid, now, now));
 	}
 
 	public void addUsers(ArrayList<UserData> userDatas) {

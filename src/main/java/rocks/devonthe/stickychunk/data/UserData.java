@@ -27,9 +27,9 @@
  */
 package rocks.devonthe.stickychunk.data;
 
+import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.economy.EconomyManager;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -42,19 +42,19 @@ public class UserData {
 	private Date joined;
 	private UniqueAccount account;
 
-	private EconomyManager economyManager = StickyChunk.getInstance().getEconomyManager();
-
-	public UserData(UUID id, BigDecimal balance, Date joined, Date seen) {
+	public UserData(UUID id, Date joined, Date seen) {
 		this.player = id;
 		this.seen = seen;
 		this.joined = joined;
 
-		Optional<UniqueAccount> oAccount = economyManager.getOrCreateAccount(id);
-		if (oAccount.isPresent()) {
-			this.account = oAccount.get();
-		} else {
-			// WAT DO!?
-		}
+		StickyChunk.getInstance().getEconomyManager().ifPresent(economyManager -> {
+			Optional<UniqueAccount> oAccount = economyManager.getOrCreateAccount(id);
+			if (oAccount.isPresent()) {
+				this.account = oAccount.get();
+			} else {
+				// WAT DO!?
+			}
+		});
 	}
 
 	public UUID getUniqueId() {
@@ -74,8 +74,8 @@ public class UserData {
 		return joined;
 	}
 
-	public BigDecimal getBalance() {
-		return account.getBalance(economyManager.getCurrency());
+	public BigDecimal getBalance(Currency currency) {
+		return account.getBalance(currency);
 	}
 
 	public void update() {

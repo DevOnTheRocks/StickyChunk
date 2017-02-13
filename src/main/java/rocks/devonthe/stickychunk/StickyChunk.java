@@ -61,6 +61,7 @@ import rocks.devonthe.stickychunk.listener.PlayerConnectionListener;
 import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 @Plugin(
 		id = "stickychunk",
@@ -214,7 +215,7 @@ public class StickyChunk {
 		return ticketManager;
 	}
 
-	public EconomyManager getEconomyManager() {
-		return economyManager;
+	public Optional<EconomyManager> getEconomyManager() {
+		return (economyManager != null) ? Optional.of(economyManager) : Optional.empty();
 	}
 }

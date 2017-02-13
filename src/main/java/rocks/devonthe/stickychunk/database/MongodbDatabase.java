@@ -112,11 +112,10 @@ public class MongodbDatabase implements IDatabase {
 		MongoCollection<Document> collection = getDatabase().getCollection("user");
 		collection.find().forEach((Block<Document>) document -> {
 			UUID player = UUID.fromString(document.getString("user"));
-			BigDecimal balance = document.get("balance", BigDecimal.class);
 			Date seen = (Date) document.getDate("seen");
 			Date joined = (Date) document.getDate("joined");
 
-			UserData userData = new UserData(player, balance, joined, seen);
+			UserData userData = new UserData(player, joined, seen);
 			userDatas.add(userData);
 		});
 
@@ -147,7 +146,6 @@ public class MongodbDatabase implements IDatabase {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 
 		Document userDocument = new Document("_id", userData.getUniqueId())
-				.append("balance", userData.getBalance())
 				.append("seen", userData.getLastSeen())
 				.append("joined", userData.getUserJoined());
 
