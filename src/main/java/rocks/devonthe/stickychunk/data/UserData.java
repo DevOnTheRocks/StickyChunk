@@ -49,11 +49,7 @@ public class UserData {
 
 		StickyChunk.getInstance().getEconomyManager().ifPresent(economyManager -> {
 			Optional<UniqueAccount> oAccount = economyManager.getOrCreateAccount(id);
-			if (oAccount.isPresent()) {
-				this.account = oAccount.get();
-			} else {
-				// WAT DO!?
-			}
+			oAccount.ifPresent(uniqueAccount -> this.account = uniqueAccount);
 		});
 	}
 
