@@ -39,10 +39,8 @@ import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.database.IDatabase;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Instant;
-import java.time.LocalDate;
 
 public class PlayerConnectionListener {
 	DataStore dataStore = StickyChunk.getInstance().getDataStore();
@@ -52,19 +50,19 @@ public class PlayerConnectionListener {
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
-		UserData userData = dataStore.getUserData(player);
+		UserData userData = dataStore.getOrCreateUserData(player);
 
-		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
+		int index[] = new int[1];
+		dataStore.getPlayerRegions(player.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
 				region.forceChunks();
+			index[0]++;
 		});
 
-		logger.info("Attempting to save user");
+		logger.info(String.format("Loaded %s chunks for %s", index[0], player.getName()));
 
 		// Update the userData in case it's an existing userData
-		dataStore.getUserData(player).setLastSeen(now).update();
-
-		logger.info(String.format("Got user %s", dataStore.getUserData(player).getUniqueId()));
+		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
 
 		database.saveUserData(userData);
 	}
@@ -72,15 +70,19 @@ public class PlayerConnectionListener {
 	@Listener
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event, @Root Player player) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
-		UserData userData = dataStore.getUserData(player);
+		UserData userData = dataStore.getOrCreateUserData(player);
 
-		dataStore.getPlayerRegions(userData.getUniqueId()).forEach(region -> {
+		int index[] = new int[1];
+		dataStore.getPlayerRegions(player.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
 				region.unForceChunks();
+			index[0]++;
 		});
 
+		logger.info(String.format("Unloaded %s chunks for %s", index[0], player.getName()));
+
 		// Update the userData in case it's an existing userData
-		dataStore.getUserData(player).setLastSeen(now).update();
+		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
 		database.saveUserData(userData);
 	}
 }

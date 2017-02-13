@@ -30,6 +30,8 @@ package rocks.devonthe.stickychunk.chunkload;
 import net.minecraftforge.common.ForgeChunkManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
@@ -257,6 +259,7 @@ public class LoadedRegion {
 
 		if (opTicket.isPresent()) {
 			newTicket = opTicket.get();
+			newTicket.getCompanionData().set(DataQuery.of("type"), getType().toString());
 			this.isValid = true;
 		} else {
 			logger.error("Requested ticket was not provided; maximum tickets may have been reached.");

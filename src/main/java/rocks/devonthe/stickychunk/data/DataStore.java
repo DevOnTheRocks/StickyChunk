@@ -29,25 +29,23 @@ package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import org.spongepowered.api.entity.living.player.Player;
+import com.google.common.collect.Maps;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.database.IDatabase;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 public class DataStore {
-	private Map<UUID, UserData> loadedUsers = new HashMap<UUID, UserData>();
-	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = new HashMap<UUID, ArrayList<LoadedRegion>>();
+	private Map<UUID, UserData> loadedUsers = Maps.newHashMap();
+	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = Maps.newHashMap();
 
 	private IDatabase database = StickyChunk.getInstance().getDatabase();
 
@@ -64,24 +62,25 @@ public class DataStore {
 	}
 
 	public ImmutableSet<LoadedRegion> getCollatedRegions() {
-		ArrayList<LoadedRegion> regions = new ArrayList<>();
+		ArrayList<LoadedRegion> regions = Lists.newArrayList();
 		loadedRegions.values().forEach(regions::addAll);
 
 		return ImmutableSet.copyOf(regions);
 	}
 
-	public UserData getUserData(User user) {
-		return getUserData(user.getUniqueId());
+	public UserData getOrCreateUserData(User user) {
+		return getOrCreateUserData(user.getUniqueId());
 	}
 
-	public UserData getUserData(UUID uuid) {
+	public UserData getOrCreateUserData(UUID uuid) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 
-		StickyChunk.getInstance().getLogger().info(String.format("UUID in DataStore: %s", uuid.toString()));
-
-		return (loadedUsers.containsKey(uuid)) ?
-				loadedUsers.get(uuid) :
-				loadedUsers.put(uuid, new UserData(uuid, now, now));
+		if (loadedUsers.containsKey(uuid)) {
+			return loadedUsers.get(uuid);
+		} else {
+			loadedUsers.put(uuid, new UserData(uuid, now, now));
+			return loadedUsers.get(uuid);
+		}
 	}
 
 	public void addUsers(ArrayList<UserData> userDatas) {
@@ -96,11 +95,13 @@ public class DataStore {
 		return getPlayerRegions(user.getUniqueId());
 	}
 
-	// Sometimes returns null; how?
 	public ArrayList<LoadedRegion> getPlayerRegions(UUID uuid) {
-		return (loadedRegions.containsKey(uuid)) ?
-				loadedRegions.get(uuid) :
-				loadedRegions.put(uuid, Lists.newArrayList());
+		if (loadedRegions.containsKey(uuid)) {
+			return loadedRegions.get(uuid);
+		} else {
+			loadedRegions.put(uuid, Lists.newArrayList());
+			return loadedRegions.get(uuid);
+		}
 	}
 
 	public ArrayList<World> getPlayerRegionWorlds(User user) {
@@ -108,7 +109,7 @@ public class DataStore {
 	}
 
 	public ArrayList<World> getPlayerRegionWorlds(UUID uuid) {
-		ArrayList<World> worlds = new ArrayList<>();
+		ArrayList<World> worlds = Lists.newArrayList();
 		getPlayerRegions(uuid).forEach(loadedRegion -> {
 			if (!worlds.contains(loadedRegion.getWorld()))
 				worlds.add(loadedRegion.getWorld());
@@ -135,7 +136,7 @@ public class DataStore {
 		if (loadedRegions.containsKey(user.getUniqueId())) {
 			loadedRegions.get(user.getUniqueId()).add(region);
 		} else {
-			ArrayList<LoadedRegion> playerRegions = new ArrayList<>();
+			ArrayList<LoadedRegion> playerRegions = Lists.newArrayList();
 			playerRegions.add(region);
 			loadedRegions.put(user.getUniqueId(), playerRegions);
 		}

@@ -141,10 +141,8 @@ public abstract class SqlDatabase implements IDatabase {
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, userData.getUniqueId().toString());
-			statement.setDate(3, userData.getLastSeen());
-			statement.setDate(4, userData.getUserJoined());
-			logger.info("Saving user data");
-
+			statement.setDate(2, userData.getLastSeen());
+			statement.setDate(3, userData.getUserJoined());
 			statement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -66,7 +66,7 @@ import java.util.Optional;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.12.3-SNAPSHOT",
+		version = "0.13.0-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )

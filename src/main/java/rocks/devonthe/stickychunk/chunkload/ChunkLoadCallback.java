@@ -30,17 +30,25 @@ package rocks.devonthe.stickychunk.chunkload;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.world.ChunkTicketManager.Callback;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.ChunkTicketManager.OrderedCallback;
 import org.spongepowered.api.world.ChunkTicketManager.PlayerOrderedCallback;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.data.DataStore;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrderedCallback {
+	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
+	private Set<LoadedRegion> unassignedRegions = dataStore.getCollatedRegions();
+
 	/**
 	 * Callback for loading player Tickets during world load.
 	 * <p>
@@ -76,14 +84,18 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	 */
 	@Override
 	public void onLoaded(ImmutableList<LoadingTicket> tickets, World world) {
-		int index[] = new int[1];
+		ArrayList<LoadedRegion> assignedRegions = Lists.newArrayList();
 
-		StickyChunk.getInstance().getDataStore().getCollatedRegions().forEach(region -> {
-			if (index[0] <= tickets.size()) {
-				region.assignTicket(tickets.get(index[0]));
-				index[0]++;
+		int index = 0;
+		for (LoadedRegion region : unassignedRegions) {
+			if (world.getUniqueId().equals(region.getWorld().getUniqueId())) {
+				region.assignTicket(tickets.get(index));
+				assignedRegions.add(region);
 			}
-		});
+			index++;
+		}
+
+		assignedRegions.forEach(region -> unassignedRegions.remove(region));
 	}
 
 	/**
@@ -101,7 +113,31 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	 */
 	@Override
 	public List<LoadingTicket> onLoaded(ImmutableList<LoadingTicket> tickets, World world, int maxTickets) {
-		// Redundant until Sponge fixes Ticket NBT data
-		return tickets;
+		List<LoadingTicket> personalTickets = Lists.newArrayList();
+		List<LoadingTicket> worldTickets = Lists.newArrayList();
+		List<LoadingTicket> toKeep = Lists.newArrayList();
+
+		if (tickets.size() > maxTickets || unassignedRegions.size() > maxTickets) {
+			tickets.forEach(ticket -> ticket.getCompanionData().getString(DataQuery.of("type")).ifPresent(type -> {
+				switch (type) {
+					case "world":
+						worldTickets.add(ticket);
+						break;
+					case "personal":
+						personalTickets.add(ticket);
+						break;
+					default:
+						ticket.release();
+						break;
+				}
+			}));
+
+			toKeep.addAll(worldTickets);
+			toKeep.addAll(personalTickets);
+
+			return toKeep;
+		} else {
+			return tickets;
+		}
 	}
 }
