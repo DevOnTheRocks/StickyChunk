@@ -88,24 +88,17 @@ public class CommandUnload implements CommandExecutor {
 			//TODO: Unload all player loaded regions
 		}
 
-		if (player.hasPermission(Permissions.COMMAND_DELETE)) {
-			logger.info("attempting to delete loadedregion");
-
-			dataStore.getPlayerRegions(player).forEach(
-				region -> region.getChunks().forEach(
-					chunk -> {
-						logger.info("Checking players location");
-						if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
-							logger.info("found chunk to delete");
-							region.unForceChunks();
-							region.invalidateTicket();
-							deleteQueue.put(player, region.getUniqueId());
-							player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
-						}
-					}
+		dataStore.getPlayerRegions(player).forEach(region ->
+			region.getChunks().forEach(chunk -> {
+				if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
+					logger.info("found chunk to delete");
+					region.unForceChunks();
+					region.invalidateTicket();
+					deleteQueue.put(player, region.getUniqueId());
+					player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
 				}
-			)
-		);
+			}
+		));
 
 		// Delete all the regions queued to be deleted
 		deleteQueue.forEach((owner, regionId) -> dataStore.deletePlayerRegion(owner, regionId));
