@@ -33,6 +33,7 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -52,10 +53,12 @@ public class CommandUnload implements CommandExecutor {
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
 	private static String helpText = "/sc unload - unload the region at your current position.";
+	private static final Text ALL = Text.of("all");
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
 		.permission(Permissions.COMMAND_DELETE)
 		.description(Text.of(helpText))
+		.arguments(GenericArguments.literal(ALL, "all"))
 		.executor(new CommandUnload())
 		.build();
 
@@ -80,6 +83,10 @@ public class CommandUnload implements CommandExecutor {
 
 		HashMap<Player, UUID> deleteQueue = new HashMap<>();
 		Player player = (Player) src;
+
+		if (args.hasAny(ALL)){
+			//TODO: Unload all player loaded regions
+		}
 
 		if (player.hasPermission(Permissions.COMMAND_DELETE)) {
 			logger.info("attempting to delete loadedregion");

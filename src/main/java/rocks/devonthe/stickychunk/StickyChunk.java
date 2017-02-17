@@ -225,6 +225,6 @@ public class StickyChunk {
 	}
 
 	public Optional<EconomyManager> getEconomyManager() {
-		return (economyManager != null) ? Optional.of(economyManager) : Optional.empty();
+		return Optional.ofNullable(economyManager);
 	}
 }
