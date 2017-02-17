@@ -78,7 +78,7 @@ public class StickyChunk {
 	public static final String NAME = "@NAME@";
 	public static final String DESCRIPTION = "@DESCRIPTION@";
 	public static final String VERSION = "@VERSION@";
-	public static final String AUTHORS = "cossacksman";
+	public static final String AUTHORS = "cossacksman, Mohron";
 
 	@Inject
 	private Logger logger;

@@ -52,7 +52,7 @@ public class CommandLoad implements CommandExecutor {
 	private IDatabase database = StickyChunk.getInstance().getDatabase();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
-	private static String helpText = "/sc load <world|personal> - Chunk-load the chunk at your current position.";
+	public static String helpText = "/sc load <world|personal> - Chunk-load the chunk at your current position.";
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
 		.permission(Permissions.COMMAND_CREATE)

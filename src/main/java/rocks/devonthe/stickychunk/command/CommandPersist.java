@@ -27,17 +27,34 @@
  */
 package rocks.devonthe.stickychunk.command;
 
+import com.google.common.collect.Lists;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.HoverAction;
+import org.spongepowered.api.text.action.TextAction;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.permission.Permissions;
+
+import java.util.List;
+
+import static rocks.devonthe.stickychunk.StickyChunk.NAME;
+import static rocks.devonthe.stickychunk.StickyChunk.VERSION;
 
 public class CommandPersist implements CommandExecutor {
 	private static String helpText = "";
+	private static final Text HELP = Text.of("help");
 
 	private static CommandSpec commandSpec = CommandSpec.builder()
 		.description(Text.of(helpText))
@@ -45,6 +62,7 @@ public class CommandPersist implements CommandExecutor {
 		.child(CommandLoad.commandSpec, "load")
 		.child(CommandLoadRange.commandSpec, "loadarea")
 		.child(CommandUnload.commandSpec, "unload")
+		.arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.literal(HELP, "help"))))
 		.executor(new CommandPersist())
 		.build();
 
@@ -64,6 +82,69 @@ public class CommandPersist implements CommandExecutor {
 	 * @throws CommandException If a user-facing error occurs while executing this command
 	 */
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		return null;
+		boolean hasPerms = false;
+		List<Text> helpContents = Lists.newArrayList();
+
+		helpContents.add(Text.of(
+			TextColors.WHITE, "StickyChunk's region selection tool is currently set to: ",
+			Text.builder("Blaze Rod").color(TextColors.GOLD)
+				.onHover(TextActions.showItem(ItemStack.builder().itemType(ItemTypes.BLAZE_ROD).build().createSnapshot())))
+		);
+
+		if (src.hasPermission(Permissions.COMMAND_LIST)) {
+			helpContents.add(Text.of(
+				Text.NEW_LINE,
+				TextColors.AQUA, Text.builder("cs list").onClick(TextActions.runCommand("/cs list")),
+				TextColors.GRAY, (src.hasPermission(Permissions.COMMAND_LIST_OTHERS)) ? " [user]" : Text.EMPTY,
+				TextColors.DARK_GRAY, " - ",
+				TextColors.DARK_GREEN, CommandLoad.helpText
+			));
+			hasPerms = true;
+		}
+
+		if (src.hasPermission(Permissions.COMMAND_CREATE)) {
+			helpContents.add(Text.of(
+				Text.NEW_LINE,
+				TextColors.AQUA, Text.builder("cs load").onClick(TextActions.suggestCommand("/cs load")),
+				TextColors.GRAY, " [world|personal]",
+				TextColors.DARK_GRAY, " - ",
+				TextColors.DARK_GREEN, CommandLoad.helpText
+			));
+			hasPerms = true;
+		}
+
+		if (src.hasPermission(Permissions.COMMAND_CREATE)) {
+			helpContents.add(Text.of(
+				Text.NEW_LINE,
+				TextColors.AQUA, Text.builder("cs loadarea").onClick(TextActions.suggestCommand("/cs loadarea")),
+				TextColors.GRAY, " [world|personal]",
+				TextColors.DARK_GRAY, " - ",
+				TextColors.DARK_GREEN, CommandLoadRange.helpText
+			));
+			hasPerms = true;
+		}
+
+		if (src.hasPermission(Permissions.COMMAND_DELETE)) {
+			helpContents.add(Text.of(
+				Text.NEW_LINE,
+				TextColors.AQUA, Text.builder("cs unload").onClick(TextActions.suggestCommand("/cs unload")),
+				TextColors.GRAY, " [all]",
+				TextColors.DARK_GRAY, " - ",
+				TextColors.DARK_GREEN, CommandLoadRange.helpText
+			));
+			hasPerms = true;
+		}
+
+		if (hasPerms) {
+			PaginationList.Builder paginationBuilder = PaginationList.builder()
+				.title(Text.of(TextColors.GOLD, NAME, " Help"))
+				.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
+				.contents(helpContents);
+			paginationBuilder.sendTo(src);
+		} else {
+			src.sendMessage(Text.of(NAME + " " + VERSION));
+		}
+
+		return CommandResult.success();
 	}
 }
