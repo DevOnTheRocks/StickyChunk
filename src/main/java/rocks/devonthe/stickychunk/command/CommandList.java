@@ -107,7 +107,8 @@ public class CommandList implements CommandExecutor {
 			TextColors.WHITE, " chunk(s) in world ",
 			TextColors.GOLD, region.getWorld().getName(),
 			TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-			TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+			TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ") ",
+			TextColors.GREEN, "[", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]"
 		)));
 
 

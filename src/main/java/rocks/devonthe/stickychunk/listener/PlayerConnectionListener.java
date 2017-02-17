@@ -73,10 +73,12 @@ public class PlayerConnectionListener {
 		UserData userData = dataStore.getOrCreateUserData(player);
 
 		int index[] = new int[1];
+		index[0] = 0;
 		dataStore.getPlayerRegions(player.getUniqueId()).forEach(region -> {
-			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
+			if (region.getType() == LoadedRegion.ChunkType.PERSONAL) {
 				region.unForceChunks();
-			index[0]++;
+				index[0]++;
+			}
 		});
 
 		logger.info(String.format("Unloaded %s chunks for %s", index[0], player.getName()));

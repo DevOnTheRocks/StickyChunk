@@ -95,13 +95,6 @@ public class Region {
 
 			for (int i = 0; i <= width; i++) {
 				for (int l = 0; l <= height; l++) {
-
-					StickyChunk.getInstance().getLogger().info(String.format("posX: %s", pointerX));
-					StickyChunk.getInstance().getLogger().info(String.format("posZ: %s", pointerZ));
-
-					boolean ispresent = world.get().getChunk(pointerX, 0, pointerZ).isPresent();
-					StickyChunk.getInstance().getLogger().info(String.format("Chunk is present: %s", ispresent));
-
 					world.get().getChunk(pointerX, 0, pointerZ).ifPresent(chunks::add);
 					pointerZ++;
 				}
@@ -110,8 +103,6 @@ public class Region {
 				pointerX++;
 			}
 		}
-
-		StickyChunk.getInstance().getLogger().info(String.format("Chunks: %s", chunks.size()));
 
 		return chunks;
 	}
