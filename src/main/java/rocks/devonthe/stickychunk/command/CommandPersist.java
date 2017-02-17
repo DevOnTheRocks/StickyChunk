@@ -39,8 +39,6 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.HoverAction;
-import org.spongepowered.api.text.action.TextAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -86,7 +84,7 @@ public class CommandPersist implements CommandExecutor {
 		List<Text> helpContents = Lists.newArrayList();
 
 		helpContents.add(Text.of(
-			TextColors.WHITE, "StickyChunk's region selection tool is currently set to: ",
+			TextColors.WHITE, "StickyChunk's region selection tool is set to: ",
 			Text.builder("Blaze Rod").color(TextColors.GOLD)
 				.onHover(TextActions.showItem(ItemStack.builder().itemType(ItemTypes.BLAZE_ROD).build().createSnapshot())))
 		);
@@ -94,10 +92,10 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_LIST)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.AQUA, Text.builder("cs list").onClick(TextActions.runCommand("/cs list")),
+				TextColors.GOLD, Text.builder("/cs list").onClick(TextActions.runCommand("/cs list")),
 				TextColors.GRAY, (src.hasPermission(Permissions.COMMAND_LIST_OTHERS)) ? " [user]" : Text.EMPTY,
 				TextColors.DARK_GRAY, " - ",
-				TextColors.DARK_GREEN, CommandLoad.helpText
+				TextColors.WHITE, CommandList.helpText
 			));
 			hasPerms = true;
 		}
@@ -105,10 +103,10 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_CREATE)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.AQUA, Text.builder("cs load").onClick(TextActions.suggestCommand("/cs load")),
+				TextColors.GOLD, Text.builder("/cs load").onClick(TextActions.suggestCommand("/cs load")),
 				TextColors.GRAY, " [world|personal]",
 				TextColors.DARK_GRAY, " - ",
-				TextColors.DARK_GREEN, CommandLoad.helpText
+				TextColors.WHITE, CommandLoad.helpText
 			));
 			hasPerms = true;
 		}
@@ -116,10 +114,10 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_CREATE)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.AQUA, Text.builder("cs loadarea").onClick(TextActions.suggestCommand("/cs loadarea")),
+				TextColors.GOLD, Text.builder("/cs loadarea").onClick(TextActions.suggestCommand("/cs loadarea")),
 				TextColors.GRAY, " [world|personal]",
 				TextColors.DARK_GRAY, " - ",
-				TextColors.DARK_GREEN, CommandLoadRange.helpText
+				TextColors.WHITE, CommandLoadRange.helpText
 			));
 			hasPerms = true;
 		}
@@ -127,20 +125,20 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_DELETE)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.AQUA, Text.builder("cs unload").onClick(TextActions.suggestCommand("/cs unload")),
+				TextColors.GOLD, Text.builder("/cs unload").onClick(TextActions.suggestCommand("/cs unload")),
 				TextColors.GRAY, " [all]",
 				TextColors.DARK_GRAY, " - ",
-				TextColors.DARK_GREEN, CommandLoadRange.helpText
+				TextColors.WHITE, CommandUnload.helpText
 			));
 			hasPerms = true;
 		}
 
 		if (hasPerms) {
-			PaginationList.Builder paginationBuilder = PaginationList.builder()
+			PaginationList.builder()
 				.title(Text.of(TextColors.GOLD, NAME, " Help"))
 				.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
-				.contents(helpContents);
-			paginationBuilder.sendTo(src);
+				.contents(helpContents)
+				.sendTo(src);
 		} else {
 			src.sendMessage(Text.of(NAME + " " + VERSION));
 		}

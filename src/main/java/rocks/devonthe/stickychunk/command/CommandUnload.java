@@ -57,7 +57,7 @@ public class CommandUnload implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
-	private static String helpText = "/sc unload - unload the region at your current position.";
+	public static String helpText = "/sc unload - unload the region at your current position.";
 	private static final Text ALL = Text.of("all");
 
 	public static CommandSpec commandSpec = CommandSpec.builder()

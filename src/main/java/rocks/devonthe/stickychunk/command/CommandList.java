@@ -56,7 +56,7 @@ public class CommandList implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
 	private static Server server = game.getServer();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
-	private static String helpText = "/sc list - Lists all of your chunks across worlds.";
+	public static String helpText = "/sc list - Lists all of your chunks across worlds.";
 	private static final Text USER = Text.of("user");
 
 	public static CommandSpec commandSpec = CommandSpec.builder()
@@ -104,11 +104,11 @@ public class CommandList implements CommandExecutor {
 
 		loadedRegions.forEach(region -> listText.add(Text.of(
 			TextColors.GOLD, region.getChunks().size(),
-			TextColors.WHITE, " chunk(s) in world ",
+			TextColors.GREEN, " [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "] ",
+			TextColors.WHITE, (region.getChunks().size() > 1) ? " chunks in world " : " chunk in world ",
 			TextColors.GOLD, region.getWorld().getName(),
-			TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-			TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ") ",
-			TextColors.GREEN, "[", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]"
+			TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE, ", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE,")",
+			TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE, ", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
 		)));
 
 		PaginationList.builder()

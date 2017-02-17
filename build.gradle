@@ -45,7 +45,6 @@ dependencies {
 
 blossom {
     def location = 'src/main/java/rocks/devonthe/stickychunk/StickyChunk.java'
-
     replaceToken '@NAME@', project.name, location
     replaceToken '@VERSION@', project.version, location
     replaceToken '@DESCRIPTION@', project.description, location
