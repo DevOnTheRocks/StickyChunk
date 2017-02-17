@@ -41,6 +41,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import rocks.devonthe.stickychunk.StickyChunk;
@@ -62,7 +63,8 @@ public class CommandList implements CommandExecutor {
 	public static CommandSpec commandSpec = CommandSpec.builder()
 		.permission(Permissions.COMMAND_LIST)
 		.description(Text.of(helpText))
-		.arguments(GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.user(USER), Permissions.COMMAND_LIST_OTHERS)))
+		.arguments(GenericArguments.optional(
+			GenericArguments.requiringPermission(GenericArguments.user(USER), Permissions.COMMAND_LIST_OTHERS)))
 		.executor(new CommandList())
 		.build();
 
@@ -104,17 +106,22 @@ public class CommandList implements CommandExecutor {
 
 		loadedRegions.forEach(region -> listText.add(Text.of(
 			TextColors.GOLD, region.getChunks().size(),
-			TextColors.GREEN, " [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "] ",
+			TextColors.GREEN, Text.of(" [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]")
+				.toBuilder().onHover(TextActions.showText(Text.of(TextColors.GREEN,
+					(region.getType() == LoadedRegion.ChunkType.WORLD) ? "World" : "Personal"
+				))),
 			TextColors.WHITE, (region.getChunks().size() > 1) ? " chunks in world " : " chunk in world ",
 			TextColors.GOLD, region.getWorld().getName(),
-			TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE, ", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE,")",
-			TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE, ", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
+			TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE,
+			", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
+			TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE,
+			", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
 		)));
 
 		PaginationList.builder()
 			.title(Text.of(TextColors.GOLD, "Loaded Regions"))
+			.padding(Text.of(TextColors.GOLD, TextStyles.STRIKETHROUGH, "-"))
 			.header(header)
-			.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
 			.contents(listText)
 			.sendTo(src);
 
@@ -133,10 +140,13 @@ public class CommandList implements CommandExecutor {
 				Text.of(
 					TextColors.GREEN, owner, " ",
 					TextColors.GOLD, region.getChunks().size(),
+					TextColors.GREEN, " [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]",
 					TextColors.WHITE, " chunks in world ",
 					TextColors.GOLD, region.getWorld().getName(),
-					TextColors.WHITE, " from (", region.getRegion().getFrom().getX(), ",", region.getRegion().getFrom().getZ(), ")",
-					TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ")"
+					TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE,
+					", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
+					TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE,
+					", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
 				)
 			);
 		});

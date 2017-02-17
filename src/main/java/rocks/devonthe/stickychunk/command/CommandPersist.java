@@ -136,7 +136,7 @@ public class CommandPersist implements CommandExecutor {
 		if (hasPerms) {
 			PaginationList.builder()
 				.title(Text.of(TextColors.GOLD, NAME, " Help"))
-				.padding(Text.of(TextColors.WHITE, TextStyles.STRIKETHROUGH, "-"))
+				.padding(Text.of(TextColors.GOLD, TextStyles.STRIKETHROUGH, "-"))
 				.contents(helpContents)
 				.sendTo(src);
 		} else {
