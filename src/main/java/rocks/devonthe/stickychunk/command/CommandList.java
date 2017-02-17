@@ -62,7 +62,7 @@ public class CommandList implements CommandExecutor {
 	public static CommandSpec commandSpec = CommandSpec.builder()
 		.permission(Permissions.COMMAND_LIST)
 		.description(Text.of(helpText))
-		.arguments(GenericArguments.optional(GenericArguments.user(USER)))
+		.arguments(GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.user(USER), Permissions.COMMAND_LIST_OTHERS)))
 		.executor(new CommandList())
 		.build();
 
@@ -110,7 +110,6 @@ public class CommandList implements CommandExecutor {
 			TextColors.WHITE, " to (", region.getRegion().getTo().getX(), ",", region.getRegion().getTo().getZ(), ") ",
 			TextColors.GREEN, "[", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]"
 		)));
-
 
 		PaginationList.builder()
 			.title(Text.of(TextColors.GOLD, "Loaded Regions"))
