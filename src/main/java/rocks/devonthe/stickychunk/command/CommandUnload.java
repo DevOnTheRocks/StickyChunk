@@ -39,6 +39,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
@@ -49,6 +50,7 @@ import rocks.devonthe.stickychunk.permission.Permissions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class CommandUnload implements CommandExecutor {
 	private Logger logger = StickyChunk.getInstance().getLogger();
@@ -61,7 +63,7 @@ public class CommandUnload implements CommandExecutor {
 	public static CommandSpec commandSpec = CommandSpec.builder()
 		.permission(Permissions.COMMAND_DELETE)
 		.description(Text.of(helpText))
-		.arguments(GenericArguments.literal(ALL, "all"))
+		.arguments(GenericArguments.optional(GenericArguments.literal(ALL, "all")))
 		.executor(new CommandUnload())
 		.build();
 
@@ -87,27 +89,27 @@ public class CommandUnload implements CommandExecutor {
 		HashMap<Player, UUID> deleteQueue = new HashMap<>();
 		Player player = (Player) src;
 
-		if (args.hasAny(ALL)){
-			ArrayList<LoadedRegion> loadedRegions = Lists.newArrayList(dataStore.getPlayerRegions(player.getUniqueId()));
-
-			loadedRegions.forEach(loadedRegion ->
-				dataStore.deletePlayerRegion(loadedRegion.getOwner(), loadedRegion.getUniqueId())
-			);
-
+		if (args.hasAny(ALL)) {
+			player.sendMessage(Text.of(
+				TextColors.GOLD, "Are you sure you want to unload all? ",
+				TextColors.GREEN, Text.builder("Yes ").onClick(TextActions.executeCallback(unloadAll(player))),
+				TextColors.RED, Text.builder("No").onClick(TextActions
+					.executeCallback(s -> player.sendMessage(Text.of(TextColors.GREEN, "Unload All Cancelled."))))
+			));
 			return CommandResult.success();
 		}
 
 		dataStore.getPlayerRegions(player).forEach(region ->
 			region.getChunks().forEach(chunk -> {
-				if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
-					logger.info("found chunk to delete");
-					region.unForceChunks();
-					region.invalidateTicket();
-					deleteQueue.put(player, region.getUniqueId());
-					player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
+					if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
+						logger.info("found chunk to delete");
+						region.unForceChunks();
+						region.invalidateTicket();
+						deleteQueue.put(player, region.getUniqueId());
+						player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
+					}
 				}
-			}
-		));
+			));
 
 		// Delete all the regions queued to be deleted
 		deleteQueue.forEach((owner, regionId) -> dataStore.deletePlayerRegion(owner, regionId));
@@ -123,5 +125,16 @@ public class CommandUnload implements CommandExecutor {
 	 */
 	private CommandResult execServer(CommandSource src, CommandContext args) {
 		return CommandResult.success();
+	}
+
+	private Consumer<CommandSource> unloadAll(Player player) {
+		return src -> {
+			ArrayList<LoadedRegion> loadedRegions = Lists
+				.newArrayList(dataStore.getPlayerRegions(player.getUniqueId()));
+
+			loadedRegions.forEach(loadedRegion ->
+				dataStore.deletePlayerRegion(loadedRegion.getOwner(), loadedRegion.getUniqueId())
+			);
+		};
 	}
 }
