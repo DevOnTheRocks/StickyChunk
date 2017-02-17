@@ -92,7 +92,7 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_LIST)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.GOLD, Text.builder("/cs list").onClick(TextActions.runCommand("/cs list")),
+				TextColors.GOLD, Text.builder("/sc list").onClick(TextActions.runCommand("/sc list")),
 				TextColors.GRAY, (src.hasPermission(Permissions.COMMAND_LIST_OTHERS)) ? " [user]" : Text.EMPTY,
 				TextColors.DARK_GRAY, " - ",
 				TextColors.WHITE, CommandList.helpText
@@ -103,7 +103,7 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_CREATE)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.GOLD, Text.builder("/cs load").onClick(TextActions.suggestCommand("/cs load")),
+				TextColors.GOLD, Text.builder("/sc load").onClick(TextActions.suggestCommand("/sc load")),
 				TextColors.GRAY, " [world|personal]",
 				TextColors.DARK_GRAY, " - ",
 				TextColors.WHITE, CommandLoad.helpText
@@ -114,7 +114,7 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_CREATE)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.GOLD, Text.builder("/cs loadarea").onClick(TextActions.suggestCommand("/cs loadarea")),
+				TextColors.GOLD, Text.builder("/sc loadarea").onClick(TextActions.suggestCommand("/sc loadarea")),
 				TextColors.GRAY, " [world|personal]",
 				TextColors.DARK_GRAY, " - ",
 				TextColors.WHITE, CommandLoadRange.helpText
@@ -125,7 +125,7 @@ public class CommandPersist implements CommandExecutor {
 		if (src.hasPermission(Permissions.COMMAND_DELETE)) {
 			helpContents.add(Text.of(
 				Text.NEW_LINE,
-				TextColors.GOLD, Text.builder("/cs unload").onClick(TextActions.suggestCommand("/cs unload")),
+				TextColors.GOLD, Text.builder("/sc unload").onClick(TextActions.suggestCommand("/sc unload")),
 				TextColors.GRAY, " [all]",
 				TextColors.DARK_GRAY, " - ",
 				TextColors.WHITE, CommandUnload.helpText
