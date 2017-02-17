@@ -33,7 +33,8 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.PermissionService;
 
 public class Options {
-	private static final PermissionService PERMISSION_SERVICE = Sponge.getServiceManager().provide(PermissionService.class).get();
+	private static final PermissionService PERMISSION_SERVICE = Sponge.getServiceManager().provideUnchecked(PermissionService.class);
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	private static final String DEFAULT_MAX = (Sponge.getServiceManager().getRegistration(PermissionService.class).get().getPlugin().getId()
 		.equalsIgnoreCase("sponge")) ? "-1" : "0";
 
