@@ -27,6 +27,7 @@
  */
 package rocks.devonthe.stickychunk.command;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
@@ -40,10 +41,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -85,7 +88,13 @@ public class CommandUnload implements CommandExecutor {
 		Player player = (Player) src;
 
 		if (args.hasAny(ALL)){
-			//TODO: Unload all player loaded regions
+			ArrayList<LoadedRegion> loadedRegions = Lists.newArrayList(dataStore.getPlayerRegions(player.getUniqueId()));
+
+			loadedRegions.forEach(loadedRegion ->
+				dataStore.deletePlayerRegion(loadedRegion.getOwner(), loadedRegion.getUniqueId())
+			);
+
+			return CommandResult.success();
 		}
 
 		dataStore.getPlayerRegions(player).forEach(region ->

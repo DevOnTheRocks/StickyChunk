@@ -33,13 +33,13 @@ public class Permissions {
 	// User permissions
 	public static final String COMMAND_HELP = "stickychunk.command.help";
 	public static final String COMMAND_LIST = "stickychunk.command.list";
-	public static final String COMMAND_CREATE = "stickychunk.command.create";
+	public static final String COMMAND_CREATE = "stickychunk.command.create.base";
 	public static final String COMMAND_CREATE_PERSONAL = "stickychunk.command.create.personal";
 	public static final String COMMAND_CREATE_WORLD = "stickychunk.command.create.world";
-	public static final String COMMAND_DELETE = "stickychunk.command.delete";
+	public static final String COMMAND_DELETE = "stickychunk.command.delete.base";
 	public static final String COMMAND_DELETE_PERSONAL = "stickychunk.command.delete.personal";
 	public static final String COMMAND_DELETE_WORLD = "stickychunk.command.delete.world";
-	public static final String COMMAND_DELETE_ALL = "stickychunk.command.deleteall";
+	public static final String COMMAND_DELETE_ALL = "stickychunk.command.delete.all";
 	public static final String COMMAND_RELEASE = "stickychunk.command.release";
 	public static final String PLAYER_SELECT_REGION = "stickychunk.command.select";
 

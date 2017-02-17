@@ -122,7 +122,10 @@ public class StickyChunk {
 
 		// Register callbacks
 		Sponge.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
-//		game.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
+
+		// Register events
+		Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());
+		Sponge.getGame().getEventManager().registerListeners(this, new RegionAreaListener());
 	}
 
 	@Listener
@@ -134,10 +137,6 @@ public class StickyChunk {
 	public void onServerStarted(GameStartedServerEvent event) {
 		if (!enabled)
 			return;
-
-		// Register events
-		Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());
-		Sponge.getGame().getEventManager().registerListeners(this, new RegionAreaListener());
 
 		// Register commands
 		registerCommands();
