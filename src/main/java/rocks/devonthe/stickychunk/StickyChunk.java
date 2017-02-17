@@ -64,15 +64,22 @@ import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import static rocks.devonthe.stickychunk.StickyChunk.*;
+
 @Plugin(
-		id = "stickychunk",
-		name = "StickyChunk",
-		version = "0.14.0-SNAPSHOT",
-		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
-		authors = {"cossacksman"}
+		id = PLUGIN_ID,
+		name = NAME,
+		version = VERSION,
+		description = DESCRIPTION,
+		authors = {AUTHORS}
 )
 public class StickyChunk {
-	public static final String MODID = "stickychunk";
+	public static final String PLUGIN_ID = "stickychunk";
+	public static final String NAME = "@NAME@";
+	public static final String DESCRIPTION = "@DESCRIPTION@";
+	public static final String VERSION = "@VERSION@";
+	public static final String AUTHORS = "cossacksman";
+
 	@Inject
 	private Logger logger;
 	@Inject

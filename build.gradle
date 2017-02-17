@@ -13,6 +13,7 @@ plugins {
     id 'idea'
     id 'maven'
     id 'org.spongepowered.plugin' version '0.6'
+    id 'ninja.miserable.blossom' version '1.0.1'
 }
 
 apply plugin: 'java'
@@ -21,8 +22,8 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-group 'rocks.devonthe.stickychunk'
-version '0.14.0-SNAPSHOT'
+group = 'rocks.devonthe.stickychunk'
+version = '0.14.0-SNAPSHOT'
 description = 'StickyChunk is a chunk persistence plugin for keeping blocks and entities loaded.'
 
 repositories {
@@ -40,6 +41,14 @@ minecraft {
 
 dependencies {
     testCompile 'junit:junit:4.12'
+}
+
+blossom {
+    def location = 'src/main/java/rocks/devonthe/stickychunk/StickyChunk.java'
+
+    replaceToken '@NAME@', project.name, location
+    replaceToken '@VERSION@', project.version, location
+    replaceToken '@DESCRIPTION@', project.description, location
 }
 
 dependencies {
