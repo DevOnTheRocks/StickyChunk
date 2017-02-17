@@ -27,7 +27,6 @@
  */
 package rocks.devonthe.stickychunk.listener;
 
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;

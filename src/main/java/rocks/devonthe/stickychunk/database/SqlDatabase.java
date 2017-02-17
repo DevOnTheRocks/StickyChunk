@@ -37,7 +37,6 @@ import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.world.Coordinate;
 import rocks.devonthe.stickychunk.world.Region;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;

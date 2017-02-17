@@ -27,8 +27,6 @@
  */
 package rocks.devonthe.stickychunk.config;
 
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-
 //@ConfigSerializable
 public class MiscConfig {
 

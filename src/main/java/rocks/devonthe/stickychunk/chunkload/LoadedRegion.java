@@ -27,17 +27,14 @@
  */
 package rocks.devonthe.stickychunk.chunkload;
 
-import net.minecraftforge.common.ForgeChunkManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Server;
-import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.mod.service.world.SpongeChunkTicketManager;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
