@@ -89,6 +89,8 @@ public class CommandList implements CommandExecutor {
 		List<Text> listText = Lists.newArrayList();
 		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
 
+		loadedRegions.forEach(region -> StickyChunk.getInstance().getLogger().info(region.getOwner().toString()));
+
 		Text header = Text.of(
 			"Listing ",
 			TextColors.GOLD, loadedRegions.size(),

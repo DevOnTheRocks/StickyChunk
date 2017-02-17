@@ -47,7 +47,8 @@ import java.util.UUID;
 
 public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrderedCallback {
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
-	private Set<LoadedRegion> unassignedRegions = dataStore.getCollatedRegions();
+	private Set<LoadedRegion> allRegions = dataStore.getCollatedRegions();
+	private ArrayList<LoadedRegion> unassignedRegions = Lists.newArrayList(allRegions);
 
 	/**
 	 * Callback for loading player Tickets during world load.
@@ -86,16 +87,27 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	public void onLoaded(ImmutableList<LoadingTicket> tickets, World world) {
 		ArrayList<LoadedRegion> assignedRegions = Lists.newArrayList();
 
-		int index = 0;
-		for (LoadedRegion region : unassignedRegions) {
-			if (world.getUniqueId().equals(region.getWorld().getUniqueId())) {
-				region.assignTicket(tickets.get(index));
-				assignedRegions.add(region);
+		StickyChunk.getInstance().getLogger().info("registering tickets");
+
+		int lndex = 0;
+		while (unassignedRegions.size() > 0) {
+			int index = 0;
+			for (LoadedRegion region : unassignedRegions) {
+				if (world.getUniqueId().equals(region.getWorld().getUniqueId())) {
+					region.assignTicket(tickets.get(index));
+					assignedRegions.add(region);
+					StickyChunk.getInstance().getLogger().info(String.format("registering ticket to %s", region.getOwner().toString()));
+				}
+				index++;
 			}
-			index++;
+
+			unassignedRegions.removeAll(assignedRegions);
+
+			StickyChunk.getInstance().getLogger().info(String.format("Running while: %s", lndex));
+			lndex++;
 		}
 
-		assignedRegions.forEach(region -> unassignedRegions.remove(region));
+		assignedRegions.forEach(region -> dataStore.addPlayerRegion(region.getOwner(), region));
 	}
 
 	/**
@@ -117,6 +129,8 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 		List<LoadingTicket> worldTickets = Lists.newArrayList();
 		List<LoadingTicket> toKeep = Lists.newArrayList();
 
+		StickyChunk.getInstance().getLogger().info("sorting tickets");
+
 		if (tickets.size() > maxTickets || unassignedRegions.size() > maxTickets) {
 			tickets.forEach(ticket -> ticket.getCompanionData().getString(DataQuery.of("type")).ifPresent(type -> {
 				switch (type) {
@@ -130,13 +144,19 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 						ticket.release();
 						break;
 				}
+
+				StickyChunk.getInstance().getLogger().info("sorting ticket");
 			}));
 
 			toKeep.addAll(worldTickets);
 			toKeep.addAll(personalTickets);
 
+			StickyChunk.getInstance().getLogger().info(String.format("Returning sorted tickets of size: %s", toKeep.size()));
+
 			return toKeep;
 		} else {
+			StickyChunk.getInstance().getLogger().info(String.format("Returning all tickets of size: %s", tickets.size()));
+
 			return tickets;
 		}
 	}

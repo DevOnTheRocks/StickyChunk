@@ -57,17 +57,20 @@ public class Region {
 	}
 
 	public Region(Location<World> from, Location<World> to) {
-		fromChunkPosition = new Coordinate(from.getBlockPosition());
-		toChunkPosition = new Coordinate(to.getBlockPosition());
+		fromChunkPosition = new Coordinate(from.getChunkPosition());
+		toChunkPosition = new Coordinate(to.getChunkPosition());
 		chunks = new ArrayList<>();
 		worldId = from.getExtent().getUniqueId();
 	}
 
 	public Region(Location<World> location) {
 		chunks = new ArrayList<>();
-		location.getExtent().getChunk(location.getChunkPosition().getX(), 0, location.getChunkPosition().getZ()).ifPresent(chunks::add);
-		fromChunkPosition = toChunkPosition = new Coordinate(location.getBlockPosition());
+//		location.getExtent().getChunk(location.getChunkPosition().getX(), 0, location.getChunkPosition().getZ()).ifPresent(chunks::add);
+		fromChunkPosition = toChunkPosition = new Coordinate(location.getChunkPosition());
 		worldId = location.getExtent().getUniqueId();
+
+		StickyChunk.getInstance().getLogger().info(String.format("Creating region FROM X: %s AND Z: %s", fromChunkPosition.getX(), fromChunkPosition.getZ()));
+		StickyChunk.getInstance().getLogger().info(String.format("TO X: %s AND Z: %s", toChunkPosition.getX(), toChunkPosition.getZ()));
 	}
 
 	/***
@@ -91,11 +94,24 @@ public class Region {
 
 			area = Math.abs((width + 1) * (height + 1));
 
+			StickyChunk.getInstance().getLogger().info(String.format("Width: %s", width));
+			StickyChunk.getInstance().getLogger().info(String.format("Height: %s", height));
+			StickyChunk.getInstance().getLogger().info(String.format("WidthAfter: %s", width+1));
+			StickyChunk.getInstance().getLogger().info(String.format("HeightAfter: %s", height+1));
+			StickyChunk.getInstance().getLogger().info(String.format("Area: %s", area));
+
 			pointerX = lowestX;
 			pointerZ = lowestZ;
 
 			for (int i = 0; i <= width; i++) {
 				for (int l = 0; l <= height; l++) {
+
+					StickyChunk.getInstance().getLogger().info(String.format("posX: %s", pointerX));
+					StickyChunk.getInstance().getLogger().info(String.format("posZ: %s", pointerZ));
+
+					boolean ispresent = world.get().getChunk(pointerX, 0, pointerZ).isPresent();
+					StickyChunk.getInstance().getLogger().info(String.format("Chunk is present: %s", ispresent));
+
 					world.get().getChunk(pointerX, 0, pointerZ).ifPresent(chunks::add);
 					pointerZ++;
 				}
@@ -104,6 +120,8 @@ public class Region {
 				pointerX++;
 			}
 		}
+
+		StickyChunk.getInstance().getLogger().info(String.format("Chunks: %s", chunks.size()));
 
 		return chunks;
 	}

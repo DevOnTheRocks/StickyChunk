@@ -40,6 +40,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -66,7 +67,7 @@ import java.util.Optional;
 @Plugin(
 		id = "stickychunk",
 		name = "StickyChunk",
-		version = "0.13.0-SNAPSHOT",
+		version = "0.13.3-SNAPSHOT",
 		description = "A chunk persistence plugin for keeping your entities and blocks loaded.",
 		authors = {"cossacksman"}
 )
@@ -113,18 +114,26 @@ public class StickyChunk {
 		database = new SqliteDatabase();
 		dataStore = new DataStore();
 		ticketManager = new TicketManager();
+
+		dataStore.addPlayerRegions(database.loadRegionData());
+		dataStore.addUsers(database.loadUserData());
+
+		logger.info("registering callback");
+
+		// Register callbacks
+		Sponge.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
+//		game.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
+	}
+
+	@Listener
+	public void onServerStarting(GameStartingServerEvent event) {
+
 	}
 
 	@Listener
 	public void onServerStarted(GameStartedServerEvent event) {
 		if (!enabled)
 			return;
-
-		dataStore.addPlayerRegions(database.loadRegionData());
-		dataStore.addUsers(database.loadUserData());
-
-		// Register callbacks
-		game.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
 
 		// Register events
 		Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());

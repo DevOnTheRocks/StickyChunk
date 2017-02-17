@@ -133,32 +133,44 @@ public class DataStore {
 	}
 
 	public void addPlayerRegion(User user, LoadedRegion region) {
-		if (loadedRegions.containsKey(user.getUniqueId())) {
-			loadedRegions.get(user.getUniqueId()).add(region);
-		} else {
-			ArrayList<LoadedRegion> playerRegions = Lists.newArrayList();
-			playerRegions.add(region);
-			loadedRegions.put(user.getUniqueId(), playerRegions);
-		}
+		addPlayerRegion(user.getUniqueId(), region);
 	}
 
-	public void deletePlayerRegion(UUID player, UUID id) {
-		getPlayerRegions(player).stream()
-				.filter(region -> region.getUniqueId().equals(id))
-				.findFirst()
-				.ifPresent(region -> {
-					loadedRegions.get(player).remove(region);
-					database.deleteRegionData(region);
-				});
+	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
+		StickyChunk.getInstance().getLogger().info(String.format("UUID is %s and region owner is %s", uuid, region.getOwner()));
+
+		if (loadedRegions.containsKey(uuid)) {
+			StickyChunk.getInstance().getLogger().info("key exists");
+			loadedRegions.get(uuid).add(region);
+		} else {
+			StickyChunk.getInstance().getLogger().info("key doesn't exist");
+			ArrayList<LoadedRegion> playerRegions = Lists.newArrayList();
+			playerRegions.add(region);
+			loadedRegions.put(uuid, playerRegions);
+		}
 	}
 
 	public void deletePlayerRegion(User user, UUID id) {
 		deletePlayerRegion(user.getUniqueId(), id);
 	}
 
-	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
-		loadedRegions.get(uuid).add(region);
-		database.saveRegionData(region);
+	public void deletePlayerRegion(UUID user, UUID id) {
+		StickyChunk.getInstance().getLogger().info("delete called");
+
+		if (user == null)
+			StickyChunk.getInstance().getLogger().info("user is null");
+		if (id == null)
+			StickyChunk.getInstance().getLogger().info("user is null");
+		if (getPlayerRegions(user) == null)
+			StickyChunk.getInstance().getLogger().info("regions is null");
+
+		getPlayerRegions(user).stream()
+			.filter(region -> region.getUniqueId().equals(id))
+			.findAny()
+			.ifPresent(region -> {
+				loadedRegions.get(user).remove(region);
+				database.deleteRegionData(region);
+			});
 	}
 
 	public boolean playerHasRegions(User user) {

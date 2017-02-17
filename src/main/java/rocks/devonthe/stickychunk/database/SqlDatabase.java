@@ -114,14 +114,14 @@ public abstract class SqlDatabase implements IDatabase {
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, loadedRegion.getUniqueId().toString());
 			statement.setString(2, loadedRegion.getOwner().toString());
-			statement.setString(3, loadedRegion.getWorld().getUniqueId().toString());
+			statement.setString(3, loadedRegion.getRegion().getWorldId().toString());
 			statement.setString(4, loadedRegion.getType().toString());
 			statement.setInt(5, loadedRegion.getRegion().getFrom().getX());
 			statement.setInt(6, loadedRegion.getRegion().getFrom().getZ());
 			statement.setInt(7, loadedRegion.getRegion().getTo().getX());
 			statement.setInt(8, loadedRegion.getRegion().getTo().getZ());
 			statement.setDate(9, new Date(loadedRegion.getEpoch().getTime()));
-			statement.executeUpdate();
+			statement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Error inserting LoadedRegion into the database: %s", e.getMessage()));
@@ -163,7 +163,7 @@ public abstract class SqlDatabase implements IDatabase {
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, region.getUniqueId().toString());
-			statement.executeUpdate();
+			statement.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Unable to delete record from the chunks table: %s", e.getMessage()));
@@ -179,7 +179,7 @@ public abstract class SqlDatabase implements IDatabase {
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, userData.getUniqueId().toString());
-			statement.executeUpdate();
+			statement.execute();
  		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Unable to delete record from the users table: %s", e.getMessage()));

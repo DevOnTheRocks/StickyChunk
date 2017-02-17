@@ -31,6 +31,7 @@ import org.spongepowered.api.command.CommandSource;
 
 public class Permissions {
 	// User permissions
+	public static final String COMMAND_HELP = "stickychunk.command.help";
 	public static final String COMMAND_LIST = "stickychunk.command.list";
 	public static final String COMMAND_CREATE = "stickychunk.command.create";
 	public static final String COMMAND_CREATE_PERSONAL = "stickychunk.command.create.personal";
