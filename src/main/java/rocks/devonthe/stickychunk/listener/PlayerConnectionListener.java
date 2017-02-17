@@ -68,7 +68,7 @@ public class PlayerConnectionListener {
 	}
 
 	@Listener
-	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event, @Root Player player) {
+	public void onPlayerLeave(ClientConnectionEvent.Disconnect event, @Root Player player) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 		UserData userData = dataStore.getOrCreateUserData(player);
 
