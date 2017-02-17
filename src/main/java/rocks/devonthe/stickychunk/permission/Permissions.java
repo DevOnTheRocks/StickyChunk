@@ -39,6 +39,7 @@ public class Permissions {
 	public static final String COMMAND_DELETE = "stickychunk.command.delete";
 	public static final String COMMAND_DELETE_PERSONAL = "stickychunk.command.delete.personal";
 	public static final String COMMAND_DELETE_WORLD = "stickychunk.command.delete.world";
+	public static final String COMMAND_DELETE_ALL = "stickychunk.command.deleteall";
 	public static final String COMMAND_RELEASE = "stickychunk.command.release";
 	public static final String PLAYER_SELECT_REGION = "stickychunk.command.select";
 
