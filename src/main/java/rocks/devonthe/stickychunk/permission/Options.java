@@ -34,6 +34,8 @@ import org.spongepowered.api.service.permission.PermissionService;
 
 public class Options {
 	private static final PermissionService PERMISSION_SERVICE = Sponge.getServiceManager().provide(PermissionService.class).get();
+	private static final String DEFAULT_MAX = (Sponge.getServiceManager().getRegistration(PermissionService.class).get().getPlugin().getId()
+		.equalsIgnoreCase("sponge")) ? "-1" : "0";
 
 	private static final String MAX_PERSONAL_CHUNKS = "stickychunk.max-personal";
 	private static final String MAX_WORLD_CHUNKS = "stickychunk.max-world";
@@ -41,7 +43,7 @@ public class Options {
 
 	public static int getMaxPersonalChunks(User user) {
 		try {
-			return Integer.parseInt(PERMISSION_SERVICE.getUserSubjects().get(user.getIdentifier()).getOption(user.getActiveContexts(), MAX_PERSONAL_CHUNKS).orElse("-1"));
+			return Integer.parseInt(PERMISSION_SERVICE.getUserSubjects().get(user.getIdentifier()).getOption(user.getActiveContexts(), MAX_PERSONAL_CHUNKS).orElse(DEFAULT_MAX));
 		} catch (NumberFormatException ignored) {
 			return -1;
 		}
@@ -49,7 +51,7 @@ public class Options {
 
 	public static int getMaxWorldChunks(User user) {
 		try {
-			return Integer.parseInt(PERMISSION_SERVICE.getUserSubjects().get(user.getIdentifier()).getOption(user.getActiveContexts(), MAX_WORLD_CHUNKS).orElse("-1"));
+			return Integer.parseInt(PERMISSION_SERVICE.getUserSubjects().get(user.getIdentifier()).getOption(user.getActiveContexts(), MAX_WORLD_CHUNKS).orElse(DEFAULT_MAX));
 		} catch (NumberFormatException ignored) {
 			return -1;
 		}
@@ -57,7 +59,7 @@ public class Options {
 
 	public static int getWorldChunksDuration(User user) {
 		try {
-			return Integer.parseInt(PERMISSION_SERVICE.getUserSubjects().get(user.getIdentifier()).getOption(user.getActiveContexts(), MAX_WORLD_DURATION).orElse("-1"));
+			return Integer.parseInt(PERMISSION_SERVICE.getUserSubjects().get(user.getIdentifier()).getOption(user.getActiveContexts(), MAX_WORLD_DURATION).orElse(DEFAULT_MAX));
 		} catch (NumberFormatException ignored) {
 			return -1;
 		}
