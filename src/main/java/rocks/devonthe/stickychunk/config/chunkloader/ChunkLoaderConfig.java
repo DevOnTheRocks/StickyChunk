@@ -39,15 +39,15 @@ public abstract class ChunkLoaderConfig {
 	@Setting(value = "Name", comment = "Name of the chunk loader used in options & commands.")
 	private String name = "";
 	@Setting(value = "Type", comment = "The type of chunk loader. [command]")
-	private String type = "command";
+	private String type = ChunkLoaderType.COMMAND.toString().toLowerCase();
 	@Setting(value = "Offline-Duration", comment = "The amount time to keep the chunk(s) loaded when the owner is offline.")
 	private String duration = "1d";
 	@Setting(value = "Load-While-AFK", comment = "Whether the chunk stays loaded while the player is AFK.")
 	private boolean afk = true;
 
-	public ChunkLoaderConfig (String name, String type, String duration, boolean afk) {
+	public ChunkLoaderConfig (String name, ChunkLoaderType type, String duration, boolean afk) {
 		this.name = name;
-		this.type = type;
+		this.type = type.toString().toLowerCase();
 		this.duration = duration;
 		this.afk = afk;
 	}
@@ -56,8 +56,8 @@ public abstract class ChunkLoaderConfig {
 		return name;
 	}
 
-	public String getType() {
-		return type;
+	public ChunkLoaderType getType() {
+		return ChunkLoaderType.parse(type);
 	}
 
 	public Duration getDuration() {

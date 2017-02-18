@@ -2,7 +2,6 @@ package rocks.devonthe.stickychunk.config.chunkloader;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderConfig;
 
 @ConfigSerializable
 public class CommandChunkLoaderConfig extends ChunkLoaderConfig {
@@ -10,7 +9,7 @@ public class CommandChunkLoaderConfig extends ChunkLoaderConfig {
 	private boolean allowRegion = true;
 
 	public CommandChunkLoaderConfig(String name, String duration, boolean afk, boolean allowRegion) {
-		super(name, "command", duration, afk);
+		super(name, ChunkLoaderType.COMMAND, duration, afk);
 		this.allowRegion = allowRegion;
 	}
 
