@@ -46,8 +46,8 @@ public class StickyChunkConfig {
 //	public MiscConfig misc;
 
 	public StickyChunkConfig() {
-		if (chunkLoaderConfigs.isEmpty())
-			chunkLoaderConfigs = addDefaultConfigs();
+//		if (chunkLoaderConfigs.isEmpty())
+//			chunkLoaderConfigs = addDefaultConfigs();
 
 		database = new DatabaseConfig();
 //		misc = new MiscConfig();

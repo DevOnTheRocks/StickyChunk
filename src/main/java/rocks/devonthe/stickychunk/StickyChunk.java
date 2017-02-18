@@ -36,6 +36,8 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
@@ -46,6 +48,7 @@ import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.chunkload.ChunkLoadCallback;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
@@ -63,6 +66,7 @@ import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.UUID;
 
 import static rocks.devonthe.stickychunk.StickyChunk.*;
 
@@ -95,6 +99,7 @@ public class StickyChunk {
 
 	private TicketManager ticketManager;
 	private EconomyManager economyManager;
+	private UserStorageService userStorageService;
 
 	private DataStore dataStore;
 	private IDatabase database;
@@ -168,6 +173,9 @@ public class StickyChunk {
 
 		if (event.getService().equals(EconomyService.class))
 			economyManager = new EconomyManager((EconomyService) event.getNewProviderRegistration().getProvider());
+
+		if (event.getService().equals(UserStorageService.class))
+			userStorageService = (UserStorageService) event.getNewProviderRegistration().getProvider();
 	}
 
 	public DataStore getDataStore() {
@@ -232,5 +240,9 @@ public class StickyChunk {
 
 	public Optional<EconomyManager> getEconomyManager() {
 		return Optional.ofNullable(economyManager);
+	}
+
+	public UserStorageService getUserStorageService() {
+		return userStorageService;
 	}
 }
