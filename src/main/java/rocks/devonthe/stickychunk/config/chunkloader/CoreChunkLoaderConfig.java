@@ -29,18 +29,45 @@ package rocks.devonthe.stickychunk.config.chunkloader;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import rocks.devonthe.stickychunk.StickyChunk;
+
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 @ConfigSerializable
-public class CommandChunkLoaderConfig extends CoreChunkLoaderConfig {
-	@Setting(value = "Allow-Regions", comment = "Allow loading of multi-chunk regions.")
-	private boolean allowRegion = true;
+public abstract class CoreChunkLoaderConfig {
+	@Setting(value = "Name", comment = "Name of the chunk loader used in options & commands.")
+	private String name = "";
+	@Setting(value = "Offline-Duration", comment = "The amount time to keep chunks loaded when the player is offline.")
+	private String duration = "1d";
+	@Setting(value = "Load-While-AFK", comment = "Whether chunks stay loaded while the player is AFK.")
+	private boolean afk = true;
 
-	public CommandChunkLoaderConfig(String name, String duration, boolean afk, boolean allowRegion) {
-		super(name, duration, afk);
-		this.allowRegion = allowRegion;
+	public CoreChunkLoaderConfig(String name, String duration, boolean afk) {
+		this.name = name;
+		this.duration = duration;
+		this.afk = afk;
 	}
 
-	public boolean isAllowRegion() {
-		return allowRegion;
+	public String getName() {
+		return name;
+	}
+
+	public Optional<Duration> getDuration() {
+		try {
+			return Optional.of(Duration.parse(duration));
+		} catch (DateTimeParseException e) {
+			if (!duration.equalsIgnoreCase("forever") || !duration.equalsIgnoreCase("infinite")) {
+				StickyChunk.getInstance().getLogger()
+					.warn(String.format("Duration (%s) of %s is malformed. Using 1d instead", duration, name));
+				return Optional.of(Duration.ofDays(1));
+			}
+			return Optional.empty();
+		}
+	}
+
+	public boolean isLoadedWhileAFK() {
+		return afk;
 	}
 }

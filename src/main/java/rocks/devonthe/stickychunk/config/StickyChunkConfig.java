@@ -27,36 +27,27 @@
  */
 package rocks.devonthe.stickychunk.config;
 
-import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderConfig;
-import rocks.devonthe.stickychunk.config.chunkloader.CommandChunkLoaderConfig;
 import rocks.devonthe.stickychunk.config.database.DatabaseConfig;
-
-import java.util.List;
 
 @ConfigSerializable
 public class StickyChunkConfig {
-	@Setting(value = "ChunkLoaders")
-	private List<ChunkLoaderConfig> chunkLoaderConfigs = Lists.newArrayList();
-	@Setting(value = "SqlDatabase")
+	@Setting(value = "ChunkLoader")
+	private ChunkLoaderConfig chunkLoaders;
+	@Setting(value = "Database")
 	public DatabaseConfig database;
 //	@Setting(value = "Misc")
 //	public MiscConfig misc;
 
 	public StickyChunkConfig() {
-//		if (chunkLoaderConfigs.isEmpty())
-//			chunkLoaderConfigs = addDefaultConfigs();
-
 		database = new DatabaseConfig();
+		chunkLoaders = new ChunkLoaderConfig();
 //		misc = new MiscConfig();
 	}
 
-	private List<ChunkLoaderConfig> addDefaultConfigs() {
-		List<ChunkLoaderConfig> defaults = Lists.newArrayList();
-		defaults.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
-		defaults.add(new CommandChunkLoaderConfig("world", "1d", true, true));
-		return defaults;
+	public ChunkLoaderConfig getChunkLoaders() {
+		return chunkLoaders;
 	}
 }
