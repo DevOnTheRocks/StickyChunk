@@ -25,84 +25,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.data;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import org.spongepowered.api.service.economy.Currency;
-import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
-import rocks.devonthe.stickychunk.StickyChunk;
+import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.UUID;
 
-public class UserData {
-	UUID player;
-	private Date seen;
-	private Date joined;
-	private UniqueAccount account;
-	private HashMap<String, ChunkLoaderData> loadedChunks;
-
-	public UserData(UUID id, Date joined, Date seen) {
-		this.player = id;
-		this.seen = seen;
-		this.joined = joined;
-
-		StickyChunk.getInstance().getEconomyManager().ifPresent(economyManager -> {
-			Optional<UniqueAccount> oAccount = economyManager.getOrCreateAccount(id);
-			oAccount.ifPresent(uniqueAccount -> this.account = uniqueAccount);
-		});
-	}
-
-	public UUID getUniqueId() {
-		return player;
-	}
-
-	public Date getLastSeen() {
-		return seen;
-	}
-
-	public UserData setLastSeen(Date seen) {
-		this.seen = seen;
-		return this;
-	}
-
-	public Date getUserJoined() {
-		return joined;
-	}
-
-	public BigDecimal getBalance(Currency currency) {
-		return account.getBalance(currency);
-	}
-
-	public void update() {
-		StickyChunk.getInstance().getDataStore().updateUser(this);
-	}
+public class ChunkLoaderData {
+	private HashMap<World, ArrayList<Chunk>> chunks;
+	private HashMap<World, LoadingTicket> tickets;
 
 	public ArrayList<Chunk> getChunks(World world) {
-		ArrayList<Chunk> chunks = Lists.newArrayList();
-		loadedChunks.values().forEach(chunkLoaderData ->
-			chunks.addAll(chunkLoaderData.getChunks(world))
-		);
-
-		return chunks;
+		return (chunks.containsKey(world)) ?
+			chunks.get(world) :
+			Lists.newArrayList();
 	}
 
-	public ArrayList<Chunk> getChunks(String type, World world) {
-		return loadedChunks.get(type).getChunks(world);
+	public Optional<LoadingTicket> getTicket(World world) {
+		return (tickets.containsKey(world)) ?
+			Optional.of(tickets.get(world)) :
+			Optional.empty();
 	}
 
-	public ArrayList<Chunk> getCollatedChunks() {
-		ArrayList<Chunk> chunks = Lists.newArrayList();
-		loadedChunks.values().forEach(chunkLoaderData ->
-			chunks.addAll(chunkLoaderData.getAllChunks())
+	public ArrayList<Chunk> getAllChunks() {
+		ArrayList<Chunk> foundChunks = Lists.newArrayList();
+		chunks.values().forEach(chunkList ->
+			chunkList.forEach(foundChunks::add)
 		);
+		return foundChunks;
+	}
 
-		return chunks;
+	public ImmutableSet<LoadingTicket> getAllTickets() {
+		ArrayList<LoadingTicket> foundTickets = Lists.newArrayList();
+		tickets.values().forEach(foundTickets::add);
+		return ImmutableSet.copyOf(foundTickets);
 	}
 }
