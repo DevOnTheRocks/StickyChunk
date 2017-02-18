@@ -37,8 +37,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TicketManager extends SpongeChunkTicketManager {
-	DataStore dataStore = StickyChunk.getInstance().getDataStore();
-
 	public TicketManager() {
 
 	}
@@ -48,7 +46,7 @@ public class TicketManager extends SpongeChunkTicketManager {
 	}
 
 	public void validateLoadedRegions() {
-		List<LoadedRegion> invalidRegions = dataStore
+		List<LoadedRegion> invalidRegions = StickyChunk.getInstance().getDataStore()
 				.getCollatedRegions()
 				.stream()
 				.filter(region -> !region.isValid())
