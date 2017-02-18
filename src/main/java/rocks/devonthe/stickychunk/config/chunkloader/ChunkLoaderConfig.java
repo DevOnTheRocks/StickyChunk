@@ -27,53 +27,29 @@
  */
 package rocks.devonthe.stickychunk.config.chunkloader;
 
+import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import rocks.devonthe.stickychunk.StickyChunk;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.item.ItemTypes;
 
-import java.time.Duration;
-import java.time.format.DateTimeParseException;
+import java.util.List;
 
 @ConfigSerializable
-public abstract class ChunkLoaderConfig {
-	@Setting(value = "Name", comment = "Name of the chunk loader used in options & commands.")
-	private String name = "";
-	@Setting(value = "Type", comment = "The type of chunk loader. [command]")
-	private String type = ChunkLoaderType.COMMAND.toString().toLowerCase();
-	@Setting(value = "Offline-Duration", comment = "The amount time to keep the chunk(s) loaded when the owner is offline.")
-	private String duration = "1d";
-	@Setting(value = "Load-While-AFK", comment = "Whether the chunk stays loaded while the player is AFK.")
-	private boolean afk = true;
+public class ChunkLoaderConfig {
+	@Setting(value = "Command")
+	private List<CommandChunkLoaderConfig> commands = Lists.newArrayList();
+	@Setting(value = "Block")
+	private List<BlockChunkLoaderConfig> blocks = Lists.newArrayList();
 
-	public ChunkLoaderConfig (String name, ChunkLoaderType type, String duration, boolean afk) {
-		this.name = name;
-		this.type = type.toString().toLowerCase();
-		this.duration = duration;
-		this.afk = afk;
+	public ChunkLoaderConfig() {
+		if (commands.isEmpty() && blocks.isEmpty())
+			addExampleConfigs();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public ChunkLoaderType getType() {
-		return ChunkLoaderType.parse(type);
-	}
-
-	public Duration getDuration() {
-		try {
-			return Duration.parse(duration);
-		} catch (DateTimeParseException e) {
-			if (!duration.equalsIgnoreCase("forever") || !duration.equalsIgnoreCase("infinite")) {
-				StickyChunk.getInstance().getLogger()
-					.warn(String.format("Duration (%s) of %s is malformed. Using 1d instead", duration, name));
-				return Duration.ofDays(1);
-			}
-			return null;
-		}
-	}
-
-	public boolean isLoadedWhileAFK() {
-		return afk;
+	private void addExampleConfigs() {
+		commands.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
+		commands.add(new CommandChunkLoaderConfig("world", "1d", true, true));
+		blocks.add(new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.IRON_BLOCK, ItemTypes.DIAMOND, ItemTypes.NONE, "8h"));
 	}
 }
