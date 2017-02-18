@@ -89,7 +89,6 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 
 		StickyChunk.getInstance().getLogger().info("registering tickets");
 
-		int lndex = 0;
 		while (unassignedRegions.size() > 0) {
 			int index = 0;
 			for (LoadedRegion region : unassignedRegions) {
@@ -102,9 +101,6 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 			}
 
 			unassignedRegions.removeAll(assignedRegions);
-
-			StickyChunk.getInstance().getLogger().info(String.format("Running while: %s", lndex));
-			lndex++;
 		}
 
 		assignedRegions.forEach(region -> dataStore.addPlayerRegion(region.getOwner(), region));

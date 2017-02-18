@@ -31,10 +31,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.database.IDatabase;
+import rocks.devonthe.stickychunk.world.Region;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -179,5 +181,38 @@ public class DataStore {
 
 	public boolean playerHasRegions(UUID uuid) {
 		return loadedRegions.containsKey(uuid);
+	}
+
+	public boolean isRegionLoaded(Region region) {
+		return getCollatedRegions().stream()
+			.anyMatch(loadedRegion ->
+				loadedRegion.getRegion().getWorldId().equals(region.getWorldId()) &&
+				loadedRegion.getRegion().getFrom().equals(region.getFrom()) &&
+				loadedRegion.getRegion().getTo().equals(region.getTo())
+			);
+	}
+
+	public boolean isRegionLoaded(LoadedRegion region) {
+		return getCollatedRegions().stream()
+			.anyMatch(loadedRegion ->
+				loadedRegion.getWorld().getUniqueId().equals(region.getWorld().getUniqueId()) &&
+				loadedRegion.getRegion().getFrom().equals(region.getRegion().getFrom()) &&
+				loadedRegion.getRegion().getTo().equals(region.getRegion().getTo()) &&
+				!loadedRegion.getOwner().equals(region.getOwner())
+			);
+	}
+
+	public boolean isChunkLoaded(Chunk chunk) {
+		for (LoadedRegion loadedRegion : getCollatedRegions()) {
+			 boolean result = loadedRegion.getChunks().stream()
+				.anyMatch(loadedChunk ->
+					loadedChunk.getUniqueId().equals(chunk.getUniqueId())
+				);
+
+			 if (result)
+			 	return true;
+		}
+
+		return false;
 	}
 }

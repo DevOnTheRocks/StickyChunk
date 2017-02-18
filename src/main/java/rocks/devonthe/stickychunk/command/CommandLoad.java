@@ -84,19 +84,20 @@ public class CommandLoad implements CommandExecutor {
 		Player player = (Player) src;
 		Region region = new Region(player.getLocation());
 		LoadedRegion.ChunkType type = args.<LoadedRegion.ChunkType>getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
-
 		LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
+
+		if (dataStore.isRegionLoaded(loadedRegion))
+			throw new CommandException(Text.of(TextColors.RED, "You've already allocated this region."));
+
 		loadedRegion.assignTicket();
+		if (loadedRegion.isValid())
+			throw new CommandException(Text.of(TextColors.RED, "Failed to allocate a loading ticket and force region."));
 
-		if (loadedRegion.isValid()) {
-			dataStore.addPlayerRegion(player, loadedRegion);
-			loadedRegion.forceChunks();
-			database.saveRegionData(loadedRegion);
+		dataStore.addPlayerRegion(player, loadedRegion);
+		loadedRegion.forceChunks();
+		database.saveRegionData(loadedRegion);
 
-			player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the chunk."));
-		} else {
-			player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a chunkloading ticket and force chunk."));
-		}
+		player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the region."));
 
 		return CommandResult.success();
 	}

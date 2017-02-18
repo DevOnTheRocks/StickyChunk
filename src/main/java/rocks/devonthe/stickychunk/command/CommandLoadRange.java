@@ -84,30 +84,27 @@ public class CommandLoadRange implements CommandExecutor {
 		Player player = (Player) src;
 		LoadedRegion.ChunkType type = (LoadedRegion.ChunkType) args.getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
 
-		if (RegionAreaListener.exists(player)) {
-			RegionAreaListener.PlayerData playerData = RegionAreaListener.get(player);
+		if (!RegionAreaListener.exists(player))
+			throw new CommandException(Text.of(TextColors.RED, "You must have a selected region before loading multiple chunks."));
 
-			Coordinate from = new Coordinate(new Location<>(player.getWorld(), playerData.getPos1()).getChunkPosition());
-			Coordinate to = new Coordinate(new Location<>(player.getWorld(), playerData.getPos2()).getChunkPosition());
+		RegionAreaListener.PlayerData playerData = RegionAreaListener.get(player);
+		Coordinate from = new Coordinate(new Location<>(player.getWorld(), playerData.getPos1()).getChunkPosition());
+		Coordinate to = new Coordinate(new Location<>(player.getWorld(), playerData.getPos2()).getChunkPosition());
+		Region region = new Region(from, to, player.getWorld().getUniqueId());
+		LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
 
-			StickyChunk.getInstance().getLogger().info(String.format("FromX: %s, fromZ: %s", from.getX(), from.getZ()));
-			StickyChunk.getInstance().getLogger().info(String.format("ToX: %s, toZ: %s", to.getX(), to.getZ()));
+		if (dataStore.isRegionLoaded(loadedRegion))
+			throw new CommandException(Text.of(TextColors.RED, "You've already allocated this region."));
 
-			Region region = new Region(from, to, player.getWorld().getUniqueId());
-			LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
-			loadedRegion.assignTicket();
+		loadedRegion.assignTicket();
+		if (!loadedRegion.isValid())
+			throw new CommandException(Text.of(TextColors.RED, "Failed to allocate a loading ticket or force chunks."));
 
-			if (loadedRegion.isValid()) {
-				dataStore.addPlayerRegion(player, loadedRegion);
-				loadedRegion.forceChunks();
-				database.saveRegionData(loadedRegion);
-				player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded chunk range."));
-			} else {
-				player.sendMessage(Text.of(TextColors.RED, "Failed to allocate a loading ticket or force chunks."));
-			}
-		} else {
-			player.sendMessage(Text.of(TextColors.RED, "You must have a selected region before loading multiple chunks."));
-		}
+		dataStore.addPlayerRegion(player, loadedRegion);
+		loadedRegion.forceChunks();
+		database.saveRegionData(loadedRegion);
+
+		player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded chunk range."));
 
 		return CommandResult.success();
 	}

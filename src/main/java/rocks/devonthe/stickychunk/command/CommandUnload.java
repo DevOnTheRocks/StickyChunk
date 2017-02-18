@@ -28,6 +28,7 @@
 package rocks.devonthe.stickychunk.command;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
@@ -86,7 +87,7 @@ public class CommandUnload implements CommandExecutor {
 		if (!(src instanceof Player))
 			return execServer(src, args);
 
-		HashMap<Player, UUID> deleteQueue = new HashMap<>();
+		HashMap<Player, UUID> deleteQueue = Maps.newHashMap();
 		Player player = (Player) src;
 
 		if (args.hasAny(ALL)) {
@@ -102,7 +103,6 @@ public class CommandUnload implements CommandExecutor {
 		dataStore.getPlayerRegions(player).forEach(region ->
 			region.getChunks().forEach(chunk -> {
 					if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
-						logger.info("found chunk to delete");
 						region.unForceChunks();
 						region.invalidateTicket();
 						deleteQueue.put(player, region.getUniqueId());
