@@ -25,36 +25,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package rocks.devonthe.stickychunk.config;
+package rocks.devonthe.stickychunk.config.chunkloader;
 
-import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderConfig;
-import rocks.devonthe.stickychunk.config.chunkloader.CommandChunkLoaderConfig;
-import rocks.devonthe.stickychunk.config.database.DatabaseConfig;
+import rocks.devonthe.stickychunk.StickyChunk;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 
 @ConfigSerializable
-public class StickyChunkConfig {
-	@Setting(value = "ChunkLoaders")
-	private List<ChunkLoaderConfig> chunkLoaderConfigs = Lists.newArrayList();
-	@Setting(value = "SqlDatabase")
-	public DatabaseConfig database;
-//	@Setting(value = "Misc")
-//	public MiscConfig misc;
+public abstract class ChunkLoaderConfig {
+	@Setting(value = "Name", comment = "Name of the chunk loader used in options & commands.")
+	private String name = "";
+	@Setting(value = "Type", comment = "The type of chunk loader. [command]")
+	private String type = "command";
+	@Setting(value = "Offline-Duration", comment = "The amount time to keep the chunk(s) loaded when the owner is offline.")
+	private String duration = "1d";
+	@Setting(value = "Load-While-AFK", comment = "Whether the chunk stays loaded while the player is AFK.")
+	private boolean afk = true;
 
-	public StickyChunkConfig() {
-		if (chunkLoaderConfigs.isEmpty()) chunkLoaderConfigs = addDefaultConfigs();
-		database = new DatabaseConfig();
-//		misc = new MiscConfig();
+	public ChunkLoaderConfig (String name, String type, String duration, boolean afk) {
+		this.name = name;
+		this.type = type;
+		this.duration = duration;
+		this.afk = afk;
 	}
 
-	private List<ChunkLoaderConfig> addDefaultConfigs() {
-		List<ChunkLoaderConfig> defaults = Lists.newArrayList();
-		defaults.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
-		defaults.add(new CommandChunkLoaderConfig("world", "1d", true, true));
-		return defaults;
+	public String getName() {
+		return name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public Duration getDuration() {
+		try {
+			return Duration.parse(duration);
+		} catch (DateTimeParseException e) {
+			if (!duration.equalsIgnoreCase("forever") || !duration.equalsIgnoreCase("infinite")) {
+				StickyChunk.getInstance().getLogger()
+					.warn(String.format("Duration (%s) of %s is malformed. Using 1d instead", duration, name));
+				return Duration.ofDays(1);
+			}
+			return null;
+		}
+	}
+
+	public boolean isLoadedWhileAFK() {
+		return afk;
 	}
 }
