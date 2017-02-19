@@ -28,25 +28,29 @@
 
 package rocks.devonthe.stickychunk.chunkload.chunkloader;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.Chunk;
-import org.spongepowered.api.world.ChunkTicketManager;
-import org.spongepowered.api.world.World;
-import rocks.devonthe.stickychunk.StickyChunk;
 
+import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
+import com.google.common.collect.ImmutableSet;
+import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.Sponge;
+
+import javax.persistence.Entity;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
+@Entity(name = "chunkloader")
 public abstract class ChunkLoader {
-	private HashMap<World, ChunkTicketManager.LoadingTicket> tickets;
-	private Duration offlineDuration;
+	private HashMap<World, LoadingTicket> tickets;
 	private ArrayList<Chunk> chunks;
 	private UUID worldId;
+	private UUID owner;
+
+	// Configurable properties
+	private Duration offlineDuration;
 
 	public UUID getWorldId() {
 		return worldId;

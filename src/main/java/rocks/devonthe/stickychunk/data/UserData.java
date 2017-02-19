@@ -175,18 +175,6 @@ public class UserData {
 		return ImmutableSet.copyOf(chunkLoaders.get(type));
 	}
 
-	public ImmutableSet<ChunkLoader> getOnlineChunkLoaders() {
-		ArrayList<ChunkLoader> onlineLoaders = Lists.newArrayList();
-		chunkLoaders.values().forEach(activeChunkLoaders ->
-			onlineLoaders.addAll(activeChunkLoaders.stream()
-				.filter(chunkLoader -> chunkLoader.getOfflineDuration().isZero())
-				.collect(Collectors.toCollection(ArrayList::new))
-			)
-		);
-
-		return ImmutableSet.copyOf(onlineLoaders);
-	}
-
 	public void addChunkLoader(ChunkLoader chunkLoader, ChunkLoaderType type) {
 		chunkLoaders.get(type).add(chunkLoader);
 	}

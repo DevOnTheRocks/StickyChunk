@@ -10,6 +10,8 @@ public abstract class EntityManager {
 	private SessionFactory sessionFactory;
 	private Configuration configuration;
 
+	private UserEntityManager userEntityManager;
+
 	public EntityManager() {
 		configuration = new Configuration()
 			.setProperty("hibernate.connection.driver_class", "org.sqlite.JDBC")
@@ -18,5 +20,14 @@ public abstract class EntityManager {
 			.setProperty("hibernate.connection.password", "");
 
 		sessionFactory = configuration.buildSessionFactory();
+		userEntityManager = new UserEntityManager();
+	}
+
+	public UserEntityManager getUserEntityManager() {
+		return userEntityManager;
+	}
+
+	protected Session getSession() {
+		return sessionFactory.openSession();
 	}
 }

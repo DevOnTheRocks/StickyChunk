@@ -60,6 +60,7 @@ import rocks.devonthe.stickychunk.command.CommandUnload;
 import rocks.devonthe.stickychunk.config.ConfigManager;
 import rocks.devonthe.stickychunk.config.StickyChunkConfig;
 import rocks.devonthe.stickychunk.data.DataStore;
+import rocks.devonthe.stickychunk.database.EntityManager;
 import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.database.SqliteDatabase;
 import rocks.devonthe.stickychunk.economy.EconomyManager;
@@ -106,6 +107,7 @@ public class StickyChunk {
 	private EconomyManager economyManager;
 	private UserStorageService userStorageService;
 
+	private EntityManager entityManager;
 	private DataStore dataStore;
 	private IDatabase database;
 
@@ -134,10 +136,8 @@ public class StickyChunk {
 		dataStore = new DataStore();
 		ticketManager = new TicketManager();
 
-		dataStore.addPlayerRegions(database.loadRegionData());
-		dataStore.addUsers(database.loadUserData());
-
-		logger.info("registering callback");
+		// Load data
+		// Populate data in order: Users -> ChunkLoaders -> Chunks
 
 		// Register callbacks
 		Sponge.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
