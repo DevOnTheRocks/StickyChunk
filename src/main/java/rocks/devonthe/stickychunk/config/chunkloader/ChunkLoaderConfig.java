@@ -43,19 +43,14 @@ public class ChunkLoaderConfig {
 	@Setting(value = "Block")
 	private List<BlockChunkLoaderConfig> blocks = Lists.newArrayList();
 
-	public ChunkLoaderConfig(String name, ChunkLoaderType type, String duration, boolean afk) {
-		this.name = name;
-		this.type = type.toString().toLowerCase();
-		this.duration = duration;
-		this.afk = afk;
+	public ChunkLoaderConfig() {
+		if (commands.isEmpty() && blocks.isEmpty())
+			addExampleConfigs();
 	}
 
 	private void addExampleConfigs() {
 		commands.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
 		commands.add(new CommandChunkLoaderConfig("world", "1d", true, true));
-		blocks.add(
-			new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.IRON_BLOCK, ItemTypes.DIAMOND, ItemTypes.NONE,
-				"8h"
-			));
+		blocks.add(new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.QUARTZ_BLOCK, ItemTypes.DIAMOND, ItemTypes.NONE, "8h"));
 	}
 }
