@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
@@ -125,33 +126,33 @@ public class MongodbDatabase implements IDatabase {
 		MongoCollection<Document> collection = getDatabase().getCollection("chunks");
 
 		Document regionDocument = new Document("_id", loadedRegion.getUniqueId().toString())
-				.append("owner", loadedRegion.getOwner().toString())
-				.append("world", loadedRegion.getWorld().getUniqueId().toString())
-				.append("type", loadedRegion.getType().toString())
-				.append("fromX", loadedRegion.getRegion().getFrom().getX())
-				.append("fromZ", loadedRegion.getRegion().getFrom().getZ())
-				.append("toX", loadedRegion.getRegion().getTo().getX())
-				.append("toZ", loadedRegion.getRegion().getTo().getZ())
-				.append("created", loadedRegion.getEpoch());
+			.append("owner", loadedRegion.getOwner().toString())
+			.append("world", loadedRegion.getWorld().getUniqueId().toString())
+			.append("type", loadedRegion.getType().toString())
+			.append("fromX", loadedRegion.getRegion().getFrom().getX())
+			.append("fromZ", loadedRegion.getRegion().getFrom().getZ())
+			.append("toX", loadedRegion.getRegion().getTo().getX())
+			.append("toZ", loadedRegion.getRegion().getTo().getZ())
+			.append("created", loadedRegion.getEpoch());
 
 		collection.replaceOne(
-				Filters.eq("_id", loadedRegion.getUniqueId().toString()),
-				regionDocument,
-				(new UpdateOptions()).upsert(true)
+			Filters.eq("_id", loadedRegion.getUniqueId().toString()),
+			regionDocument,
+			(new UpdateOptions()).upsert(true)
 		);
 	}
 
 	public void saveUserData(UserData userData) {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 
-		Document userDocument = new Document("_id", userData.getUniqueId())
-				.append("seen", userData.getLastSeen())
-				.append("joined", userData.getUserJoined());
+		Document userDocument = new Document("_id", userData.getUser())
+			.append("seen", userData.getLastSeen())
+			.append("joined", userData.getUserJoined());
 
 		collection.replaceOne(
-				Filters.eq("_id", userData.getUniqueId().toString()),
-				userDocument,
-				(new UpdateOptions()).upsert(true)
+			Filters.eq("_id", userData.getUser().toString()),
+			userDocument,
+			(new UpdateOptions()).upsert(true)
 		);
 	}
 
@@ -185,7 +186,7 @@ public class MongodbDatabase implements IDatabase {
 	public void deleteUserData(UserData userData) {
 		MongoCollection<Document> collection = getDatabase().getCollection("users");
 
-		Bson condition = new Document("_id", userData.getUniqueId().toString());
+		Bson condition = new Document("_id", userData.getUser().toString());
 		collection.deleteOne(condition);
 	}
 

@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
@@ -46,7 +47,7 @@ public interface IDatabase {
 
 	void deleteRegionData(LoadedRegion region);
 
-	void deleteRegionData( ArrayList<LoadedRegion> regions);
+	void deleteRegionData(ArrayList<LoadedRegion> regions);
 
 	void saveUserData(UserData userData);
 

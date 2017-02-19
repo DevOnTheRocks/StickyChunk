@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.database;
 
 import com.google.common.collect.ImmutableSet;
@@ -108,7 +109,8 @@ public abstract class SqlDatabase implements IDatabase {
 	}
 
 	public void saveRegionData(LoadedRegion loadedRegion) {
-		String sql = String.format("INSERT OR REPLACE INTO chunks(%s) VALUES(?,?,?,?,?,?,?,?,?)", Schema.getChunkProperties());
+		String sql = String.format(
+			"INSERT OR REPLACE INTO chunks(%s) VALUES(?,?,?,?,?,?,?,?,?)", Schema.getChunkProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
 			statement.setString(1, loadedRegion.getUniqueId().toString());
@@ -139,7 +141,7 @@ public abstract class SqlDatabase implements IDatabase {
 		String sql = String.format("INSERT OR REPLACE INTO users(%s) VALUES(?,?,?)", Schema.getUserProperties());
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, userData.getUniqueId().toString());
+			statement.setString(1, userData.getUser().toString());
 			statement.setDate(2, userData.getLastSeen());
 			statement.setDate(3, userData.getUserJoined());
 			statement.execute();
@@ -177,9 +179,9 @@ public abstract class SqlDatabase implements IDatabase {
 		String sql = "DELETE FROM users WHERE id = ?";
 
 		try (PreparedStatement statement = getConnection().prepareStatement(sql)) {
-			statement.setString(1, userData.getUniqueId().toString());
+			statement.setString(1, userData.getUser().toString());
 			statement.execute();
- 		} catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			logger.error(String.format("Unable to delete record from the users table: %s", e.getMessage()));
 		}

@@ -25,8 +25,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.command;
 
+import com.google.common.collect.Maps;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -46,6 +48,8 @@ import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.permission.Permissions;
 import rocks.devonthe.stickychunk.world.Region;
+
+import java.util.Map;
 
 public class CommandLoad implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
@@ -81,6 +85,9 @@ public class CommandLoad implements CommandExecutor {
 		if (!(src instanceof Player))
 			return execServer(src, args);
 
+		Map<String, String> chunkloaders = Maps.newHashMap();
+		chunkloaders.put("block", "IronBlockEnderEye");
+
 		Player player = (Player) src;
 		Region region = new Region(player.getLocation());
 		LoadedRegion.ChunkType type = args.<LoadedRegion.ChunkType>getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
@@ -91,7 +98,8 @@ public class CommandLoad implements CommandExecutor {
 
 		loadedRegion.assignTicket();
 		if (loadedRegion.isValid())
-			throw new CommandException(Text.of(TextColors.RED, "Failed to allocate a loading ticket and force region."));
+			throw new CommandException(
+				Text.of(TextColors.RED, "Failed to allocate a loading ticket and force region."));
 
 		dataStore.addPlayerRegion(player, loadedRegion);
 		loadedRegion.forceChunks();

@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.command.Argument;
 
 import com.google.common.collect.Lists;
@@ -70,7 +71,10 @@ public class ChunkTypeArgument extends CommandElement {
 			if (source.hasPermission(String.format("%s.%s", Permissions.COMMAND_CREATE, type)))
 				return LoadedRegion.ChunkType.asMap().get(type);
 			else
-				throw new ArgumentParseException(Text.of(TextColors.RED, String.format("You do not have permission to create %s chunks", type)), type, 0);
+				throw new ArgumentParseException(
+					Text.of(TextColors.RED, String.format("You do not have permission to create %s chunks", type)),
+					type, 0
+				);
 		} else {
 			throw new ArgumentParseException(Text.of(TextColors.RED, "Chunk type does not exist."), type, 0);
 		}

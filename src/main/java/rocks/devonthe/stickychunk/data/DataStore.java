@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.data;
 
 import com.google.common.collect.ImmutableSet;
@@ -33,186 +34,143 @@ import com.google.common.collect.Maps;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
-import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
-import rocks.devonthe.stickychunk.database.IDatabase;
-import rocks.devonthe.stickychunk.world.Region;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
+import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class DataStore {
-	private Map<UUID, UserData> loadedUsers = Maps.newHashMap();
-	private Map<UUID, ArrayList<LoadedRegion>> loadedRegions = Maps.newHashMap();
+	private Map<UUID, UserData> userChunkData = Maps.newHashMap();
 
-	private IDatabase database = StickyChunk.getInstance().getDatabase();
-
-	public ImmutableSet<UserData> getLoadedUsers() {
-		return ImmutableSet.copyOf(loadedUsers.values());
+	public ImmutableSet<UUID> getAllUsers() {
+		return ImmutableSet.copyOf(userChunkData.keySet());
 	}
 
-	public ImmutableSet<UUID> getPlayers() {
-		return ImmutableSet.copyOf(loadedRegions.keySet());
+	public ImmutableSet<UserData> getAllUserData() {
+		return ImmutableSet.copyOf(userChunkData.values());
 	}
 
-	public ImmutableSet<ArrayList<LoadedRegion>> getRegions() {
-		return ImmutableSet.copyOf(loadedRegions.values());
+	public ImmutableSet<ChunkLoader> getCollatedChunkLoaders() {
+		ArrayList<ChunkLoader> chunkLoaders = Lists.newArrayList();
+		userChunkData.values().forEach(userData ->
+			chunkLoaders.addAll(userData.getChunkLoaders())
+		);
+
+		return ImmutableSet.copyOf(chunkLoaders);
 	}
 
-	public ImmutableSet<LoadedRegion> getCollatedRegions() {
-		ArrayList<LoadedRegion> regions = Lists.newArrayList();
-		loadedRegions.values().forEach(regions::addAll);
+	public ImmutableSet<Chunk> getCollatedChunks() {
+		ArrayList<Chunk> chunks = Lists.newArrayList();
+		userChunkData.values().forEach(userData ->
+			chunks.addAll(userData.getCollatedChunks())
+		);
 
-		return ImmutableSet.copyOf(regions);
+		return ImmutableSet.copyOf(chunks);
+	}
+
+	public ImmutableSet<World> getUserWorlds(UUID uuid) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		return ImmutableSet.copyOf(userData.getLoadedWorlds());
+	}
+
+	public ImmutableSet<World> getUserWorlds(User user) {
+		return getUserWorlds(user.getUniqueId());
+	}
+
+	public ImmutableSet<Chunk> getUserChunks(UUID uuid) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		return ImmutableSet.copyOf(userData.getCollatedChunks());
+	}
+
+	public ImmutableSet<Chunk> getUserChunks(User user) {
+		return getUserChunks(user.getUniqueId());
+	}
+
+	public ImmutableSet<Chunk> getUserChunks(UUID uuid, World world) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		return ImmutableSet.copyOf(userData.getChunks(world));
+	}
+
+	public ImmutableSet<Chunk> getUserChunks(User user, World world) {
+		return getUserChunks(user.getUniqueId());
+	}
+
+	public ImmutableSet<Chunk> getUserChunks(UUID uuid, World world, ChunkLoaderType type) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		return ImmutableSet.copyOf(userData.getChunks(type, world));
+	}
+
+	public ImmutableSet<Chunk> getUserChunks(User user, World world, ChunkLoaderType type) {
+		return getUserChunks(user.getUniqueId(), world, type);
+	}
+
+	public void addUserChunkLoader(UUID uuid, ChunkLoaderType type, ChunkLoader chunkLoader) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		userData.addChunkLoader(chunkLoader, type);
+		userChunkData.put(uuid, userData);
+	}
+
+	public void addUserChunkLoader(User user, ChunkLoaderType type, ChunkLoader chunkLoader) {
+		addUserChunkLoader(user.getUniqueId(), type, chunkLoader);
+	}
+
+	public void addUserChunkLoaders(UUID uuid, ChunkLoaderType type, ArrayList<ChunkLoader> chunkLoaders) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		userData.addChunkLoaders(chunkLoaders, type);
+		userChunkData.put(uuid, userData);
+	}
+
+	public void addUserChunkLoaders(User user, ChunkLoaderType type, ArrayList<ChunkLoader> chunkLoaders) {
+		addUserChunkLoaders(user.getUniqueId(), type, chunkLoaders);
+	}
+
+	public boolean isChunkLoaded(Chunk chunk) {
+		return getCollatedChunks().stream()
+			.anyMatch(loadedChunk ->
+				loadedChunk.getUniqueId().equals(chunk.getUniqueId()) &&
+					loadedChunk.getWorld().getUniqueId().equals(chunk.getWorld().getUniqueId())
+			);
+	}
+
+	public UserData getOrCreateUserData(UUID uuid) {
+		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
+
+		if (userChunkData.containsKey(uuid)) {
+			return userChunkData.get(uuid);
+		} else {
+			UserData userData = new UserData(uuid, now, now);
+			userChunkData.put(uuid, userData);
+			return userData;
+		}
 	}
 
 	public UserData getOrCreateUserData(User user) {
 		return getOrCreateUserData(user.getUniqueId());
 	}
 
-	public UserData getOrCreateUserData(UUID uuid) {
-		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
-
-		if (loadedUsers.containsKey(uuid)) {
-			return loadedUsers.get(uuid);
-		} else {
-			loadedUsers.put(uuid, new UserData(uuid, now, now));
-			return loadedUsers.get(uuid);
-		}
-	}
-
-	public void addUsers(ArrayList<UserData> userDatas) {
-		userDatas.forEach(user -> loadedUsers.put(user.getUniqueId(), user));
-	}
-
-	public void updateUser(UserData userData) {
-		loadedUsers.put(userData.getUniqueId(), userData);
-	}
-
-	public ArrayList<LoadedRegion> getPlayerRegions(User user) {
-		return getPlayerRegions(user.getUniqueId());
-	}
-
-	public ArrayList<LoadedRegion> getPlayerRegions(UUID uuid) {
-		if (loadedRegions.containsKey(uuid)) {
-			return loadedRegions.get(uuid);
-		} else {
-			loadedRegions.put(uuid, Lists.newArrayList());
-			return loadedRegions.get(uuid);
-		}
-	}
-
-	public ArrayList<World> getPlayerRegionWorlds(User user) {
-		return getPlayerRegionWorlds(user.getUniqueId());
-	}
-
-	public ArrayList<World> getPlayerRegionWorlds(UUID uuid) {
-		ArrayList<World> worlds = Lists.newArrayList();
-		getPlayerRegions(uuid).forEach(loadedRegion -> {
-			if (!worlds.contains(loadedRegion.getWorld()))
-				worlds.add(loadedRegion.getWorld());
-		});
-		return worlds;
-	}
-
-	public void addPlayerRegions(HashMap<UUID, ArrayList<LoadedRegion>> regions) {
-		loadedRegions.putAll(regions);
-	}
-
-	public void addPlayerRegions(User user, ArrayList<LoadedRegion> regions) {
-		addPlayerRegions(user.getUniqueId(), regions);
-	}
-
-	public void addPlayerRegions(UUID uuid, ArrayList<LoadedRegion> regions) {
-		if (loadedRegions.containsKey(uuid))
-			loadedRegions.get(uuid).addAll(regions);
-		else
-			loadedRegions.put(uuid, regions);
-	}
-
-	public void addPlayerRegion(User user, LoadedRegion region) {
-		addPlayerRegion(user.getUniqueId(), region);
-	}
-
-	public void addPlayerRegion(UUID uuid, LoadedRegion region) {
-		StickyChunk.getInstance().getLogger().info(String.format("UUID is %s and region owner is %s", uuid, region.getOwner()));
-
-		if (loadedRegions.containsKey(uuid)) {
-			StickyChunk.getInstance().getLogger().info("key exists");
-			loadedRegions.get(uuid).add(region);
-		} else {
-			StickyChunk.getInstance().getLogger().info("key doesn't exist");
-			ArrayList<LoadedRegion> playerRegions = Lists.newArrayList();
-			playerRegions.add(region);
-			loadedRegions.put(uuid, playerRegions);
-		}
-	}
-
-	public void deletePlayerRegion(User user, UUID id) {
-		deletePlayerRegion(user.getUniqueId(), id);
-	}
-
-	public void deletePlayerRegion(UUID user, UUID id) {
-		StickyChunk.getInstance().getLogger().info("delete called");
-
-		if (user == null)
-			StickyChunk.getInstance().getLogger().info("user is null");
-		if (id == null)
-			StickyChunk.getInstance().getLogger().info("user is null");
-		if (getPlayerRegions(user) == null)
-			StickyChunk.getInstance().getLogger().info("regions is null");
-
-		getPlayerRegions(user).stream()
-			.filter(region -> region.getUniqueId().equals(id))
-			.findAny()
-			.ifPresent(region -> {
-				loadedRegions.get(user).remove(region);
-				database.deleteRegionData(region);
-			});
-	}
-
-	public boolean playerHasRegions(User user) {
-		return playerHasRegions(user.getUniqueId());
-	}
-
-	public boolean playerHasRegions(UUID uuid) {
-		return loadedRegions.containsKey(uuid);
-	}
-
-	public boolean isRegionLoaded(Region region) {
-		return getCollatedRegions().stream()
-			.anyMatch(loadedRegion ->
-				loadedRegion.getRegion().getWorldId().equals(region.getWorldId()) &&
-				loadedRegion.getRegion().getFrom().equals(region.getFrom()) &&
-				loadedRegion.getRegion().getTo().equals(region.getTo())
-			);
-	}
-
-	public boolean isRegionLoaded(LoadedRegion region) {
-		return getCollatedRegions().stream()
-			.anyMatch(loadedRegion ->
-				loadedRegion.getWorld().getUniqueId().equals(region.getWorld().getUniqueId()) &&
-				loadedRegion.getRegion().getFrom().equals(region.getRegion().getFrom()) &&
-				loadedRegion.getRegion().getTo().equals(region.getRegion().getTo()) &&
-				!loadedRegion.getOwner().equals(region.getOwner())
-			);
-	}
-
-	public boolean isChunkLoaded(Chunk chunk) {
-		for (LoadedRegion loadedRegion : getCollatedRegions()) {
-			 boolean result = loadedRegion.getChunks().stream()
-				.anyMatch(loadedChunk ->
-					loadedChunk.getUniqueId().equals(chunk.getUniqueId())
-				);
-
-			 if (result)
-			 	return true;
-		}
-
-		return false;
+	public void updateUserData(UserData userData) {
+		userChunkData.put(userData.getUser(), userData);
 	}
 }

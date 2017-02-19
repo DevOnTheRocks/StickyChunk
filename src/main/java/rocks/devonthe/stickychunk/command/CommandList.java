@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.command;
 
 import com.google.common.collect.Lists;
@@ -105,7 +106,8 @@ public class CommandList implements CommandExecutor {
 		loadedRegions.forEach(region -> listText.add(Text.of(
 			TextColors.GOLD, region.getChunks().size(),
 			TextColors.GREEN, Text.of(" [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]")
-				.toBuilder().onHover(TextActions.showText(Text.of(TextColors.GREEN,
+				.toBuilder().onHover(TextActions.showText(Text.of(
+					TextColors.GREEN,
 					(region.getType() == LoadedRegion.ChunkType.WORLD) ? "World" : "Personal"
 				))),
 			TextColors.WHITE, (region.getChunks().size() > 1) ? " chunks in world " : " chunk in world ",
@@ -141,9 +143,11 @@ public class CommandList implements CommandExecutor {
 					TextColors.GREEN, " [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]",
 					TextColors.WHITE, " chunks in world ",
 					TextColors.GOLD, region.getWorld().getName(),
-					TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE,
+					TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(),
+					TextColors.WHITE,
 					", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
-					TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE,
+					TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(),
+					TextColors.WHITE,
 					", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
 				)
 			);

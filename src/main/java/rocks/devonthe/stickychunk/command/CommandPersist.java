@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.command;
 
 import com.google.common.collect.Lists;
@@ -86,7 +87,9 @@ public class CommandPersist implements CommandExecutor {
 		helpContents.add(Text.of(
 			TextColors.WHITE, "StickyChunk's region selection tool is set to: ",
 			Text.builder("Blaze Rod").color(TextColors.GOLD)
-				.onHover(TextActions.showItem(ItemStack.builder().itemType(ItemTypes.BLAZE_ROD).build().createSnapshot())))
+				.onHover(
+					TextActions.showItem(ItemStack.builder().itemType(ItemTypes.BLAZE_ROD).build().createSnapshot()))
+			)
 		);
 
 		if (src.hasPermission(Permissions.COMMAND_LIST)) {

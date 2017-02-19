@@ -79,7 +79,8 @@ public class BlockChunkLoaderConfig extends CoreChunkLoaderConfig {
 		try {
 			return Duration.parse(fuelDuration);
 		} catch (DateTimeParseException e) {
-			StickyChunk.getInstance().getLogger().warn(String.format("Fuel-Duration (%s) of %s is malformed. Using 8h instead", fuelDuration, getName()));
+			StickyChunk.getInstance().getLogger().warn(
+				String.format("Fuel-Duration (%s) of %s is malformed. Using 8h instead", fuelDuration, getName()));
 			return Duration.ofHours(8);
 		}
 	}

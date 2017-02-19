@@ -25,33 +25,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.data;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
+import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Optional;
 import java.util.UUID;
 
 public class UserData {
-	UUID player;
+	private UUID user;
 	private Date seen;
 	private Date joined;
 	private UniqueAccount account;
-	private HashMap<String, ChunkLoaderData> loadedChunks;
+	private EnumMap<ChunkLoaderType, ArrayList<ChunkLoader>> chunkLoaders;
 
 	public UserData(UUID id, Date joined, Date seen) {
-		this.player = id;
+		this.user = id;
 		this.seen = seen;
 		this.joined = joined;
+		this.chunkLoaders = Maps.newEnumMap(ChunkLoaderType.class);
 
 		StickyChunk.getInstance().getEconomyManager().ifPresent(economyManager -> {
 			Optional<UniqueAccount> oAccount = economyManager.getOrCreateAccount(id);
@@ -59,8 +65,8 @@ public class UserData {
 		});
 	}
 
-	public UUID getUniqueId() {
-		return player;
+	public UUID getUser() {
+		return user;
 	}
 
 	public Date getLastSeen() {
@@ -81,28 +87,66 @@ public class UserData {
 	}
 
 	public void update() {
-		StickyChunk.getInstance().getDataStore().updateUser(this);
+		StickyChunk.getInstance().getDataStore().updateUserData(this);
 	}
 
 	public ArrayList<Chunk> getChunks(World world) {
 		ArrayList<Chunk> chunks = Lists.newArrayList();
-		loadedChunks.values().forEach(chunkLoaderData ->
-			chunks.addAll(chunkLoaderData.getChunks(world))
+		chunkLoaders.values().forEach(activeChunkLoaders ->
+			activeChunkLoaders.forEach(chunkLoader ->
+				chunks.addAll(chunkLoader.getAllChunks())
+			)
 		);
 
 		return chunks;
 	}
 
-	public ArrayList<Chunk> getChunks(String type, World world) {
-		return loadedChunks.get(type).getChunks(world);
+	public ArrayList<Chunk> getChunks(ChunkLoaderType type, World world) {
+		ArrayList<Chunk> chunks = Lists.newArrayList();
+		chunkLoaders.get(type).forEach(chunkLoader ->
+			chunks.addAll(chunkLoader.getAllChunks())
+		);
+
+		return chunks;
 	}
 
 	public ArrayList<Chunk> getCollatedChunks() {
 		ArrayList<Chunk> chunks = Lists.newArrayList();
-		loadedChunks.values().forEach(chunkLoaderData ->
-			chunks.addAll(chunkLoaderData.getAllChunks())
+		chunkLoaders.values().forEach(activeChunkLoaders ->
+			activeChunkLoaders.forEach(chunkLoader ->
+				chunks.addAll(chunkLoader.getAllChunks())
+			)
 		);
 
 		return chunks;
+	}
+
+	public ArrayList<World> getLoadedWorlds() {
+		ArrayList<World> worlds = Lists.newArrayList();
+		chunkLoaders.values().forEach(activeChunkLoaders ->
+			activeChunkLoaders.forEach(chunkLoader ->
+				worlds.addAll(chunkLoader.getAllWorlds())
+			)
+		);
+
+		return worlds;
+	}
+
+	public ImmutableSet<ChunkLoader> getChunkLoaders() {
+		ArrayList<ChunkLoader> usedChunkLoaders = Lists.newArrayList();
+		chunkLoaders.values().forEach(usedChunkLoaders::addAll);
+		return ImmutableSet.copyOf(usedChunkLoaders);
+	}
+
+	public ImmutableSet<ChunkLoader> getChunkLoader(ChunkLoaderType type) {
+		return ImmutableSet.copyOf(chunkLoaders.get(type));
+	}
+
+	public void addChunkLoader(ChunkLoader chunkLoader, ChunkLoaderType type) {
+		chunkLoaders.get(type).add(chunkLoader);
+	}
+
+	public void addChunkLoaders(ArrayList<ChunkLoader> newChunkLoaders, ChunkLoaderType type) {
+		chunkLoaders.get(type).addAll(newChunkLoaders);
 	}
 }

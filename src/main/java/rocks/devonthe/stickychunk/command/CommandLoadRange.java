@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.command;
 
 import org.spongepowered.api.command.CommandException;
@@ -85,7 +86,8 @@ public class CommandLoadRange implements CommandExecutor {
 		LoadedRegion.ChunkType type = (LoadedRegion.ChunkType) args.getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
 
 		if (!RegionAreaListener.exists(player))
-			throw new CommandException(Text.of(TextColors.RED, "You must have a selected region before loading multiple chunks."));
+			throw new CommandException(
+				Text.of(TextColors.RED, "You must have a selected region before loading multiple chunks."));
 
 		RegionAreaListener.PlayerData playerData = RegionAreaListener.get(player);
 		Coordinate from = new Coordinate(new Location<>(player.getWorld(), playerData.getPos1()).getChunkPosition());

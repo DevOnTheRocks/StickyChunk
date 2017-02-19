@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.chunkload;
 
 import com.google.common.collect.ImmutableList;
@@ -95,7 +96,9 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 				if (world.getUniqueId().equals(region.getWorld().getUniqueId())) {
 					region.assignTicket(tickets.get(index));
 					assignedRegions.add(region);
-					StickyChunk.getInstance().getLogger().info(String.format("registering ticket to %s", region.getOwner().toString()));
+					StickyChunk.getInstance()
+						.getLogger()
+						.info(String.format("registering ticket to %s", region.getOwner().toString()));
 				}
 				index++;
 			}
@@ -147,11 +150,15 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 			toKeep.addAll(worldTickets);
 			toKeep.addAll(personalTickets);
 
-			StickyChunk.getInstance().getLogger().info(String.format("Returning sorted tickets of size: %s", toKeep.size()));
+			StickyChunk.getInstance()
+				.getLogger()
+				.info(String.format("Returning sorted tickets of size: %s", toKeep.size()));
 
 			return toKeep;
 		} else {
-			StickyChunk.getInstance().getLogger().info(String.format("Returning all tickets of size: %s", tickets.size()));
+			StickyChunk.getInstance()
+				.getLogger()
+				.info(String.format("Returning all tickets of size: %s", tickets.size()));
 
 			return tickets;
 		}

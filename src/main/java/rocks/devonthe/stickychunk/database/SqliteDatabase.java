@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.database;
 
 import org.slf4j.Logger;
@@ -54,7 +55,8 @@ public class SqliteDatabase extends SqlDatabase {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s%s%s.db", databaseLocation, File.separator, databaseName));
+			connection = DriverManager.getConnection(
+				String.format("jdbc:sqlite:%s%s%s.db", databaseLocation, File.separator, databaseName));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			logger.error("Unable to load the JDBC driver");

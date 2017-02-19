@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.listener;
 
 import com.flowpowered.math.vector.Vector3i;
@@ -59,9 +60,12 @@ public class RegionAreaListener {
 			return;
 
 		Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
-		if (item.isPresent() && item.get().getItem().equals(ItemTypes.BLAZE_ROD) && event.getTargetBlock() != BlockSnapshot.NONE) {
+		if (item.isPresent() && item.get()
+			.getItem()
+			.equals(ItemTypes.BLAZE_ROD) && event.getTargetBlock() != BlockSnapshot.NONE) {
 			get(player).setPos2(event.getTargetBlock().getPosition());
-			player.sendMessage(Text.of(TextColors.LIGHT_PURPLE, "Position 2 set to " + event.getTargetBlock().getPosition()));
+			player.sendMessage(
+				Text.of(TextColors.LIGHT_PURPLE, "Position 2 set to " + event.getTargetBlock().getPosition()));
 			event.setCancelled(true);
 		}
 	}
@@ -79,7 +83,8 @@ public class RegionAreaListener {
 		Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
 		if (item.isPresent() && item.get().getItem().equals(ItemTypes.BLAZE_ROD)) {
 			get(player).setPos1(event.getTargetBlock().getPosition());
-			player.sendMessage(Text.of(TextColors.LIGHT_PURPLE, "Position 1 set to " + event.getTargetBlock().getPosition()));
+			player.sendMessage(
+				Text.of(TextColors.LIGHT_PURPLE, "Position 1 set to " + event.getTargetBlock().getPosition()));
 			event.setCancelled(true);
 		}
 	}

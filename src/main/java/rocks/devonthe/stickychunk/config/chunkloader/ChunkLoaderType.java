@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.config.chunkloader;
 
 public enum ChunkLoaderType {
@@ -32,7 +33,7 @@ public enum ChunkLoaderType {
 	BLOCK;
 
 	public static ChunkLoaderType parse(String type) {
-		for (ChunkLoaderType chunkLoaderType :ChunkLoaderType.values()) {
+		for (ChunkLoaderType chunkLoaderType : ChunkLoaderType.values()) {
 			if (chunkLoaderType.toString().equalsIgnoreCase(type)) return chunkLoaderType;
 		}
 		throw new IllegalArgumentException(String.format("Invalid ChunkLoaderType (%s) found!", type));

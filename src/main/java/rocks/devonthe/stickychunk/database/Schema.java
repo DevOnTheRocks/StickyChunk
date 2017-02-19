@@ -25,24 +25,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.database;
 
 public interface Schema {
-	static final String CHUNKSCHEMA =	"id			STRING PRIMARY KEY," +
-										"owner		STRING," +
-										"world 		STRING," +
-										"type		STRING," +
-										"fromX		INT," +
-										"fromZ		INT," +
-										"toX		INT," +
-										"toZ		INT," +
-										"created	DATETIME";
+	static final String CHUNKSCHEMA = "id			STRING PRIMARY KEY," +
+		"owner		STRING," +
+		"world 		STRING," +
+		"type		STRING," +
+		"fromX		INT," +
+		"fromZ		INT," +
+		"toX		INT," +
+		"toZ		INT," +
+		"created	DATETIME";
 
 	static final String CHUNKPROPS = "id, owner, world, type, fromX, fromZ, toX, toZ, created";
 
-	static final String USERSCHEMA =	"user		STRING PRIMARY KEY," +
-										"seen		DATETIME," +
-										"joined		DATETIME";
+	static final String USERSCHEMA = "user		STRING PRIMARY KEY," +
+		"seen		DATETIME," +
+		"joined		DATETIME";
 
 	static final String USERPROPS = "user, seen, joined";
 

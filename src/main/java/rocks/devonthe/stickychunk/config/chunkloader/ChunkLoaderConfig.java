@@ -25,6 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.config.chunkloader;
 
 import com.google.common.collect.Lists;
@@ -42,14 +43,19 @@ public class ChunkLoaderConfig {
 	@Setting(value = "Block")
 	private List<BlockChunkLoaderConfig> blocks = Lists.newArrayList();
 
-	public ChunkLoaderConfig() {
-		if (commands.isEmpty() && blocks.isEmpty())
-			addExampleConfigs();
+	public ChunkLoaderConfig(String name, ChunkLoaderType type, String duration, boolean afk) {
+		this.name = name;
+		this.type = type.toString().toLowerCase();
+		this.duration = duration;
+		this.afk = afk;
 	}
 
 	private void addExampleConfigs() {
 		commands.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
 		commands.add(new CommandChunkLoaderConfig("world", "1d", true, true));
-		blocks.add(new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.IRON_BLOCK, ItemTypes.DIAMOND, ItemTypes.NONE, "8h"));
+		blocks.add(
+			new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.IRON_BLOCK, ItemTypes.DIAMOND, ItemTypes.NONE,
+				"8h"
+			));
 	}
 }

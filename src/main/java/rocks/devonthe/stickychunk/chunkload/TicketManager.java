@@ -25,12 +25,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package rocks.devonthe.stickychunk.chunkload;
 
 import org.spongepowered.api.world.World;
 import org.spongepowered.mod.service.world.SpongeChunkTicketManager;
 import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.data.DataStore;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,10 +47,10 @@ public class TicketManager extends SpongeChunkTicketManager {
 
 	public void validateLoadedRegions() {
 		List<LoadedRegion> invalidRegions = StickyChunk.getInstance().getDataStore()
-				.getCollatedRegions()
-				.stream()
-				.filter(region -> !region.isValid())
-				.collect(Collectors.toList());
+			.getCollatedRegions()
+			.stream()
+			.filter(region -> !region.isValid())
+			.collect(Collectors.toList());
 
 		invalidRegions.forEach(LoadedRegion::assignTicket);
 	}
