@@ -51,6 +51,10 @@ public class BlockChunkLoaderConfig extends CoreChunkLoaderConfig {
 	@Setting(value = "Fuel-Duration", comment = "The amount of time to activate the chunk loader for each fuel consumed.")
 	private String fuelDuration = "8h";
 
+	public BlockChunkLoaderConfig() {
+
+	}
+
 	public BlockChunkLoaderConfig(String name, String duration, boolean afk, BlockType block, ItemType item, ItemType fuel, String fuelDuration) {
 		super(name, duration, afk);
 		this.blockId = block.getId();
