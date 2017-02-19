@@ -30,68 +30,59 @@ package rocks.devonthe.stickychunk.chunkload.chunkloader;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager;
 import org.spongepowered.api.world.World;
+import rocks.devonthe.stickychunk.StickyChunk;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class ChunkLoader {
-	private Duration offlineDuration;
-
-	private HashMap<World, ArrayList<Chunk>> chunks;
 	private HashMap<World, ChunkTicketManager.LoadingTicket> tickets;
+	private Duration offlineDuration;
+	private ArrayList<Chunk> chunks;
+	private UUID worldId;
 
-	public ArrayList<Chunk> getChunks(World world) {
-		return (chunks.containsKey(world)) ?
-			   chunks.get(world) :
-			   Lists.newArrayList();
+	public UUID getWorldId() {
+		return worldId;
 	}
 
-	public Optional<ChunkTicketManager.LoadingTicket> getTicket(World world) {
-		return (tickets.containsKey(world)) ?
-			   Optional.of(tickets.get(world)) :
-			   Optional.empty();
+	public Optional<World> getWorld() {
+		return Sponge.getServer().getWorld(worldId);
 	}
 
-	public ArrayList<Chunk> getAllChunks() {
-		ArrayList<Chunk> foundChunks = Lists.newArrayList();
-		chunks.values().forEach(chunkList ->
-			chunkList.forEach(foundChunks::add)
-		);
-		return foundChunks;
+	public ImmutableSet<Chunk> getChunks() {
+		return ImmutableSet.copyOf(chunks);
 	}
 
-	public ImmutableSet<ChunkTicketManager.LoadingTicket> getAllTickets() {
-		ArrayList<ChunkTicketManager.LoadingTicket> foundTickets = Lists.newArrayList();
-		tickets.values().forEach(foundTickets::add);
-		return ImmutableSet.copyOf(foundTickets);
+	public void addChunk(Chunk chunk) {
+		this.chunks.add(chunk);
 	}
 
-	public ImmutableSet<World> getAllWorlds() {
-		return ImmutableSet.copyOf(chunks.keySet());
+	public void addChunks(ArrayList<Chunk> chunks) {
+		this.chunks.addAll(chunks);
 	}
 
-	public void addChunk(World world, Chunk chunk) {
-		this.chunks.get(world).add(chunk);
-	}
-
-	public void addChunks(World world, ArrayList<Chunk> chunks) {
-		this.chunks.get(world).addAll(chunks);
-	}
-
-	public Duration getOfflineDuration() {
-		return offlineDuration;
+	public Optional<Duration> getOfflineDuration() {
+		return (offlineDuration == null || offlineDuration.isNegative()) ?
+			Optional.empty() :
+			Optional.of(offlineDuration);
 	}
 
 	public void forceChunks() {
-		chunks.values().forEach(chunks ->
-			chunks.forEach(chunk ->
-				tickets.get(chunk.getWorld()).forceChunk(chunk.getPosition())
-			)
+		chunks.forEach(chunk ->
+			tickets.get(chunk.getWorld()).forceChunk(chunk.getPosition())
+		);
+	}
+
+	public void unForceChunks() {
+		chunks.forEach(chunk ->
+			tickets.get(chunk.getWorld()).unforceChunk(chunk.getPosition())
 		);
 	}
 }

@@ -34,6 +34,7 @@ import com.google.common.collect.Maps;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
@@ -44,12 +45,16 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity(name = "user")
 public class UserData {
@@ -67,6 +72,7 @@ public class UserData {
 
 	private UniqueAccount account;
 	private EnumMap<ChunkLoaderType, ArrayList<ChunkLoader>> chunkLoaders;
+	private Map<UUID, LoadingTicket> tickets;
 
 	protected UserData() {
 		// Zero-argument constructor for Hibernate
@@ -111,20 +117,28 @@ public class UserData {
 
 	public ArrayList<Chunk> getChunks(World world) {
 		ArrayList<Chunk> chunks = Lists.newArrayList();
-		chunkLoaders.values().forEach(activeChunkLoaders ->
-			activeChunkLoaders.forEach(chunkLoader ->
-				chunks.addAll(chunkLoader.getAllChunks())
-			)
-		);
+
+		chunkLoaders.values().forEach(activeChunkLoaders -> {
+			activeChunkLoaders.stream()
+				.filter(chunkLoader -> chunkLoader.getWorldId().equals(world.getUniqueId()))
+				.collect(Collectors.toCollection(ArrayList::new))
+				.forEach(chunkLoader ->
+					chunks.addAll(chunkLoader.getChunks())
+				);
+		});
 
 		return chunks;
 	}
 
 	public ArrayList<Chunk> getChunks(ChunkLoaderType type, World world) {
 		ArrayList<Chunk> chunks = Lists.newArrayList();
-		chunkLoaders.get(type).forEach(chunkLoader ->
-			chunks.addAll(chunkLoader.getAllChunks())
-		);
+
+		chunkLoaders.get(type).stream()
+			.filter(chunkLoader -> chunkLoader.getWorldId().equals(world.getUniqueId()))
+			.collect(Collectors.toCollection(ArrayList::new))
+			.forEach(chunkLoader ->
+				chunks.addAll(chunkLoader.getChunks())
+			);
 
 		return chunks;
 	}
@@ -133,7 +147,7 @@ public class UserData {
 		ArrayList<Chunk> chunks = Lists.newArrayList();
 		chunkLoaders.values().forEach(activeChunkLoaders ->
 			activeChunkLoaders.forEach(chunkLoader ->
-				chunks.addAll(chunkLoader.getAllChunks())
+				chunks.addAll(chunkLoader.getChunks())
 			)
 		);
 
@@ -144,7 +158,7 @@ public class UserData {
 		ArrayList<World> worlds = Lists.newArrayList();
 		chunkLoaders.values().forEach(activeChunkLoaders ->
 			activeChunkLoaders.forEach(chunkLoader ->
-				worlds.addAll(chunkLoader.getAllWorlds())
+				chunkLoader.getWorld().ifPresent(worlds::add)
 			)
 		);
 
@@ -157,8 +171,20 @@ public class UserData {
 		return ImmutableSet.copyOf(usedChunkLoaders);
 	}
 
-	public ImmutableSet<ChunkLoader> getChunkLoader(ChunkLoaderType type) {
+	public ImmutableSet<ChunkLoader> getChunkLoaders(ChunkLoaderType type) {
 		return ImmutableSet.copyOf(chunkLoaders.get(type));
+	}
+
+	public ImmutableSet<ChunkLoader> getOnlineChunkLoaders() {
+		ArrayList<ChunkLoader> onlineLoaders = Lists.newArrayList();
+		chunkLoaders.values().forEach(activeChunkLoaders ->
+			onlineLoaders.addAll(activeChunkLoaders.stream()
+				.filter(chunkLoader -> chunkLoader.getOfflineDuration().isZero())
+				.collect(Collectors.toCollection(ArrayList::new))
+			)
+		);
+
+		return ImmutableSet.copyOf(onlineLoaders);
 	}
 
 	public void addChunkLoader(ChunkLoader chunkLoader, ChunkLoaderType type) {

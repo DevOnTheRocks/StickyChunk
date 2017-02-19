@@ -35,6 +35,7 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.database.IDatabase;
@@ -52,38 +53,31 @@ public class PlayerConnectionListener {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 		UserData userData = dataStore.getOrCreateUserData(player);
 
-		int index[] = new int[1];
-		dataStore.getUser(player.getUniqueId()).forEach(region -> {
-			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
-				region.forceChunks();
-			index[0]++;
-		});
+		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(chunkLoader ->
+			chunkLoader.getOfflineDuration().ifPresent(duration -> {
+				if (duration.isZero())
+					chunkLoader.forceChunks();
+				else {
+					// Create task
+				}
+			})
+		);
 
-		logger.info(String.format("Loaded %s chunks for %s", index[0], player.getName()));
-
-		// Update the userData in case it's an existing userData
 		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
-
 		database.saveUserData(userData);
+
+		// TODO:- Drop any user data and chunkloaders that have been unforced
 	}
 
 	@Listener
 	public void onPlayerLeave(ClientConnectionEvent.Disconnect event, @Root Player player) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
+
+		// TODO:- Load user record & chunkloaders from the database
+
 		UserData userData = dataStore.getOrCreateUserData(player);
+		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);
 
-		int index[] = new int[1];
-		index[0] = 0;
-		dataStore.getPlayerRegions(player.getUniqueId()).forEach(region -> {
-			if (region.getType() == LoadedRegion.ChunkType.PERSONAL) {
-				region.unForceChunks();
-				index[0]++;
-			}
-		});
-
-		logger.info(String.format("Unloaded %s chunks for %s", index[0], player.getName()));
-
-		// Update the userData in case it's an existing userData
 		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
 		database.saveUserData(userData);
 	}
