@@ -35,6 +35,10 @@ public class CommandChunkLoaderConfig extends CoreChunkLoaderConfig {
 	@Setting(value = "Allow-Regions", comment = "Allow loading of multi-chunk regions.")
 	private boolean allowRegion = true;
 
+	public CommandChunkLoaderConfig() {
+
+	}
+
 	public CommandChunkLoaderConfig(String name, String duration, boolean afk, boolean allowRegion) {
 		super(name, duration, afk);
 		this.allowRegion = allowRegion;
