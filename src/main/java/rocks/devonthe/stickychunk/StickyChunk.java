@@ -36,9 +36,8 @@ import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.game.state.GameAboutToStartServerEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -66,7 +65,6 @@ import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.UUID;
 
 import static rocks.devonthe.stickychunk.StickyChunk.*;
 
@@ -88,6 +86,8 @@ public class StickyChunk {
 	private Logger logger;
 	@Inject
 	private Game game;
+	@Inject
+	private PluginContainer pluginContainer;
 	@Inject
 	@ConfigDir(sharedRoot = false)
 	private Path configDirectory;
@@ -212,6 +212,10 @@ public class StickyChunk {
 
 	public static StickyChunk getInstance() {
 		return instance;
+	}
+
+	public Cause getCause() {
+		return Cause.source(pluginContainer).build();
 	}
 
 	public Logger getLogger() {
