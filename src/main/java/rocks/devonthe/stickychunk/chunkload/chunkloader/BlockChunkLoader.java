@@ -28,6 +28,17 @@
 
 package rocks.devonthe.stickychunk.chunkload.chunkloader;
 
-public class BlockChunkLoader extends ChunkLoader {
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
+public class BlockChunkLoader extends ChunkLoader {
+	private Location<World> location;
+
+	public BlockChunkLoader(Location<World> location) {
+		this.location = location;
+	}
+
+	public Location<World> getLocation() {
+		return location;
+	}
 }

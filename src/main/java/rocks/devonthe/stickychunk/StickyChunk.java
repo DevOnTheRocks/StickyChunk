@@ -63,6 +63,7 @@ import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.IDatabase;
 import rocks.devonthe.stickychunk.database.SqliteDatabase;
 import rocks.devonthe.stickychunk.economy.EconomyManager;
+import rocks.devonthe.stickychunk.listener.ChunkLoaderListener;
 import rocks.devonthe.stickychunk.listener.PlayerConnectionListener;
 import rocks.devonthe.stickychunk.listener.RegionAreaListener;
 
@@ -144,6 +145,7 @@ public class StickyChunk {
 		// Register events
 		Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());
 		Sponge.getGame().getEventManager().registerListeners(this, new RegionAreaListener());
+		Sponge.getGame().getEventManager().registerListeners(this, new ChunkLoaderListener());
 	}
 
 	@Listener

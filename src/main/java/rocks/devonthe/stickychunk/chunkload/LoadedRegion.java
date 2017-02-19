@@ -68,7 +68,8 @@ public class LoadedRegion {
 
 	public enum ChunkType {
 		PERSONAL("personal"),
-		WORLD("world");
+		WORLD("world"),
+		BLOCK("block");
 
 		private final String text;
 
