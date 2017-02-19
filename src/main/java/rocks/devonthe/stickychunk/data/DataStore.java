@@ -28,6 +28,7 @@
 
 package rocks.devonthe.stickychunk.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -118,6 +119,18 @@ public class DataStore {
 
 	public ImmutableSet<Chunk> getUserChunks(User user, World world, ChunkLoaderType type) {
 		return getUserChunks(user.getUniqueId(), world, type);
+	}
+
+	public ImmutableSet<ChunkLoader> getUserChunkLoaders(UUID uuid) {
+		UserData userData = (userChunkData.containsKey(uuid)) ?
+							userChunkData.get(uuid) :
+							getOrCreateUserData(uuid);
+
+		return userData.getChunkLoaders();
+	}
+
+	public ImmutableSet<ChunkLoader> getUserChunkLoaders(User user) {
+		return getUserChunkLoaders(user.getUniqueId());
 	}
 
 	public void addUserChunkLoader(UUID uuid, ChunkLoaderType type, ChunkLoader chunkLoader) {

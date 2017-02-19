@@ -39,6 +39,11 @@ import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -46,12 +51,26 @@ import java.util.EnumMap;
 import java.util.Optional;
 import java.util.UUID;
 
+@Entity(name = "user")
 public class UserData {
+	@Id
+	@Column(name = "user")
 	private UUID user;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "seen")
 	private Date seen;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "joined")
 	private Date joined;
+
 	private UniqueAccount account;
 	private EnumMap<ChunkLoaderType, ArrayList<ChunkLoader>> chunkLoaders;
+
+	protected UserData() {
+		// Zero-argument constructor for Hibernate
+	}
 
 	public UserData(UUID id, Date joined, Date seen) {
 		this.user = id;

@@ -53,7 +53,7 @@ public class PlayerConnectionListener {
 		UserData userData = dataStore.getOrCreateUserData(player);
 
 		int index[] = new int[1];
-		dataStore.getPlayerRegions(player.getUniqueId()).forEach(region -> {
+		dataStore.getUser(player.getUniqueId()).forEach(region -> {
 			if (region.getType() == LoadedRegion.ChunkType.PERSONAL)
 				region.forceChunks();
 			index[0]++;

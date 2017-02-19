@@ -86,4 +86,12 @@ public abstract class ChunkLoader {
 	public Duration getOfflineDuration() {
 		return offlineDuration;
 	}
+
+	public void forceChunks() {
+		chunks.values().forEach(chunks ->
+			chunks.forEach(chunk ->
+				tickets.get(chunk.getWorld()).forceChunk(chunk.getPosition())
+			)
+		);
+	}
 }
