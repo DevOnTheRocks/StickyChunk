@@ -34,18 +34,17 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.data.UserData;
-import rocks.devonthe.stickychunk.database.IDatabase;
+import rocks.devonthe.stickychunk.database.EntityManager;
 
 import java.sql.Date;
 import java.time.Instant;
 
 public class PlayerConnectionListener {
+	EntityManager entityManager = StickyChunk.getInstance().getEntityManager();
 	DataStore dataStore = StickyChunk.getInstance().getDataStore();
-	IDatabase database = StickyChunk.getInstance().getDatabase();
 	Logger logger = StickyChunk.getInstance().getLogger();
 
 	@Listener
@@ -64,7 +63,7 @@ public class PlayerConnectionListener {
 		);
 
 		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
-		database.saveUserData(userData);
+		entityManager.getUserEntityManager().save(userData);
 
 		// TODO:- Drop any user data and chunkloaders that have been unforced
 	}
@@ -79,6 +78,6 @@ public class PlayerConnectionListener {
 		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);
 
 		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
-		database.saveUserData(userData);
+		entityManager.getUserEntityManager().save(userData);
 	}
 }

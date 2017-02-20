@@ -45,6 +45,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -70,8 +71,13 @@ public class UserData {
 	@Column(name = "joined")
 	private Date joined;
 
+	@Transient
 	private UniqueAccount account;
+
+	@Transient
 	private EnumMap<ChunkLoaderType, ArrayList<ChunkLoader>> chunkLoaders;
+
+	@Transient
 	private Map<UUID, LoadingTicket> tickets;
 
 	protected UserData() {

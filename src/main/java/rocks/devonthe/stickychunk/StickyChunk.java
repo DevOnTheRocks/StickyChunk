@@ -61,8 +61,6 @@ import rocks.devonthe.stickychunk.config.ConfigManager;
 import rocks.devonthe.stickychunk.config.StickyChunkConfig;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.EntityManager;
-import rocks.devonthe.stickychunk.database.IDatabase;
-import rocks.devonthe.stickychunk.database.SqliteDatabase;
 import rocks.devonthe.stickychunk.economy.EconomyManager;
 import rocks.devonthe.stickychunk.listener.ChunkLoaderListener;
 import rocks.devonthe.stickychunk.listener.PlayerConnectionListener;
@@ -109,7 +107,6 @@ public class StickyChunk {
 
 	private EntityManager entityManager;
 	private DataStore dataStore;
-	private IDatabase database;
 
 	EnumMap<ChunkLoadType, String> chunkLoaders = Maps.newEnumMap(ChunkLoadType.class);
 
@@ -132,12 +129,11 @@ public class StickyChunk {
 		pluginConfigManager = new ConfigManager(configManager);
 		pluginConfigManager.save();
 
-		database = new SqliteDatabase();
 		dataStore = new DataStore();
 		ticketManager = new TicketManager();
 
 		// Load data
-		// Populate data in order: Users -> ChunkLoaders -> Chunks
+		// TODO:- Populate data in order: Users -> ChunkLoaders -> Chunks
 
 		// Register callbacks
 		Sponge.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
@@ -162,7 +158,7 @@ public class StickyChunk {
 		registerCommands();
 
 		// Validate LoadedRegions
-		ticketManager.validateLoadedRegions();
+		ticketManager.validateChunkLoaders();
 	}
 
 	@Listener
@@ -170,8 +166,9 @@ public class StickyChunk {
 		if (!enabled)
 			return;
 
-		database.saveRegionData(dataStore.getCollatedRegions());
-		database.saveUserData(dataStore.getLoadedUsers());
+		// TODO:- Store data in order: Users -> ChunksLoaders -> Chunks
+//		database.saveRegionData(dataStore.getCollatedRegions());
+//		database.saveUserData(dataStore.getLoadedUsers());
 	}
 
 	@Listener
@@ -245,8 +242,8 @@ public class StickyChunk {
 		return config;
 	}
 
-	public IDatabase getDatabase() {
-		return database;
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
 	public TicketManager getTicketManager() {

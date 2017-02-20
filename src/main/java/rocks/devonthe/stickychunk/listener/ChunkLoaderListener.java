@@ -53,12 +53,12 @@ import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.BlockChunkLoader;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 import rocks.devonthe.stickychunk.data.DataStore;
-import rocks.devonthe.stickychunk.database.IDatabase;
+import rocks.devonthe.stickychunk.database.EntityManager;
 
 import java.util.function.Consumer;
 
 public class ChunkLoaderListener {
-	private IDatabase database = StickyChunk.getInstance().getDatabase();
+	private EntityManager database = StickyChunk.getInstance().getEntityManager();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 
 	@Listener

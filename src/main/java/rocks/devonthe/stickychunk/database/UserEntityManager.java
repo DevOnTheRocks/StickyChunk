@@ -13,4 +13,8 @@ public class UserEntityManager extends EntityManager {
 	public void save(ImmutableSet<UserData> userData) {
 
 	}
+
+	public void save(UserData userData) {
+
+	}
 }

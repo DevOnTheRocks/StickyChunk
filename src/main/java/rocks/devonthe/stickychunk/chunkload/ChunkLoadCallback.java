@@ -39,6 +39,7 @@ import org.spongepowered.api.world.ChunkTicketManager.OrderedCallback;
 import org.spongepowered.api.world.ChunkTicketManager.PlayerOrderedCallback;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.data.DataStore;
 
 import java.util.ArrayList;
@@ -48,8 +49,8 @@ import java.util.UUID;
 
 public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrderedCallback {
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
-	private Set<LoadedRegion> allRegions = dataStore.getCollatedRegions();
-	private ArrayList<LoadedRegion> unassignedRegions = Lists.newArrayList(allRegions);
+	private Set<ChunkLoader> allChunkLoaders = dataStore.getCollatedChunkLoaders();
+	private ArrayList<ChunkLoader> unassignedChunkLoaders = Lists.newArrayList(allChunkLoaders);
 
 	/**
 	 * Callback for loading player Tickets during world load.
@@ -86,27 +87,7 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	 */
 	@Override
 	public void onLoaded(ImmutableList<LoadingTicket> tickets, World world) {
-		ArrayList<LoadedRegion> assignedRegions = Lists.newArrayList();
-
-		StickyChunk.getInstance().getLogger().info("registering tickets");
-
-		while (unassignedRegions.size() > 0) {
-			int index = 0;
-			for (LoadedRegion region : unassignedRegions) {
-				if (world.getUniqueId().equals(region.getWorld().getUniqueId())) {
-					region.assignTicket(tickets.get(index));
-					assignedRegions.add(region);
-					StickyChunk.getInstance()
-						.getLogger()
-						.info(String.format("registering ticket to %s", region.getOwner().toString()));
-				}
-				index++;
-			}
-
-			unassignedRegions.removeAll(assignedRegions);
-		}
-
-		assignedRegions.forEach(region -> dataStore.addPlayerRegion(region.getOwner(), region));
+		ArrayList<ChunkLoader> assignedRegions = Lists.newArrayList();
 	}
 
 	/**
@@ -124,43 +105,7 @@ public class ChunkLoadCallback implements Callback, OrderedCallback, PlayerOrder
 	 */
 	@Override
 	public List<LoadingTicket> onLoaded(ImmutableList<LoadingTicket> tickets, World world, int maxTickets) {
-		List<LoadingTicket> personalTickets = Lists.newArrayList();
-		List<LoadingTicket> worldTickets = Lists.newArrayList();
 		List<LoadingTicket> toKeep = Lists.newArrayList();
-
-		StickyChunk.getInstance().getLogger().info("sorting tickets");
-
-		if (tickets.size() > maxTickets || unassignedRegions.size() > maxTickets) {
-			tickets.forEach(ticket -> ticket.getCompanionData().getString(DataQuery.of("type")).ifPresent(type -> {
-				switch (type) {
-					case "world":
-						worldTickets.add(ticket);
-						break;
-					case "personal":
-						personalTickets.add(ticket);
-						break;
-					default:
-						ticket.release();
-						break;
-				}
-
-				StickyChunk.getInstance().getLogger().info("sorting ticket");
-			}));
-
-			toKeep.addAll(worldTickets);
-			toKeep.addAll(personalTickets);
-
-			StickyChunk.getInstance()
-				.getLogger()
-				.info(String.format("Returning sorted tickets of size: %s", toKeep.size()));
-
-			return toKeep;
-		} else {
-			StickyChunk.getInstance()
-				.getLogger()
-				.info(String.format("Returning all tickets of size: %s", tickets.size()));
-
-			return tickets;
-		}
+		return null;
 	}
 }
