@@ -161,10 +161,22 @@ public class DataStore {
 
 	public void deleteUserChunkLoader(UUID uuid, ChunkLoader chunkLoader) {
 		userChunkData.get(uuid).removeChunkLoader(chunkLoader);
+		// TODO:- Update DataBase
 	}
 
 	public void deleteUserChunkLoader(User user, ChunkLoader chunkLoader) {
 		deleteUserChunkLoader(user.getUniqueId(), chunkLoader);
+	}
+
+	/**
+	 * A method to remove ChunkLoader instances from a UserData without
+	 * effecting the database. Allowing the ChunkLoader to be re-loaded.
+	 *
+	 * @param uuid The UUID of the UserData the ChunkLoader belongs to
+	 * @param chunkLoader The ChunkLoader to remove from the UserData
+	 */
+	public void removeChunkLoader(UUID uuid, ChunkLoader chunkLoader) {
+		userChunkData.get(uuid).removeChunkLoader(chunkLoader);
 	}
 
 	public boolean isChunkLoaded(Chunk chunk) {

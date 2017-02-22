@@ -28,6 +28,7 @@
 
 package rocks.devonthe.stickychunk.listener;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -41,6 +42,8 @@ import rocks.devonthe.stickychunk.database.EntityManager;
 
 import java.sql.Date;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class PlayerConnectionListener {
 	EntityManager entityManager = StickyChunk.getInstance().getEntityManager();
@@ -50,34 +53,46 @@ public class PlayerConnectionListener {
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
-		UserData userData = dataStore.getOrCreateUserData(player);
 
-		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(chunkLoader ->
+		// Load user from the database or create a new one if not present
+		Optional<UserData> userDataOptional = entityManager.getUserEntityManager().load(player.getUniqueId());
+		UserData userData = (userDataOptional.isPresent()) ?
+			userDataOptional.get() :
+			dataStore.getOrCreateUserData(player.getUniqueId());
+
+		// Force load the player's chunks and update the DataStore
+		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);
+
+		// Update the user in the DataStore and Database
+		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
+		entityManager.getUserEntityManager().save(userData);
+	}
+
+	@Listener
+	public void onPlayerLeave(ClientConnectionEvent.Disconnect event, @Root Player player) {
+		UserData userData = dataStore.getOrCreateUserData(player.getUniqueId());
+		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
+		ArrayList<ChunkLoader> deleteQueue = Lists.newArrayList();
+
+		// Find all ChunkLoaders that need unloading and update the DataStore
+		userData.getChunkLoaders().forEach(chunkLoader ->
 			chunkLoader.getOfflineDuration().ifPresent(duration -> {
-				if (duration.isZero())
-					chunkLoader.forceChunks();
-				else {
+				if (duration.isZero()) {
+					chunkLoader.unForceChunks();
+					deleteQueue.add(chunkLoader);
+				} else {
 					// Create task
 				}
 			})
 		);
 
+		// Update the user in the Database
 		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
 		entityManager.getUserEntityManager().save(userData);
 
-		// TODO:- Drop any user data and chunkloaders that have been unforced
-	}
-
-	@Listener
-	public void onPlayerLeave(ClientConnectionEvent.Disconnect event, @Root Player player) {
-		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
-
-		// TODO:- Load user record & chunkloaders from the database
-
-		UserData userData = dataStore.getOrCreateUserData(player);
-		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);
-
-		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
-		entityManager.getUserEntityManager().save(userData);
+		// Remove the no-longer necessary data from the DataStore
+		deleteQueue.forEach(chunkLoader ->
+			dataStore.removeChunkLoader(player.getUniqueId(), chunkLoader)
+		);
 	}
 }
