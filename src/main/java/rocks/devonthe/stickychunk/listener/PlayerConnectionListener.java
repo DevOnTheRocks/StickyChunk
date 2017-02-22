@@ -30,10 +30,12 @@ package rocks.devonthe.stickychunk.listener;
 
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.scheduler.Task;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.data.DataStore;
@@ -44,25 +46,34 @@ import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class PlayerConnectionListener {
-	EntityManager entityManager = StickyChunk.getInstance().getEntityManager();
-	DataStore dataStore = StickyChunk.getInstance().getDataStore();
-	Logger logger = StickyChunk.getInstance().getLogger();
+	private static final StickyChunk INSTANCE = StickyChunk.getInstance();
+	private EntityManager entityManager = INSTANCE.getEntityManager();
+	private DataStore dataStore = INSTANCE.getDataStore();
+	private Logger logger = INSTANCE.getLogger();
 
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 
-		// Load user from the database or create a new one if not present
-		UserData userData = dataStore.getOrCreateUserData(player.getUniqueId());
+		Sponge.getScheduler().createTaskBuilder()
+			.execute(src -> {
+				// Load user from the database or create a new one if not present
+				UserData userData = dataStore.getOrCreateUserData(player.getUniqueId());
 
-		// Force load the player's chunks and update the DataStore
-		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);
+				// Force load the player's chunks and update the DataStore
+				dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);
 
-		// Update the user in the DataStore and Database
-		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
-		entityManager.getUserEntityManager().save(userData);
+				// Update the user in the DataStore and Database
+				dataStore.getOrCreateUserData(player).setLastSeen(now).update();
+				entityManager.getUserEntityManager().save(userData);
+			})
+			.async()
+			.submit(INSTANCE);
 	}
 
 	@Listener
@@ -78,18 +89,32 @@ public class PlayerConnectionListener {
 					chunkLoader.unForceChunks();
 					deleteQueue.add(chunkLoader);
 				} else {
-					// Create task
+					Sponge.getScheduler().createTaskBuilder()
+						.delay(duration.toMinutes(), TimeUnit.MINUTES)
+						.execute(unloadChunkLoader(chunkLoader, player.getUniqueId()))
+						.async()
+						.submit(INSTANCE);
 				}
 			})
 		);
 
-		// Update the user in the Database
-		dataStore.getOrCreateUserData(player).setLastSeen(now).update();
-		entityManager.getUserEntityManager().save(userData);
+		Sponge.getScheduler().createTaskBuilder()
+			.execute(src -> {
+				// Update the user in the Database
+				dataStore.getOrCreateUserData(player).setLastSeen(now).update();
+				entityManager.getUserEntityManager().save(userData);
 
-		// Remove the no-longer necessary data from the DataStore
-		deleteQueue.forEach(chunkLoader ->
-			dataStore.removeChunkLoader(player.getUniqueId(), chunkLoader)
-		);
+				// Remove the no-longer necessary data from the DataStore
+				deleteQueue.forEach(cl -> dataStore.removeChunkLoader(player.getUniqueId(), cl));
+			})
+			.async()
+			.submit(INSTANCE);
+	}
+
+	private Consumer<Task> unloadChunkLoader(ChunkLoader chunkLoader, UUID playerId) {
+		return src -> {
+			chunkLoader.unForceChunks();
+			dataStore.removeChunkLoader(playerId, chunkLoader);
+		};
 	}
 }
