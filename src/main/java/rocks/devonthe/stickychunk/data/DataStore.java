@@ -35,7 +35,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
-import rocks.devonthe.stickychunk.chunkload.chunkloader.LoadedChunk;
+import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import java.sql.Date;

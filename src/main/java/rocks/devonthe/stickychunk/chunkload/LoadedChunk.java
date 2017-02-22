@@ -1,4 +1,4 @@
-package rocks.devonthe.stickychunk.chunkload.chunkloader;
+package rocks.devonthe.stickychunk.chunkload;
 
 
 import org.spongepowered.api.world.Chunk;

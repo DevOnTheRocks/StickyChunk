@@ -31,9 +31,9 @@ package rocks.devonthe.stickychunk.chunkload.chunkloader;
 
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import com.google.common.collect.ImmutableSet;
-import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.Sponge;
+import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import javax.persistence.Entity;

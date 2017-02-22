@@ -33,13 +33,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
-import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
-import rocks.devonthe.stickychunk.chunkload.chunkloader.LoadedChunk;
+import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import javax.persistence.Column;

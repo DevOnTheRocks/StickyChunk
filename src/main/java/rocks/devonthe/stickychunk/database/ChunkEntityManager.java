@@ -1,7 +1,7 @@
 package rocks.devonthe.stickychunk.database;
 
 import org.hibernate.Session;
-import rocks.devonthe.stickychunk.chunkload.chunkloader.LoadedChunk;
+import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 
 import java.util.ArrayList;
 import java.util.Optional;
