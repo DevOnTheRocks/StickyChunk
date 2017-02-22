@@ -1,6 +1,5 @@
 package rocks.devonthe.stickychunk.chunkload;
 
-
 import org.spongepowered.api.world.Chunk;
 import rocks.devonthe.stickychunk.world.Coordinate;
 
@@ -18,7 +17,7 @@ public class LoadedChunk {
 	@Transient
 	private Chunk chunk;
 
-	public LoadedChunk() {}
+	protected LoadedChunk() {}
 
 	public LoadedChunk(UUID id, UUID world, Chunk chunk) {
 		this.id = id;

@@ -55,10 +55,7 @@ public class PlayerConnectionListener {
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 
 		// Load user from the database or create a new one if not present
-		Optional<UserData> userDataOptional = entityManager.getUserEntityManager().load(player.getUniqueId());
-		UserData userData = (userDataOptional.isPresent()) ?
-			userDataOptional.get() :
-			dataStore.getOrCreateUserData(player.getUniqueId());
+		UserData userData = dataStore.getOrCreateUserData(player.getUniqueId());
 
 		// Force load the player's chunks and update the DataStore
 		dataStore.getOrCreateUserData(player).getChunkLoaders().forEach(ChunkLoader::forceChunks);

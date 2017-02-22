@@ -34,14 +34,17 @@ import com.google.common.collect.Maps;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
+import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
+import rocks.devonthe.stickychunk.database.EntityManager;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class DataStore {
@@ -188,14 +191,20 @@ public class DataStore {
 	}
 
 	public UserData getOrCreateUserData(UUID uuid) {
+		EntityManager entityManager = StickyChunk.getInstance().getEntityManager();
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 
 		if (userChunkData.containsKey(uuid)) {
 			return userChunkData.get(uuid);
 		} else {
-			UserData userData = new UserData(uuid, now, now);
-			userChunkData.put(uuid, userData);
-			return userData;
+			Optional<UserData> userDataOptional = entityManager.getUserEntityManager().load(uuid);
+			if (userDataOptional.isPresent()) {
+				return userDataOptional.get();
+			} else {
+				UserData userData = new UserData(uuid, now, now);
+				userChunkData.put(uuid, userData);
+				return userData;
+			}
 		}
 	}
 
