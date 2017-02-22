@@ -11,6 +11,8 @@ public abstract class EntityManager {
 	private Configuration configuration;
 
 	private UserEntityManager userEntityManager;
+	private ChunkLoaderEntityManager chunkLoaderEntityManager;
+	private ChunkEntityManager chunkEntityManager;
 
 	public EntityManager() {
 		configuration = new Configuration()
@@ -25,6 +27,14 @@ public abstract class EntityManager {
 
 	public UserEntityManager getUserEntityManager() {
 		return userEntityManager;
+	}
+
+	public ChunkLoaderEntityManager getChunkLoaderEntityManager() {
+		return chunkLoaderEntityManager;
+	}
+
+	public ChunkEntityManager getChunkEntityManager() {
+		return chunkEntityManager;
 	}
 
 	protected Session getSession() {

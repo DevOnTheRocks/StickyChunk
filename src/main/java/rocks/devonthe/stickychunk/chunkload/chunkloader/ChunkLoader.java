@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableSet;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.Sponge;
+import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import javax.persistence.Entity;
 import java.time.Duration;
@@ -45,7 +46,8 @@ import java.util.UUID;
 @Entity(name = "chunkloader")
 public abstract class ChunkLoader {
 	private HashMap<World, LoadingTicket> tickets;
-	private ArrayList<Chunk> chunks;
+	private ChunkLoaderType chunkLoaderType;
+	private ArrayList<LoadedChunk> loadedChunks;
 	private UUID worldId;
 	private UUID owner;
 
@@ -60,16 +62,20 @@ public abstract class ChunkLoader {
 		return Sponge.getServer().getWorld(worldId);
 	}
 
-	public ImmutableSet<Chunk> getChunks() {
-		return ImmutableSet.copyOf(chunks);
+	public ImmutableSet<LoadedChunk> getLoadedChunks() {
+		return ImmutableSet.copyOf(loadedChunks);
 	}
 
-	public void addChunk(Chunk chunk) {
-		this.chunks.add(chunk);
+	public ChunkLoaderType getChunkLoaderType() {
+		return chunkLoaderType;
 	}
 
-	public void addChunks(ArrayList<Chunk> chunks) {
-		this.chunks.addAll(chunks);
+	public void addChunk(LoadedChunk chunk) {
+		this.loadedChunks.add(chunk);
+	}
+
+	public void addChunks(ArrayList<LoadedChunk> chunks) {
+		this.loadedChunks.addAll(chunks);
 	}
 
 	public Optional<Duration> getOfflineDuration() {
@@ -79,14 +85,20 @@ public abstract class ChunkLoader {
 	}
 
 	public void forceChunks() {
-		chunks.forEach(chunk ->
-			tickets.get(chunk.getWorld()).forceChunk(chunk.getPosition())
+		loadedChunks.forEach(chunk ->
+			tickets.get(chunk.getChunk().getWorld()).forceChunk(chunk.getChunk().getPosition())
 		);
 	}
 
 	public void unForceChunks() {
-		chunks.forEach(chunk ->
-			tickets.get(chunk.getWorld()).unforceChunk(chunk.getPosition())
+		loadedChunks.forEach(chunk ->
+			tickets.get(chunk.getChunk().getWorld()).unforceChunk(chunk.getChunk().getPosition())
 		);
+	}
+
+	public void releaseAllTickets() {
+		unForceChunks();
+		tickets.values().forEach(LoadingTicket::release);
+		tickets.clear();
 	}
 }

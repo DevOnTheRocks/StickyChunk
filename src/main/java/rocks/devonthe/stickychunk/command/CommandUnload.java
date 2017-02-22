@@ -29,7 +29,6 @@
 package rocks.devonthe.stickychunk.command;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
@@ -44,14 +43,13 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.data.DataStore;
+import rocks.devonthe.stickychunk.data.UserData;
 import rocks.devonthe.stickychunk.permission.Permissions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class CommandUnload implements CommandExecutor {
@@ -88,8 +86,8 @@ public class CommandUnload implements CommandExecutor {
 		if (!(src instanceof Player))
 			return execServer(src, args);
 
-		HashMap<Player, UUID> deleteQueue = Maps.newHashMap();
 		Player player = (Player) src;
+		UserData user = dataStore.getOrCreateUserData(player);
 
 		if (args.hasAny(ALL)) {
 			player.sendMessage(Text.of(
@@ -101,19 +99,11 @@ public class CommandUnload implements CommandExecutor {
 			return CommandResult.success();
 		}
 
-		dataStore.getPlayerRegions(player).forEach(region ->
-			region.getChunks().forEach(chunk -> {
-					if (player.getLocation().getChunkPosition().equals(chunk.getPosition())) {
-						region.unForceChunks();
-						region.invalidateTicket();
-						deleteQueue.put(player, region.getUniqueId());
-						player.sendMessage(Text.of(TextColors.GREEN, "Successfully removed loaded region"));
-					}
-				}
-			));
-
-		// Delete all the regions queued to be deleted
-		deleteQueue.forEach((owner, regionId) -> dataStore.deletePlayerRegion(owner, regionId));
+		// Remove the chunk-loader & chunks associated with this chunk
+		user.getChunkParent(player.getLocation()).ifPresent(chunkLoader -> {
+			chunkLoader.releaseAllTickets();
+			user.removeChunkLoader(chunkLoader);
+		});
 
 		return CommandResult.success();
 	}
@@ -130,11 +120,11 @@ public class CommandUnload implements CommandExecutor {
 
 	private Consumer<CommandSource> unloadAll(Player player) {
 		return src -> {
-			ArrayList<LoadedRegion> loadedRegions = Lists
-				.newArrayList(dataStore.getPlayerRegions(player.getUniqueId()));
+			ArrayList<ChunkLoader> chunkLoaders = Lists
+				.newArrayList(dataStore.getUserChunkLoaders(player));
 
-			loadedRegions.forEach(loadedRegion ->
-				dataStore.deletePlayerRegion(loadedRegion.getOwner(), loadedRegion.getUniqueId())
+			chunkLoaders.forEach(chunkLoader ->
+				dataStore.deleteUserChunkLoader(player, chunkLoader)
 			);
 		};
 	}

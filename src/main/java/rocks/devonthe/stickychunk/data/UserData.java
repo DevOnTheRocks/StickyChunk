@@ -35,9 +35,11 @@ import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import javax.persistence.Column;
@@ -46,12 +48,10 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -121,39 +121,52 @@ public class UserData {
 		StickyChunk.getInstance().getDataStore().updateUserData(this);
 	}
 
-	public ArrayList<Chunk> getChunks(World world) {
-		ArrayList<Chunk> chunks = Lists.newArrayList();
+	public ArrayList<LoadedChunk> getChunks(World world) {
+		ArrayList<LoadedChunk> chunks = Lists.newArrayList();
 
 		chunkLoaders.values().forEach(activeChunkLoaders -> {
 			activeChunkLoaders.stream()
 				.filter(chunkLoader -> chunkLoader.getWorldId().equals(world.getUniqueId()))
 				.collect(Collectors.toCollection(ArrayList::new))
 				.forEach(chunkLoader ->
-					chunks.addAll(chunkLoader.getChunks())
+					chunks.addAll(chunkLoader.getLoadedChunks())
 				);
 		});
 
 		return chunks;
 	}
 
-	public ArrayList<Chunk> getChunks(ChunkLoaderType type, World world) {
-		ArrayList<Chunk> chunks = Lists.newArrayList();
+	public ArrayList<LoadedChunk> getChunks(ChunkLoaderType type, World world) {
+		ArrayList<LoadedChunk> chunks = Lists.newArrayList();
 
 		chunkLoaders.get(type).stream()
 			.filter(chunkLoader -> chunkLoader.getWorldId().equals(world.getUniqueId()))
 			.collect(Collectors.toCollection(ArrayList::new))
 			.forEach(chunkLoader ->
-				chunks.addAll(chunkLoader.getChunks())
+				chunks.addAll(chunkLoader.getLoadedChunks())
 			);
 
 		return chunks;
 	}
 
-	public ArrayList<Chunk> getCollatedChunks() {
-		ArrayList<Chunk> chunks = Lists.newArrayList();
+	public Optional<LoadedChunk> getChunkAtLocation(Location<World> location) {
+		Optional<ChunkLoader> chunkLoader = getChunkParent(location);
+		Optional<LoadedChunk> chunkOptional = Optional.empty();
+
+		if (chunkLoader.isPresent()) {
+			chunkOptional = chunkLoader.get().getLoadedChunks().stream()
+				.filter(chunk -> chunk.getChunk().getPosition().equals(location.getChunkPosition()))
+				.findFirst();
+		}
+
+		return chunkOptional;
+	}
+
+	public ArrayList<LoadedChunk> getCollatedChunks() {
+		ArrayList<LoadedChunk> chunks = Lists.newArrayList();
 		chunkLoaders.values().forEach(activeChunkLoaders ->
 			activeChunkLoaders.forEach(chunkLoader ->
-				chunks.addAll(chunkLoader.getChunks())
+				chunks.addAll(chunkLoader.getLoadedChunks())
 			)
 		);
 
@@ -181,11 +194,31 @@ public class UserData {
 		return ImmutableSet.copyOf(chunkLoaders.get(type));
 	}
 
+	public Optional<ChunkLoader> getChunkParent(Location<World> location) {
+		Optional<ChunkLoader> chunkLoaderOptional = Optional.empty();
+
+		for (ArrayList<ChunkLoader> chunkLoaders : chunkLoaders.values()) {
+			for (ChunkLoader chunkLoader : chunkLoaders) {
+				final boolean match = chunkLoader.getLoadedChunks().stream()
+					.anyMatch(chunk -> chunk.getChunk().getPosition().equals(location.getChunkPosition()));
+
+				if (match)
+					chunkLoaderOptional = Optional.of(chunkLoader);
+			}
+		}
+
+		return chunkLoaderOptional;
+	}
+
 	public void addChunkLoader(ChunkLoader chunkLoader, ChunkLoaderType type) {
 		chunkLoaders.get(type).add(chunkLoader);
 	}
 
 	public void addChunkLoaders(ArrayList<ChunkLoader> newChunkLoaders, ChunkLoaderType type) {
 		chunkLoaders.get(type).addAll(newChunkLoaders);
+	}
+
+	public void removeChunkLoader(ChunkLoader chunkLoader) {
+		chunkLoaders.get(chunkLoader.getChunkLoaderType()).remove(chunkLoader);
 	}
 }

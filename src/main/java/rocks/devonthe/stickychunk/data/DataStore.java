@@ -28,7 +28,6 @@
 
 package rocks.devonthe.stickychunk.data;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -36,6 +35,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
 import java.sql.Date;
@@ -64,8 +64,8 @@ public class DataStore {
 		return ImmutableSet.copyOf(chunkLoaders);
 	}
 
-	public ImmutableSet<Chunk> getCollatedChunks() {
-		ArrayList<Chunk> chunks = Lists.newArrayList();
+	public ImmutableSet<LoadedChunk> getCollatedChunks() {
+		ArrayList<LoadedChunk> chunks = Lists.newArrayList();
 		userChunkData.values().forEach(userData ->
 			chunks.addAll(userData.getCollatedChunks())
 		);
@@ -85,7 +85,7 @@ public class DataStore {
 		return getUserWorlds(user.getUniqueId());
 	}
 
-	public ImmutableSet<Chunk> getUserChunks(UUID uuid) {
+	public ImmutableSet<LoadedChunk> getUserChunks(UUID uuid) {
 		UserData userData = (userChunkData.containsKey(uuid)) ?
 							userChunkData.get(uuid) :
 							getOrCreateUserData(uuid);
@@ -93,11 +93,11 @@ public class DataStore {
 		return ImmutableSet.copyOf(userData.getCollatedChunks());
 	}
 
-	public ImmutableSet<Chunk> getUserChunks(User user) {
+	public ImmutableSet<LoadedChunk> getUserChunks(User user) {
 		return getUserChunks(user.getUniqueId());
 	}
 
-	public ImmutableSet<Chunk> getUserChunks(UUID uuid, World world) {
+	public ImmutableSet<LoadedChunk> getUserChunks(UUID uuid, World world) {
 		UserData userData = (userChunkData.containsKey(uuid)) ?
 							userChunkData.get(uuid) :
 							getOrCreateUserData(uuid);
@@ -105,11 +105,11 @@ public class DataStore {
 		return ImmutableSet.copyOf(userData.getChunks(world));
 	}
 
-	public ImmutableSet<Chunk> getUserChunks(User user, World world) {
+	public ImmutableSet<LoadedChunk> getUserChunks(User user, World world) {
 		return getUserChunks(user.getUniqueId());
 	}
 
-	public ImmutableSet<Chunk> getUserChunks(UUID uuid, World world, ChunkLoaderType type) {
+	public ImmutableSet<LoadedChunk> getUserChunks(UUID uuid, World world, ChunkLoaderType type) {
 		UserData userData = (userChunkData.containsKey(uuid)) ?
 							userChunkData.get(uuid) :
 							getOrCreateUserData(uuid);
@@ -117,7 +117,7 @@ public class DataStore {
 		return ImmutableSet.copyOf(userData.getChunks(type, world));
 	}
 
-	public ImmutableSet<Chunk> getUserChunks(User user, World world, ChunkLoaderType type) {
+	public ImmutableSet<LoadedChunk> getUserChunks(User user, World world, ChunkLoaderType type) {
 		return getUserChunks(user.getUniqueId(), world, type);
 	}
 
@@ -159,11 +159,19 @@ public class DataStore {
 		addUserChunkLoaders(user.getUniqueId(), type, chunkLoaders);
 	}
 
+	public void deleteUserChunkLoader(UUID uuid, ChunkLoader chunkLoader) {
+		userChunkData.get(uuid).removeChunkLoader(chunkLoader);
+	}
+
+	public void deleteUserChunkLoader(User user, ChunkLoader chunkLoader) {
+		deleteUserChunkLoader(user.getUniqueId(), chunkLoader);
+	}
+
 	public boolean isChunkLoaded(Chunk chunk) {
 		return getCollatedChunks().stream()
 			.anyMatch(loadedChunk ->
-				loadedChunk.getUniqueId().equals(chunk.getUniqueId()) &&
-					loadedChunk.getWorld().getUniqueId().equals(chunk.getWorld().getUniqueId())
+				loadedChunk.getChunk().getUniqueId().equals(chunk.getUniqueId()) &&
+					loadedChunk.getChunk().getWorld().getUniqueId().equals(chunk.getWorld().getUniqueId())
 			);
 	}
 
