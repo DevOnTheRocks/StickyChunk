@@ -27,6 +27,7 @@
  */
 package rocks.devonthe.stickychunk.config.chunkloader;
 
+import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;
@@ -34,33 +35,27 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
-import rocks.devonthe.stickychunk.StickyChunk;
+import org.spongepowered.api.util.TextMessageException;
+import rocks.devonthe.stickychunk.chunkload.ChunkLoaderFuel;
 
-import java.time.Duration;
-import java.time.format.DateTimeParseException;
-import java.util.Optional;
+import java.util.List;
 
 @ConfigSerializable
 public class BlockChunkLoaderConfig extends CoreChunkLoaderConfig {
-	@Setting(value = "Block-ID", comment = "The block to use as a chunk loader.")
-	private String blockId = "minecraft:iron_block";
-	@Setting(value = "Item-ID", comment = "The item to use to activate the chunk loader.")
-	private String itemId = "minecraft:diamond";
-	@Setting(value = "Fuel", comment = "The item to use as fuel, if any.")
-	private String fuel = "";
-	@Setting(value = "Fuel-Duration", comment = "The amount of time to activate the chunk loader for each fuel consumed.")
-	private String fuelDuration = "8h";
+	@Setting(value = "Block-Id", comment = "The block used to represent the chunk loader. ex \"minecraft:quartz_block\"")
+	private String blockId = BlockTypes.QUARTZ_BLOCK.getId();
+	@Setting(value = "Item-Id", comment = "The item to used to activate the chunk loader. ex \"minecraft:quartz_block\"")
+	private String itemId = ItemTypes.DIAMOND.getId();
+	@Setting(value = "Fuel", comment = "A list of items and the duration that the item activates the chunk loader ex. \"minecraft:coal|1h\".")
+	private List<String> fuels = Lists.newArrayList();
 
 	public BlockChunkLoaderConfig() {
-
 	}
 
-	public BlockChunkLoaderConfig(String name, String duration, boolean afk, BlockType block, ItemType item, ItemType fuel, String fuelDuration) {
+	public BlockChunkLoaderConfig(String name, String duration, boolean afk, BlockType block, ItemType item) {
 		super(name, duration, afk);
 		this.blockId = block.getId();
 		this.itemId = item.getId();
-		this.fuel = fuel.getId();
-		this.fuelDuration = fuelDuration;
 	}
 
 	public BlockType getBlockId() {
@@ -71,17 +66,15 @@ public class BlockChunkLoaderConfig extends CoreChunkLoaderConfig {
 		return Sponge.getRegistry().getType(ItemType.class, itemId).orElse(ItemTypes.NONE);
 	}
 
-	public Optional<ItemType> getFuel() {
-		return Optional.ofNullable(Sponge.getRegistry().getType(ItemType.class, fuel).orElse(null));
-	}
-
-	public Duration getFuelDuration() {
-		try {
-			return Duration.parse(fuelDuration);
-		} catch (DateTimeParseException e) {
-			StickyChunk.getInstance().getLogger().warn(
-				String.format("Fuel-Duration (%s) of %s is malformed. Using 8h instead", fuelDuration, getName()));
-			return Duration.ofHours(8);
-		}
+	public List<ChunkLoaderFuel> getFuels() {
+		List<ChunkLoaderFuel> validFuels = Lists.newArrayList();
+		fuels.forEach(fuel -> {
+			try {
+				validFuels.add(ChunkLoaderFuel.parse(fuel));
+			} catch (TextMessageException e) {
+				e.printStackTrace();
+			}
+		});
+		return validFuels;
 	}
 }

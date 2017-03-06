@@ -187,6 +187,7 @@ public class StickyChunk {
 		return dataStore;
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	public World getDefaultWorld() {
 		String defaultWorldName = StickyChunk.getInstance().getGame().getServer().getDefaultWorldName();
 		return StickyChunk.getInstance().getGame().getServer().getWorld(defaultWorldName).get();

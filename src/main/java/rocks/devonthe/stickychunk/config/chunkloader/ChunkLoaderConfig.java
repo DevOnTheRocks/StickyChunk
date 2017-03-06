@@ -51,6 +51,6 @@ public class ChunkLoaderConfig {
 	private void addExampleConfigs() {
 		commands.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
 		commands.add(new CommandChunkLoaderConfig("world", "1d", true, true));
-		blocks.add(new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.QUARTZ_BLOCK, ItemTypes.DIAMOND, ItemTypes.NONE, "8h"));
+		blocks.add(new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.QUARTZ_BLOCK, ItemTypes.DIAMOND));
 	}
 }
