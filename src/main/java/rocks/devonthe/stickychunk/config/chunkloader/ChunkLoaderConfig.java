@@ -33,15 +33,19 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.item.ItemTypes;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoaderFuel;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoaderFuelMode;
 
+import java.time.Duration;
 import java.util.List;
 
 @ConfigSerializable
 public class ChunkLoaderConfig {
-	@Setting(value = "Command")
-	private List<CommandChunkLoaderConfig> commands = Lists.newArrayList();
+
 	@Setting(value = "Block")
 	private List<BlockChunkLoaderConfig> blocks = Lists.newArrayList();
+	@Setting(value = "Command")
+	private List<CommandChunkLoaderConfig> commands = Lists.newArrayList();
 
 	public ChunkLoaderConfig() {
 		if (commands.isEmpty() && blocks.isEmpty())
@@ -49,8 +53,17 @@ public class ChunkLoaderConfig {
 	}
 
 	private void addExampleConfigs() {
-		commands.add(new CommandChunkLoaderConfig("personal", "0d", true, true));
-		commands.add(new CommandChunkLoaderConfig("world", "1d", true, true));
-		blocks.add(new BlockChunkLoaderConfig("basic", "0d", true, BlockTypes.QUARTZ_BLOCK, ItemTypes.DIAMOND));
+		commands.add(new CommandChunkLoaderConfig("personal", "0d", true));
+		commands.add(new CommandChunkLoaderConfig("world", Duration.ofDays(1).toString(), true));
+		blocks.add(new BlockChunkLoaderConfig("basic", "0d", BlockTypes.QUARTZ_BLOCK, ItemTypes.DIAMOND, ChunkLoaderFuelMode.ONLINE,
+			Lists.newArrayList(ChunkLoaderFuel.of(ItemTypes.BLAZE_ROD, Duration.ofHours(1)))));
+	}
+
+	public List<BlockChunkLoaderConfig> getBlockBased() {
+		return blocks;
+	}
+
+	public List<CommandChunkLoaderConfig> getCommandBased() {
+		return commands;
 	}
 }

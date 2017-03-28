@@ -26,51 +26,14 @@
  * THE SOFTWARE.
  */
 
-package rocks.devonthe.stickychunk.chunkload;
+package rocks.devonthe.stickychunk.chunkload.chunkloader;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.util.TextMessageException;
 
-import java.time.Duration;
-import java.time.format.DateTimeParseException;
-import java.util.NoSuchElementException;
+public enum ChunkLoaderFuelMode {
+	NONE, OFFLINE, AFK, ONLINE;
 
-public class ChunkLoaderFuel {
-	private ItemType itemType;
-	private Duration duration;
-
-	public ChunkLoaderFuel(ItemType itemType, Duration duration) {
-		this.itemType = itemType;
-		this.duration = duration;
-	}
-
-	public ChunkLoaderFuel(String chunkLoaderFuel) throws TextMessageException {
-		parse(chunkLoaderFuel);
-	}
-
-	public static ChunkLoaderFuel parse(String chunkLoaderFuel) throws TextMessageException {
-		try {
-			String[] split = chunkLoaderFuel.split("|");
-			return new ChunkLoaderFuel(
-				Sponge.getRegistry().getType(ItemType.class, split[0]).get(),
-				Duration.parse(split[1])
-			);
-		} catch (NoSuchElementException | DateTimeParseException e) {
-			throw new TextMessageException(Text.of("Encountered invalid fuel: ", chunkLoaderFuel), e);
-		}
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s|%s", itemType.getId(), duration.toString());
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof ChunkLoaderFuel
-			&& (this.itemType.equals(((ChunkLoaderFuel) obj).itemType)
-			&& this.duration.equals(((ChunkLoaderFuel) obj).duration));
+	public Text toText() {
+		return Text.of(this);
 	}
 }

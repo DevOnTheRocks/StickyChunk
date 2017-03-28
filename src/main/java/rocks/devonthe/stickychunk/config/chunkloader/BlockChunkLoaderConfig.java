@@ -36,26 +36,35 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.util.TextMessageException;
-import rocks.devonthe.stickychunk.chunkload.ChunkLoaderFuel;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoaderFuel;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoaderFuelMode;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ConfigSerializable
 public class BlockChunkLoaderConfig extends CoreChunkLoaderConfig {
+
 	@Setting(value = "Block-Id", comment = "The block used to represent the chunk loader. ex \"minecraft:quartz_block\"")
 	private String blockId = BlockTypes.QUARTZ_BLOCK.getId();
-	@Setting(value = "Item-Id", comment = "The item to used to activate the chunk loader. ex \"minecraft:quartz_block\"")
+	@Setting(value = "Item-Id", comment = "The item to used to activate the chunk loader. ex \"minecraft:diamond\"")
 	private String itemId = ItemTypes.DIAMOND.getId();
-	@Setting(value = "Fuel", comment = "A list of items and the duration that the item activates the chunk loader ex. \"minecraft:coal|1h\".")
+	@Setting(value = "Fuel-Mode", comment = "When the chunk loader should require fuel, if enabled. [NONE, OFFLINE, AFK, ONLINE]")
+	private ChunkLoaderFuelMode fuelMode = ChunkLoaderFuelMode.NONE;
+	@Setting(value = "Fuels", comment = "A list of items and the duration that the item activates the chunk loader ex. \"minecraft:coal|1h\".")
 	private List<String> fuels = Lists.newArrayList();
 
 	public BlockChunkLoaderConfig() {
+
 	}
 
-	public BlockChunkLoaderConfig(String name, String duration, boolean afk, BlockType block, ItemType item) {
-		super(name, duration, afk);
+	public BlockChunkLoaderConfig(String name, String duration, BlockType block, ItemType item, ChunkLoaderFuelMode fuelMode,
+		List<ChunkLoaderFuel> fuels) {
+		super(name, duration);
 		this.blockId = block.getId();
 		this.itemId = item.getId();
+		this.fuelMode = fuelMode;
+		this.fuels = fuels.stream().map(ChunkLoaderFuel::toString).collect(Collectors.toList());
 	}
 
 	public BlockType getBlockId() {
@@ -66,11 +75,15 @@ public class BlockChunkLoaderConfig extends CoreChunkLoaderConfig {
 		return Sponge.getRegistry().getType(ItemType.class, itemId).orElse(ItemTypes.NONE);
 	}
 
+	public ChunkLoaderFuelMode getFuelMode() {
+		return fuelMode;
+	}
+
 	public List<ChunkLoaderFuel> getFuels() {
 		List<ChunkLoaderFuel> validFuels = Lists.newArrayList();
 		fuels.forEach(fuel -> {
 			try {
-				validFuels.add(ChunkLoaderFuel.parse(fuel));
+				validFuels.add(new ChunkLoaderFuel(fuel));
 			} catch (TextMessageException e) {
 				e.printStackTrace();
 			}

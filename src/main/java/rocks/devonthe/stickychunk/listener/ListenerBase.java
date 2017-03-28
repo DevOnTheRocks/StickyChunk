@@ -26,26 +26,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.devonthe.stickychunk.config.chunkloader;
+package rocks.devonthe.stickychunk.listener;
 
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.slf4j.Logger;
+import rocks.devonthe.stickychunk.StickyChunk;
 
-@ConfigSerializable
-public class CommandChunkLoaderConfig extends CoreChunkLoaderConfig {
-	@Setting(value = "Allow-Regions", comment = "Allow loading of multi-chunk regions.")
-	private boolean allowRegion = true;
-
-	public CommandChunkLoaderConfig() {
-
-	}
-
-	public CommandChunkLoaderConfig(String name, String duration, boolean allowRegion) {
-		super(name, duration);
-		this.allowRegion = allowRegion;
-	}
-
-	public boolean isAllowRegion() {
-		return allowRegion;
-	}
+public class ListenerBase {
+	protected StickyChunk instance = StickyChunk.getInstance();
+	protected Logger logger = instance.getLogger();
 }

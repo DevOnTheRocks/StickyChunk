@@ -28,7 +28,6 @@
 
 package rocks.devonthe.stickychunk.command;
 
-import com.google.common.collect.Lists;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.command.CommandException;
@@ -39,20 +38,10 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
 import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class CommandList implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
@@ -88,70 +77,70 @@ public class CommandList implements CommandExecutor {
 		if (!(src instanceof Player))
 			return execServer(src, args);
 
-		User user = args.<User>getOne(USER).orElse((Player) src);
-		List<Text> listText = Lists.newArrayList();
-		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
-
-		Text header = Text.of(
-			"Listing ",
-			TextColors.GOLD, loadedRegions.size(),
-			TextColors.RESET, " region(s) across ",
-			TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
-			TextColors.RESET, " worlds"
-		);
-
-		if (loadedRegions.isEmpty())
-			header = Text.of(TextColors.RED, "There are no loaded regions to display");
-
-		loadedRegions.forEach(region -> listText.add(Text.of(
-			TextColors.GOLD, region.getChunks().size(),
-			TextColors.GREEN, Text.of(" [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]")
-				.toBuilder().onHover(TextActions.showText(Text.of(
-					TextColors.GREEN,
-					(region.getType() == LoadedRegion.ChunkType.WORLD) ? "World" : "Personal"
-				))),
-			TextColors.WHITE, (region.getChunks().size() > 1) ? " chunks in world " : " chunk in world ",
-			TextColors.GOLD, region.getWorld().getName(),
-			TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE,
-			", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
-			TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE,
-			", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
-		)));
-
-		PaginationList.builder()
-			.title(Text.of(TextColors.GOLD, "Loaded Regions"))
-			.padding(Text.of(TextColors.GOLD, TextStyles.STRIKETHROUGH, "-"))
-			.header(header)
-			.contents(listText)
-			.sendTo(src);
+//		User user = args.<User>getOne(USER).orElse((Player) src);
+//		List<Text> listText = Lists.newArrayList();
+//		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
+//
+//		Text header = Text.of(
+//			"Listing ",
+//			TextColors.GOLD, loadedRegions.size(),
+//			TextColors.RESET, " region(s) across ",
+//			TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
+//			TextColors.RESET, " worlds"
+//		);
+//
+//		if (loadedRegions.isEmpty())
+//			header = Text.of(TextColors.RED, "There are no loaded regions to display");
+//
+//		loadedRegions.forEach(region -> listText.add(Text.of(
+//			TextColors.GOLD, region.getChunks().size(),
+//			TextColors.GREEN, Text.of(" [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]")
+//				.toBuilder().onHover(TextActions.showText(Text.of(
+//					TextColors.GREEN,
+//					(region.getType() == LoadedRegion.ChunkType.WORLD) ? "World" : "Personal"
+//				))),
+//			TextColors.WHITE, (region.getChunks().size() > 1) ? " chunks in world " : " chunk in world ",
+//			TextColors.GOLD, region.getWorld().getName(),
+//			TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE,
+//			", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
+//			TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE,
+//			", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
+//		)));
+//
+//		PaginationList.builder()
+//			.title(Text.of(TextColors.GOLD, "Loaded Regions"))
+//			.padding(Text.of(TextColors.GOLD, TextStyles.STRIKETHROUGH, "-"))
+//			.header(header)
+//			.contents(listText)
+//			.sendTo(src);
 
 		return CommandResult.success();
 	}
 
 	private CommandResult execServer(CommandSource src, CommandContext args) {
-		if (dataStore.getCollatedRegions().isEmpty())
-			src.sendMessage(Text.of(TextColors.RED, "There are no loaded regions to display"));
-
-		dataStore.getCollatedRegions().forEach(region -> {
-			Optional<Player> oPlayer = server.getPlayer(region.getOwner());
-			String owner = (oPlayer.isPresent()) ? oPlayer.get().getName() : region.getOwner().toString();
-
-			src.sendMessage(
-				Text.of(
-					TextColors.GREEN, owner, " ",
-					TextColors.GOLD, region.getChunks().size(),
-					TextColors.GREEN, " [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]",
-					TextColors.WHITE, " chunks in world ",
-					TextColors.GOLD, region.getWorld().getName(),
-					TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(),
-					TextColors.WHITE,
-					", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
-					TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(),
-					TextColors.WHITE,
-					", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
-				)
-			);
-		});
+//		if (dataStore.getCollatedRegions().isEmpty())
+//			src.sendMessage(Text.of(TextColors.RED, "There are no loaded regions to display"));
+//
+//		dataStore.getCollatedRegions().forEach(region -> {
+//			Optional<Player> oPlayer = server.getPlayer(region.getOwner());
+//			String owner = (oPlayer.isPresent()) ? oPlayer.get().getName() : region.getOwner().toString();
+//
+//			src.sendMessage(
+//				Text.of(
+//					TextColors.GREEN, owner, " ",
+//					TextColors.GOLD, region.getChunks().size(),
+//					TextColors.GREEN, " [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]",
+//					TextColors.WHITE, " chunks in world ",
+//					TextColors.GOLD, region.getWorld().getName(),
+//					TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(),
+//					TextColors.WHITE,
+//					", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
+//					TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(),
+//					TextColors.WHITE,
+//					", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
+//				)
+//			);
+//		});
 
 		return CommandResult.success();
 	}

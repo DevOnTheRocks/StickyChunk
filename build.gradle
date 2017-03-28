@@ -4,12 +4,8 @@ plugins {
     id 'maven'
     id 'org.spongepowered.plugin' version '0.6'
     id 'ninja.miserable.blossom' version '1.0.1'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
-
-apply plugin: 'java'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
 group = 'rocks.devonthe.stickychunk'
 version = '0.16.0-SNAPSHOT'
@@ -21,6 +17,11 @@ repositories {
         name = 'sponge'
         url = 'http://repo.spongepowered.org/maven'
     }
+}
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 }
 
 dependencies {
@@ -40,3 +41,14 @@ dependencies {
     compile ("org.hibernate:hibernate-core:5.2.8.Final")
     compile fileTree(dir: 'libs', include: '*.jar')
 }
+
+shadowJar {
+    dependencies {
+        include(dependency('org.mongodb:mongo-java-driver:3.4.1'))
+        include(dependency('org.hibernate:hibernate-core:5.2.8.Final'))
+    }
+
+    archiveName = project.name + "-${version}-all.jar"
+}
+
+build.dependsOn(shadowJar)

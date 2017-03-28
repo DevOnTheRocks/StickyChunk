@@ -28,6 +28,14 @@
 
 package rocks.devonthe.stickychunk.chunkload.chunkloader;
 
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.world.World;
+import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
+
 public class CommandChunkLoader extends ChunkLoader {
+
+	CommandChunkLoader(User owner, World world) {
+		super(ChunkLoaderType.COMMAND, world, owner);
+	}
 
 }

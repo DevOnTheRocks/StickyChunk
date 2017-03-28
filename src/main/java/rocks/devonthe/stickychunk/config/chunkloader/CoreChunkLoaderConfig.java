@@ -39,21 +39,18 @@ import java.util.Optional;
 public abstract class CoreChunkLoaderConfig {
 	@Setting(value = "Name", comment = "Name of the chunk loader used in options & commands.")
 	private String name = "";
-	@Setting(value = "Offline-Duration", comment = "The amount time to keep chunks loaded when the player is offline.")
+	@Setting(value = "Offline-Duration", comment = "The max amount time to keep chunks loaded when the player is offline.")
 	private String duration = "1d";
 	@Setting(value = "Price", comment = "The price per chunk, if any.")
 	private double price = 0d;
-	@Setting(value = "Load-While-AFK", comment = "Whether chunks stay loaded while the player is AFK.")
-	private boolean afk = true;
 
 	public CoreChunkLoaderConfig() {
 
 	}
 
-	public CoreChunkLoaderConfig(String name, String duration, boolean afk) {
+	public CoreChunkLoaderConfig(String name, String duration) {
 		this.name = name;
 		this.duration = duration;
-		this.afk = afk;
 	}
 
 	public String getName() {
@@ -75,9 +72,5 @@ public abstract class CoreChunkLoaderConfig {
 
 	public double getPrice() {
 		return price;
-	}
-
-	public boolean isLoadedWhileAFK() {
-		return afk;
 	}
 }

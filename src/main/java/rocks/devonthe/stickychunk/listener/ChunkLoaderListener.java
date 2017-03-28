@@ -28,130 +28,131 @@
 
 package rocks.devonthe.stickychunk.listener;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
-import org.spongepowered.api.Sponge;
+import com.google.common.collect.Sets;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.effect.particle.ParticleEffect;
-import org.spongepowered.api.effect.particle.ParticleOptions;
-import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.BlockChangeFlag;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.BlockChunkLoader;
-import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoaderFuelMode;
+import rocks.devonthe.stickychunk.config.chunkloader.BlockChunkLoaderConfig;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.EntityManager;
 
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class ChunkLoaderListener {
+public class ChunkLoaderListener extends ListenerBase {
+
+	static private Set<BlockChunkLoader> blockChunkLoaders = Sets.newHashSet();
 	private EntityManager database = StickyChunk.getInstance().getEntityManager();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 
 	@Listener
-	public void onBlockChange(ChangeBlockEvent.Break event, @Root Player player) {
-		if (event.getTransactions().stream()
-			.filter(t -> t.getOriginal().getState().getType().equals(BlockTypes.IRON_BLOCK))
-			.count() == 0)
-			return;
-
-		StickyChunk.getInstance().getLogger().info(String
-			.format("%s attempted to break a chunkloader in %s at %s", player.getName(),
-				player.getLocation().getExtent().getName(), player.getLocation().getPosition().toString()
-			));
-
-		event.setCancelled(true);
+	public void onBlockChange(ChangeBlockEvent.Break event) {
+		event.getTransactions().forEach(t ->
+			blockChunkLoaders.stream()
+				.filter(cl -> cl.getLocation().equals(t.getOriginal().getLocation().get()))
+				.findAny()
+				.ifPresent(chunkLoader -> {
+					chunkLoader.dropInventory(event.getCause());
+					chunkLoader.remove();
+					blockChunkLoaders.remove(chunkLoader);
+				}));
 	}
 
 	@Listener
-	public void onInteract(InteractBlockEvent.Primary event, @Root Player player) {
-		if (!event.getTargetBlock().getState().getType().equals(BlockTypes.IRON_BLOCK)
-			|| !player.getItemInHand(event.getHandType()).isPresent()
-			|| !player.getItemInHand(event.getHandType()).get().getItem().equals(ItemTypes.ENDER_EYE))
-			return;
+	public void onInteract(InteractBlockEvent event, @Root Player player) {
+		List<BlockChunkLoaderConfig> chunkloaders = instance.getConfig().getChunkLoaders().getBlockBased().stream()
+			.filter(cl -> cl.getBlockId().equals(event.getTargetBlock().getState().getType()))
+			.collect(Collectors.toList());
 
-		StickyChunk.getInstance().getLogger().info(String
-			.format("%s attempted to make a chunkloader in %s at %s", player.getName(),
-				player.getLocation().getExtent().getName(), player.getLocation().getPosition().toString()
-			));
-
-		event.setCancelled(true);
-
-		World world = player.getWorld();
-		Vector3i blockPos = event.getTargetBlock().getPosition();
-
-		ItemStack item = player.getItemInHand(event.getHandType()).get();
-		item.setQuantity(item.getQuantity() - 1);
-
-		if (dataStore.isChunkLoaded(world.getChunk(blockPos.getX(),blockPos.getY(), blockPos.getZ()).get())) {
-			player.sendMessage(Text.of(TextColors.RED, "This chunk is already loaded."));
+		if (chunkloaders.isEmpty()) {
 			return;
 		}
-
-		dataStore.addUserChunkLoader(player, ChunkLoaderType.BLOCK, new BlockChunkLoader(event.getTargetBlock().getLocation().get()));
-
-		player.setItemInHand(event.getHandType(), (item.getQuantity() > 0) ? item : null);
-
-		Sponge.getScheduler().createTaskBuilder()
-			.intervalTicks(100)
-			.execute(animateChunkLoader(world, event.getTargetBlock().getLocation().get().getPosition()))
-			.submit(StickyChunk.getInstance());
-
-		BlockState block = BlockState.builder()
-			.blockType(event.getTargetBlock().getState().getType())
-			.add(Keys.DISPLAY_NAME, Text.of(TextColors.GOLD, "Chunk Loader"))
-			.build();
-
-		player.getWorld().setBlock(event.getTargetBlock().getPosition(), block, BlockChangeFlag.NONE,
-			StickyChunk.getInstance().getCause()
-		);
-
-		player.sendMessage(Text.of(TextColors.GREEN, "Successfully created chunkloader."));
+		if (event instanceof InteractBlockEvent.Primary) {
+			onLeftClick((InteractBlockEvent.Primary) event, player);
+		} else if (event instanceof InteractBlockEvent.Secondary) {
+			onRightClick((InteractBlockEvent.Secondary) event, chunkloaders, player);
+		}
 	}
 
-	private Consumer<Task> animateChunkLoader(World world, Vector3d position) {
-		return task -> {
-			// Top Effect
-			world.spawnParticles(
-				ParticleEffect.builder().type(ParticleTypes.END_ROD).option(ParticleOptions.QUANTITY, 5).build(),
-				position.add(0.5, 1.5, 0.5)
-			);
-			// Circle Effect
-			for (int i = 0, r = 0; r < 360; i++, r += 15) {
-				Sponge.getScheduler().createTaskBuilder()
-					.delayTicks(i)
-					.execute(circleAnimation(world, position, r))
-					.submit(StickyChunk.getInstance());
+	private void onLeftClick(InteractBlockEvent.Primary event, Player player) {
+		blockChunkLoaders.stream()
+			.filter(cl -> cl.getLocation().equals(event.getTargetBlock().getLocation().get()))
+			.findAny()
+			.ifPresent(cl -> cl.sendInfoMessage(player));
+	}
+
+	private void onRightClick(InteractBlockEvent.Secondary event, List<BlockChunkLoaderConfig> chunkLoaders, Player player) {
+		Optional<BlockChunkLoader> oChunkLoader = blockChunkLoaders.stream()
+			.filter(cl -> !cl.getConfig().getFuelMode().equals(ChunkLoaderFuelMode.NONE))
+			.filter(cl -> cl.getLocation().equals(event.getTargetBlock().getLocation().get()))
+			.findAny();
+		if (oChunkLoader.isPresent()) {
+			player.openInventory(oChunkLoader.get().getInventory(), instance.getCause());
+		} else {
+			if (!player.get(Keys.IS_SNEAKING).orElse(false)
+				|| !player.getItemInHand(event.getHandType()).isPresent()
+				|| blockChunkLoaders.stream().filter(cl -> cl.getLocation().equals(event.getTargetBlock().getLocation().get())).count() > 1) {
+				return;
 			}
-		};
-	}
 
-	private Consumer<Task> circleAnimation(World world, Vector3d position, int r) {
-		return task -> {
-			// Upper
-			world.spawnParticles(
-				ParticleEffect.builder().type(ParticleTypes.HAPPY_VILLAGER)/*.option(ParticleOptions.COLOR, Color.WHITE)*/
-					.build(),
-				position.add(0.5 + 0.5 * Math.cos(r), 1.5, 0.5 + 0.5 * Math.sin(r))
-			);
-			// Lower
-			world.spawnParticles(
-				ParticleEffect.builder().type(ParticleTypes.REDSTONE_DUST).build(),
-				position.add(0.5 + 1.25 * Math.cos(r), 0.5, 0.5 + 1.25 * Math.sin(r))
-			);
-		};
+			ItemStack item = player.getItemInHand(event.getHandType()).get();
+			chunkLoaders.stream()
+				.filter(c -> c.getItemId().getType().equals(item.getItem()))
+				.findAny()
+				.ifPresent(cl -> {
+					Location<World> location = event.getTargetBlock().getLocation().get();
+
+					logger.info(String.format(
+						"%s attempted to make a chunkloader in %s at %s",
+						player.getName(),
+						location.getExtent().getName(),
+						location.getBlockPosition().toString()
+					));
+
+					event.setCancelled(true);
+
+					if (!player.getGameModeData().get(Keys.GAME_MODE).get().equals(GameModes.CREATIVE)) {
+						item.setQuantity(item.getQuantity() - 1);
+						player.setItemInHand(event.getHandType(), (item.getQuantity() > 0) ? item : null);
+					}
+
+					//if (dataStore.isChunkLoaded(world.getChunk(blockPos.getX(), blockPos.getY(), blockPos.getZ()).get())) {
+					//	player.sendMessage(Text.of(TextColors.RED, "This chunk is already loaded."));
+					//	return;
+					//}
+
+					//dataStore.addUserChunkLoader(player, ChunkLoaderType.BLOCK, new BlockChunkLoader(event.getTargetBlock().getLocation().get()));
+
+					blockChunkLoaders.add(new BlockChunkLoader(player, cl.getName(), location));
+
+					BlockState block = BlockState.builder()
+						.blockType(event.getTargetBlock().getState().getType())
+						.build();
+
+					player.getWorld().setBlock(location.getBlockPosition(), block, BlockChangeFlag.NONE, instance.getCause());
+
+					location.getTileEntity().ifPresent(tile -> {
+						tile.offer(Keys.DISPLAY_NAME, Text.of(TextColors.GOLD, "Chunkloader"));
+					});
+
+					player.sendMessage(Text.of(TextColors.GREEN, "Successfully created chunkloader."));
+				});
+		}
 	}
 }

@@ -139,7 +139,7 @@ public class StickyChunk {
 		Sponge.getServer().getChunkTicketManager().registerCallback(this, new ChunkLoadCallback());
 
 		// Register events
-		Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());
+		//Sponge.getGame().getEventManager().registerListeners(this, new PlayerConnectionListener());
 		Sponge.getGame().getEventManager().registerListeners(this, new RegionAreaListener());
 		Sponge.getGame().getEventManager().registerListeners(this, new ChunkLoaderListener());
 	}

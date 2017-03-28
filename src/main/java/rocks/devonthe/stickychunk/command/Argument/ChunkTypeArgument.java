@@ -37,13 +37,9 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
-import rocks.devonthe.stickychunk.chunkload.LoadedRegion;
-import rocks.devonthe.stickychunk.permission.Permissions;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ChunkTypeArgument extends CommandElement {
 	public ChunkTypeArgument(@Nullable Text key) {
@@ -67,17 +63,17 @@ public class ChunkTypeArgument extends CommandElement {
 	protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
 		String type = args.next().toLowerCase();
 
-		if (LoadedRegion.ChunkType.asMap().containsKey(type)) {
-			if (source.hasPermission(String.format("%s.%s", Permissions.COMMAND_CREATE, type)))
-				return LoadedRegion.ChunkType.asMap().get(type);
-			else
-				throw new ArgumentParseException(
-					Text.of(TextColors.RED, String.format("You do not have permission to create %s chunks", type)),
-					type, 0
-				);
-		} else {
+//		if (LoadedRegion.ChunkType.asMap().containsKey(type)) {
+//			if (source.hasPermission(String.format("%s.%s", Permissions.COMMAND_CREATE, type)))
+//				return LoadedRegion.ChunkType.asMap().get(type);
+//			else
+//				throw new ArgumentParseException(
+//					Text.of(TextColors.RED, String.format("You do not have permission to create %s chunks", type)),
+//					type, 0
+//				);
+//		} else {
 			throw new ArgumentParseException(Text.of(TextColors.RED, "Chunk type does not exist."), type, 0);
-		}
+//		}
 	}
 
 	/**
@@ -91,16 +87,16 @@ public class ChunkTypeArgument extends CommandElement {
 	@Override
 	@NonnullByDefault
 	public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-		try {
-			String type = args.peek().toLowerCase();
-			return LoadedRegion.ChunkType.asMap().entrySet().stream()
-				.filter(s -> s.getKey().startsWith(type))
-				.filter(s -> Permissions.hasPermission(src, s.getKey()))
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toList());
-		} catch (ArgumentParseException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			String type = args.peek().toLowerCase();
+//			return LoadedRegion.ChunkType.asMap().entrySet().stream()
+//				.filter(s -> s.getKey().startsWith(type))
+//				.filter(s -> Permissions.hasPermission(src, s.getKey()))
+//				.map(Map.Entry::getKey)
+//				.collect(Collectors.toList());
+//		} catch (ArgumentParseException e) {
+//			e.printStackTrace();
+//		}
 
 		return Lists.newArrayList();
 	}
