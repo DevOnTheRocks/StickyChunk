@@ -40,19 +40,18 @@ import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.data.UserData;
-import rocks.devonthe.stickychunk.database.EntityManager;
+import rocks.devonthe.stickychunk.database.SQLiteEntityManager;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class PlayerConnectionListener {
 	private static final StickyChunk INSTANCE = StickyChunk.getInstance();
-	private EntityManager entityManager = INSTANCE.getEntityManager();
+	private SQLiteEntityManager entityManager = INSTANCE.getEntityManager();
 	private DataStore dataStore = INSTANCE.getDataStore();
 	private Logger logger = INSTANCE.getLogger();
 

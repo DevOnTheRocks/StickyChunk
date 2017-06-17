@@ -38,6 +38,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
+import com.j256.ormlite.table.DatabaseTable;
 import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
@@ -47,9 +48,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.persistence.Entity;
-
-@Entity(name = "chunkloader")
+@DatabaseTable(tableName = "chunkloader")
 public abstract class ChunkLoader {
 
 	private HashMap<World, LoadingTicket> tickets;

@@ -36,7 +36,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
@@ -46,6 +45,7 @@ import rocks.devonthe.stickychunk.permission.Permissions;
 
 public class CommandLoad implements CommandExecutor {
 	private static Game game = StickyChunk.getInstance().getGame();
+//	private EntityManager database = StickyChunk.getInstance().getEntityManager();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
 	public static String helpText = "/sc load <world|personal> - Chunk-load the chunk at your current position.";
@@ -74,8 +74,30 @@ public class CommandLoad implements CommandExecutor {
 	 * @throws CommandException If a user-facing error occurs while executing this command
 	 */
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!(src instanceof Player))
-			return execServer(src, args);
+//		if (!(src instanceof Player))
+//			return execServer(src, args);
+//
+//		Map<String, String> chunkloaders = Maps.newHashMap();
+//		chunkloaders.put("block", "IronBlockEnderEye");
+//
+//		Player player = (Player) src;
+//		Region region = new Region(player.getLocation());
+//		LoadedRegion.ChunkType type = args.<LoadedRegion.ChunkType>getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
+//		LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
+//
+//		if (dataStore.isRegionLoaded(loadedRegion))
+//			throw new CommandException(Text.of(TextColors.RED, "You've already allocated this region."));
+//
+//		loadedRegion.assignTicket();
+//		if (loadedRegion.isValid())
+//			throw new CommandException(
+//				Text.of(TextColors.RED, "Failed to allocate a loading ticket and force region."));
+//
+//		dataStore.addPlayerRegion(player, loadedRegion);
+//		loadedRegion.forceChunks();
+//		database.saveRegionData(loadedRegion);
+//
+//		player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded the region."));
 
 //		Map<String, String> chunkloaders = Maps.newHashMap();
 //		chunkloaders.put("block", "IronBlockEnderEye");

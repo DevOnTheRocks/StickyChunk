@@ -61,6 +61,7 @@ import rocks.devonthe.stickychunk.config.ConfigManager;
 import rocks.devonthe.stickychunk.config.StickyChunkConfig;
 import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.database.EntityManager;
+import rocks.devonthe.stickychunk.database.SQLiteEntityManager;
 import rocks.devonthe.stickychunk.economy.EconomyManager;
 import rocks.devonthe.stickychunk.listener.ChunkLoaderListener;
 import rocks.devonthe.stickychunk.listener.PlayerConnectionListener;
@@ -243,7 +244,7 @@ public class StickyChunk {
 		return config;
 	}
 
-	public EntityManager getEntityManager() {
+	public SQLiteEntityManager getEntityManager() {
 		return entityManager;
 	}
 

@@ -35,7 +35,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.TicketManager;
@@ -44,6 +43,7 @@ import rocks.devonthe.stickychunk.data.DataStore;
 import rocks.devonthe.stickychunk.permission.Permissions;
 
 public class CommandLoadRange implements CommandExecutor {
+//	private EntityManager database = StickyChunk.getInstance().getEntityManager();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 	private TicketManager ticketManager = StickyChunk.getInstance().getTicketManager();
 	public static String helpText = "/sc loadarea <world|personal> - Chunk-load the region currently selected.";
@@ -71,8 +71,34 @@ public class CommandLoadRange implements CommandExecutor {
 	 * @throws CommandException If a user-facing error occurs while executing this command
 	 */
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!(src instanceof Player))
-			return execServer(src, args);
+//		if (!(src instanceof Player))
+//			return execServer(src, args);
+//
+//		Player player = (Player) src;
+//		LoadedRegion.ChunkType type = (LoadedRegion.ChunkType) args.getOne("type").orElse(LoadedRegion.ChunkType.WORLD);
+//
+//		if (!RegionAreaListener.exists(player))
+//			throw new CommandException(
+//				Text.of(TextColors.RED, "You must have a selected region before loading multiple chunks."));
+//
+//		RegionAreaListener.PlayerData playerData = RegionAreaListener.get(player);
+//		Coordinate from = new Coordinate(new Location<>(player.getWorld(), playerData.getPos1()).getChunkPosition());
+//		Coordinate to = new Coordinate(new Location<>(player.getWorld(), playerData.getPos2()).getChunkPosition());
+//		Region region = new Region(from, to, player.getWorld().getUniqueId());
+//		LoadedRegion loadedRegion = new LoadedRegion(region, player, type);
+//
+//		if (dataStore.isRegionLoaded(loadedRegion))
+//			throw new CommandException(Text.of(TextColors.RED, "You've already allocated this region."));
+//
+//		loadedRegion.assignTicket();
+//		if (!loadedRegion.isValid())
+//			throw new CommandException(Text.of(TextColors.RED, "Failed to allocate a loading ticket or force chunks."));
+//
+//		dataStore.addPlayerRegion(player, loadedRegion);
+//		loadedRegion.forceChunks();
+//		database.saveRegionData(loadedRegion);
+//
+//		player.sendMessage(Text.of(TextColors.GREEN, "Successfully loaded chunk range."));
 
 //		Player player = (Player) src;
 //		LoadedRegion.ChunkType type = (LoadedRegion.ChunkType) args.getOne("type").orElse(LoadedRegion.ChunkType.WORLD);

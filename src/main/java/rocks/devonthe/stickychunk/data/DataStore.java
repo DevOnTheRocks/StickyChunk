@@ -38,7 +38,7 @@ import rocks.devonthe.stickychunk.StickyChunk;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
-import rocks.devonthe.stickychunk.database.EntityManager;
+import rocks.devonthe.stickychunk.database.SQLiteEntityManager;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -191,7 +191,7 @@ public class DataStore {
 	}
 
 	public UserData getOrCreateUserData(UUID uuid) {
-		EntityManager entityManager = StickyChunk.getInstance().getEntityManager();
+		SQLiteEntityManager entityManager = StickyChunk.getInstance().getEntityManager();
 		Date now = new Date(java.util.Date.from(Instant.now()).getTime());
 
 		if (userChunkData.containsKey(uuid)) {

@@ -48,7 +48,7 @@ import rocks.devonthe.stickychunk.chunkload.chunkloader.BlockChunkLoader;
 import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoaderFuelMode;
 import rocks.devonthe.stickychunk.config.chunkloader.BlockChunkLoaderConfig;
 import rocks.devonthe.stickychunk.data.DataStore;
-import rocks.devonthe.stickychunk.database.EntityManager;
+import rocks.devonthe.stickychunk.database.SQLiteEntityManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,9 +56,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ChunkLoaderListener extends ListenerBase {
-
 	static private Set<BlockChunkLoader> blockChunkLoaders = Sets.newHashSet();
-	private EntityManager database = StickyChunk.getInstance().getEntityManager();
+	private SQLiteEntityManager database = StickyChunk.getInstance().getEntityManager();
 	private DataStore dataStore = StickyChunk.getInstance().getDataStore();
 
 	@Listener

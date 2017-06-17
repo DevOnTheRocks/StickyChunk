@@ -37,6 +37,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+import rocks.devonthe.stickychunk.permission.Permissions;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,7 +62,19 @@ public class ChunkTypeArgument extends CommandElement {
 	@Nullable
 	@NonnullByDefault
 	protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
-		String type = args.next().toLowerCase();
+//		String type = args.next().toLowerCase();
+//
+//		if (LoadedRegion.ChunkType.asMap().containsKey(type)) {
+//			if (source.hasPermission(String.format("%s.%s", Permissions.COMMAND_CREATE, type)))
+//				return LoadedRegion.ChunkType.asMap().get(type);
+//			else
+//				throw new ArgumentParseException(
+//					Text.of(TextColors.RED, String.format("You do not have permission to create %s chunks", type)),
+//					type, 0
+//				);
+//		} else {
+//			throw new ArgumentParseException(Text.of(TextColors.RED, "Chunk type does not exist."), type, 0);
+//		}
 
 //		if (LoadedRegion.ChunkType.asMap().containsKey(type)) {
 //			if (source.hasPermission(String.format("%s.%s", Permissions.COMMAND_CREATE, type)))

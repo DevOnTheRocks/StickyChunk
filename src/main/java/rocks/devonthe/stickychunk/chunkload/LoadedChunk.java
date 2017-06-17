@@ -1,21 +1,23 @@
 package rocks.devonthe.stickychunk.chunkload;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import org.spongepowered.api.world.Chunk;
 import rocks.devonthe.stickychunk.world.Coordinate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import java.util.UUID;
 
-@Entity(name = "chunk")
+@DatabaseTable(tableName = "chunk")
 public class LoadedChunk {
-	@Column(name = "id")
+	@DatabaseField
 	private UUID id;
-	@Column(name = "world")
+	@DatabaseField
 	private UUID world;
-	@Transient
 	private Chunk chunk;
+	@DatabaseField(useGetSet = true)
+	private int chunkPosX;
+	@DatabaseField(useGetSet = true)
+	private int chunkPosZ;
 
 	protected LoadedChunk() {}
 
@@ -41,13 +43,11 @@ public class LoadedChunk {
 		return new Coordinate(chunk.getPosition());
 	}
 
-	@Column(name = "chunkPosX")
-	public int getChunkX() {
+	public int getChunkPosX() {
 		return chunk.getPosition().getX();
 	}
 
-	@Column(name = "chunkPosZ")
-	public int getChunkZ() {
+	public int getChunkPosZ() {
 		return chunk.getPosition().getZ();
 	}
 }

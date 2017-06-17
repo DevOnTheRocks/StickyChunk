@@ -31,22 +31,18 @@ package rocks.devonthe.stickychunk.data;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import org.spongepowered.api.service.economy.Currency;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.world.ChunkTicketManager.LoadingTicket;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import rocks.devonthe.stickychunk.StickyChunk;
-import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.chunkload.LoadedChunk;
+import rocks.devonthe.stickychunk.chunkload.chunkloader.ChunkLoader;
 import rocks.devonthe.stickychunk.config.chunkloader.ChunkLoaderType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -56,31 +52,25 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Entity(name = "user")
+@DatabaseTable(tableName = "userdata")
 public class UserData {
-	@Id
-	@Column(name = "user")
+	@DatabaseField(id = true, canBeNull = false)
 	private UUID user;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "seen")
+	@DatabaseField()
 	private Date seen;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "joined")
+	@DatabaseField(canBeNull = false)
 	private Date joined;
 
-	@Transient
 	private UniqueAccount account;
 
-	@Transient
 	private EnumMap<ChunkLoaderType, ArrayList<ChunkLoader>> chunkLoaders;
 
-	@Transient
 	private Map<UUID, LoadingTicket> tickets;
 
 	protected UserData() {
-		// Zero-argument constructor for Hibernate
+		// Zero-argument constructor for Ormlite
 	}
 
 	public UserData(UUID id, Date joined, Date seen) {

@@ -74,8 +74,45 @@ public class CommandList implements CommandExecutor {
 	 * @throws CommandException If a user-facing error occurs while executing this command
 	 */
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!(src instanceof Player))
-			return execServer(src, args);
+//		if (!(src instanceof Player))
+//			return execServer(src, args);
+//
+//		User user = args.<User>getOne(USER).orElse((Player) src);
+//		List<Text> listText = Lists.newArrayList();
+//		ArrayList<LoadedRegion> loadedRegions = dataStore.getPlayerRegions(user);
+//
+//		Text header = Text.of(
+//			"Listing ",
+//			TextColors.GOLD, loadedRegions.size(),
+//			TextColors.RESET, " region(s) across ",
+//			TextColors.GOLD, dataStore.getPlayerRegionWorlds(user).size(),
+//			TextColors.RESET, " worlds"
+//		);
+//
+//		if (loadedRegions.isEmpty())
+//			header = Text.of(TextColors.RED, "There are no loaded regions to display");
+//
+//		loadedRegions.forEach(region -> listText.add(Text.of(
+//			TextColors.GOLD, region.getChunks().size(),
+//			TextColors.GREEN, Text.of(" [", (region.getType() == LoadedRegion.ChunkType.WORLD) ? 'W' : 'P', "]")
+//				.toBuilder().onHover(TextActions.showText(Text.of(
+//					TextColors.GREEN,
+//					(region.getType() == LoadedRegion.ChunkType.WORLD) ? "World" : "Personal"
+//				))),
+//			TextColors.WHITE, (region.getChunks().size() > 1) ? " chunks in world " : " chunk in world ",
+//			TextColors.GOLD, region.getWorld().getName(),
+//			TextColors.WHITE, " from (", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getX(), TextColors.WHITE,
+//			", ", TextColors.LIGHT_PURPLE, region.getRegion().getFrom().getZ(), TextColors.WHITE, ")",
+//			TextColors.WHITE, " to (", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getX(), TextColors.WHITE,
+//			", ", TextColors.LIGHT_PURPLE, region.getRegion().getTo().getZ(), TextColors.WHITE, ")"
+//		)));
+//
+//		PaginationList.builder()
+//			.title(Text.of(TextColors.GOLD, "Loaded Regions"))
+//			.padding(Text.of(TextColors.GOLD, TextStyles.STRIKETHROUGH, "-"))
+//			.header(header)
+//			.contents(listText)
+//			.sendTo(src);
 
 //		User user = args.<User>getOne(USER).orElse((Player) src);
 //		List<Text> listText = Lists.newArrayList();
